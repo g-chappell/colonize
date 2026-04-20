@@ -40,7 +40,7 @@ epics:
             attempt_count: 1
           - id: TASK-002
             title: "Scaffold apps/web with Vite + React + TS"
-            status: ready
+            status: done
             priority: high
             complexity: small
             workspaces: [web]
@@ -50,11 +50,11 @@ epics:
               that renders "Colonize — NW 2191". Wire npm run dev / build /
               test / typecheck scripts. Verify port 5173 dev server starts.
             depends_on: [TASK-001]
-            pr: null
-            completed: null
+            pr: "https://github.com/g-chappell/colonize/pull/3"
+            completed: "2026-04-20T18:40:00Z"
             blocked_reason: null
-            last_attempted: null
-            attempt_count: 0
+            last_attempted: "2026-04-20T18:35:00Z"
+            attempt_count: 1
       - id: STORY-02
         title: "Mobile wrapper"
         description: |
