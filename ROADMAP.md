@@ -9,9 +9,9 @@ _Created: 2026-04-20_
 ## Summary
 
 - **Total tasks:** 90
-- **Done:** 4 (4%)
+- **Done:** 5 (6%)
 - **Ready:** 85
-- **In progress:** 1
+- **In progress:** 0
 - **Blocked:** 0
 
 ---
@@ -58,7 +58,7 @@ the deploy pipeline from main → VPS docker compose.
     > their tsconfigs), index.ts exporting a placeholder symbol
     > each. Add them to root tsconfig.json references. Verify tsc
     > -b succeeds at root.
-  - :large_orange_diamond: **TASK-005** — Wire shared state store (Zustand) in apps/web  `high` `small` _(web, core)_  
+  - :white_check_mark: **TASK-005** — Wire shared state store (Zustand) in apps/web  `high` `small` _(web, core)_ · [PR](https://github.com/g-chappell/colonize/pull/7)  
     _depends on: TASK-002, TASK-004_
     > Install zustand in apps/web. Create src/store/game.ts with a
     > minimal store (slice: gameVersion, currentTurn). Import a

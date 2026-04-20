@@ -104,7 +104,7 @@ epics:
             attempt_count: 1
           - id: TASK-005
             title: "Wire shared state store (Zustand) in apps/web"
-            status: in-progress
+            status: done
             priority: high
             complexity: small
             workspaces: [web, core]
@@ -114,8 +114,8 @@ epics:
               type from packages/core to verify cross-workspace imports
               work via project references + paths alias.
             depends_on: [TASK-002, TASK-004]
-            pr: null
-            completed: null
+            pr: "https://github.com/g-chappell/colonize/pull/7"
+            completed: "2026-04-20T20:10:00Z"
             blocked_reason: null
             last_attempted: "2026-04-20T20:05:00Z"
             attempt_count: 1
