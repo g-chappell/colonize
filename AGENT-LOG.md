@@ -157,7 +157,7 @@ gaps.
 - Files changed: .github/workflows/deploy.yml (new), roadmap/roadmap.yml, ROADMAP.md
 - Regression alert: false
 - Review proposed: false (3 consecutive successes since the TASK-005 review checkpoint; threshold = 5)
-- Deploy: pending (fires via new workflow once PR #14 merges, assuming SSH_HOST + SSH_PRIVATE_KEY secrets are configured — otherwise the SSH step will fail visibly in the Actions tab)
+- Deploy: success (local /deploy path); new GH Actions workflow ran in parallel and failed on "missing server host" as expected (SSH_HOST / SSH_PRIVATE_KEY secrets not yet provisioned). Local deploy: colonize:latest rebuilt, docker-app-1 recreated, healthcheck 200 on attempt 2 at http://localhost:3000/health; GET returns {"ok":true,"version":"0.0.0","uptime":~4s}. GH Actions run: https://github.com/g-chappell/colonize/actions/runs/24693256793 (conclusion: failure at SSH step — operator action required to set secrets before this path becomes authoritative).
 - Lessons learned:
   - `git reset --hard origin/main` in the remote deploy script is dangerous when the VPS checkout doubles as the autonomous agent's working directory (mid-feature-branch work would be wiped). Guarded by a current-branch check that bails if HEAD != main, and fast-forward-only pull. Safer default.
   - Two on-merge deploy actors now exist: (a) the systemd-timer agent running /autonomous-run step 12 on the VPS, (b) this new GH Actions workflow. `concurrency: deploy-production` serialises within Actions but the local-on-VPS run is a separate actor. Pick a winner in a follow-up; both race inside `docker compose build`.
