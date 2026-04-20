@@ -168,10 +168,14 @@ gaps.
 ### Run [2026-04-20 23:10]
 - Task: TASK-009 — Define OTK retro palette + pipeline script
 - Outcome: success
-- PR: https://github.com/g-chappell/colonize/pull/15 (auto-merge enabled)
+- PR: https://github.com/g-chappell/colonize/pull/15 (merged)
 - Test counts: server=8, web=8, content=9 (was 2 — added 7 palette tests), core=1, shared=2
 - Files changed: packages/content/src/palette.ts, packages/content/src/palette.test.ts, packages/content/src/index.ts, packages/content/scripts/pack-atlas.mjs, packages/content/README.md, packages/content/package.json, package-lock.json, .gitignore, roadmap/roadmap.yml, ROADMAP.md
 - Regression alert: false (content 2 → 9; all other counts steady)
-- Review proposed: <pending Step 15>
-- Deploy: <pending Step 12-14>
-- Lessons learned: pending
+- Review proposed: false (4 consecutive successes since the TASK-005 review checkpoint; threshold = 5 — next success triggers /autonomous-review)
+- Deploy: success — colonize:latest rebuilt (multi-stage docker build, ~10s builder phase), docker-app-1 recreated, healthcheck 200 on attempt 2 at http://localhost:3000/health (`{"ok":true,"version":"0.0.0","uptime":5.984}`); root `/` returns 200 (apps/web/dist served via @fastify/static). Image manifest sha256:bcb9a1144e75. New `free-tex-packer-core` devDep installs cleanly inside the builder stage; runtime image unaffected (devDep, not bundled).
+- Lessons learned:
+  - First content-only PR — palette is plain TS data, atlas script is a CLI-style `.mjs` that's safe to re-run with no inputs (exits 0 with an info notice). Keeps the pipeline runnable before any sprite art exists.
+  - `free-tex-packer-core` 0.3.5 is CommonJS but imports cleanly via ESM default-import. Brings transitive deps (jimp 0.2.x, tinify 1.x, mustache, maxrects-packer) — install adds ~79 packages but no native build steps and no audit failures. Acceptable given the task explicitly named the wrapper.
+  - PR #15 auto-merged faster than the AGENT-LOG push; rebase-pull on main resolved cleanly. If this becomes routine, the skill could push the log entry from the feature branch instead and let the merge carry it.
+- Notes: Ninth autonomous-run cycle. Streak: 4 consecutive successes since the TASK-005 review checkpoint (TASK-006 → TASK-007 → TASK-008 → TASK-009); the next successful run will hit successThreshold=5 and fire /autonomous-review.
