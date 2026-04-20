@@ -107,7 +107,7 @@ gaps.
 - Files changed: apps/web/package.json, apps/web/tsconfig.json, apps/web/src/store/game.ts, apps/web/src/store/game.test.ts, package-lock.json, roadmap/roadmap.yml, ROADMAP.md
 - Regression alert: false (web went 3 → 8, all other counts steady)
 - Review proposed: true (5 consecutive successes hits threshold; first /autonomous-review pass invoked)
-- Deploy: deferred (apps/server still missing; Dockerfile COPY will fail until TASK-006 lands)
+- Deploy: build_failed (exit 1) — `bash scripts/deploy.sh` ran post-merge as configured (`autoDeployOnMerge: true`); Dockerfile `COPY apps/server/package.json` fails because apps/server has not been scaffolded yet. Pre-existing condition flagged in every prior run; nothing was deployed → no rollback required → other roadmap tasks remain pickupable. Resolves on TASK-006 (`Scaffold apps/server with Fastify + /health endpoint`).
 - Lessons learned:
   - Cross-workspace import worked transparently via npm workspaces' `node_modules/@colonize/core` symlink + a tsconfig project reference from apps/web → packages/core. No path alias needed in vite.config / tsconfig paths.
   - Zustand v5 ships ESM-only, integrates cleanly with Vite + Vitest jsdom env. Stores reset via `useGameStore.getState().reset()` between tests with `beforeEach` is enough — no global teardown needed.
