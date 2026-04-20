@@ -63,7 +63,7 @@ epics:
         tasks:
           - id: TASK-003
             title: "Scaffold apps/mobile with Capacitor + add iOS/Android"
-            status: in-progress
+            status: done
             priority: high
             complexity: medium
             workspaces: [mobile]
@@ -73,8 +73,8 @@ epics:
               ios + npx cap add android. Verify npx cap sync works after a
               web build. Commit ios/ and android/ directories.
             depends_on: [TASK-002]
-            pr: null
-            completed: null
+            pr: "https://github.com/g-chappell/colonize/pull/4"
+            completed: "2026-04-20T18:58:00Z"
             blocked_reason: null
             last_attempted: "2026-04-20T18:55:00Z"
             attempt_count: 1

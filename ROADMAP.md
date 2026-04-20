@@ -9,9 +9,9 @@ _Created: 2026-04-20_
 ## Summary
 
 - **Total tasks:** 90
-- **Done:** 2 (2%)
+- **Done:** 3 (3%)
 - **Ready:** 87
-- **In progress:** 1
+- **In progress:** 0
 - **Blocked:** 0
 
 ---
@@ -41,7 +41,7 @@ the deploy pipeline from main → VPS docker compose.
 - **STORY-02** — Mobile wrapper
   > Capacitor scaffold in apps/mobile pointing at apps/web's build
   > output. iOS + Android projects generated; build verified locally.
-  - :large_orange_diamond: **TASK-003** — Scaffold apps/mobile with Capacitor + add iOS/Android  `high` `medium` _(mobile)_  
+  - :white_check_mark: **TASK-003** — Scaffold apps/mobile with Capacitor + add iOS/Android  `high` `medium` _(mobile)_ · [PR](https://github.com/g-chappell/colonize/pull/4)  
     _depends on: TASK-002_
     > Create apps/mobile with capacitor.config.ts (appId
     > dev.blacksail.colonize, webDir ../web/dist). Run npx cap add
