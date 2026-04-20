@@ -128,7 +128,7 @@ epics:
         tasks:
           - id: TASK-006
             title: "Scaffold apps/server with Fastify + /health endpoint"
-            status: ready
+            status: in-progress
             priority: high
             complexity: small
             workspaces: [server, shared]
@@ -141,8 +141,8 @@ epics:
             pr: null
             completed: null
             blocked_reason: null
-            last_attempted: null
-            attempt_count: 0
+            last_attempted: "2026-04-20T19:25:00Z"
+            attempt_count: 1
           - id: TASK-007
             title: "Wire apps/server to serve apps/web static build"
             status: ready
