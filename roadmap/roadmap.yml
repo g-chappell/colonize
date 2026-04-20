@@ -196,7 +196,7 @@ epics:
         tasks:
           - id: TASK-009
             title: "Define OTK retro palette + pipeline script"
-            status: in-progress
+            status: done
             priority: high
             complexity: medium
             workspaces: [content]
@@ -208,8 +208,8 @@ epics:
               free-tex-packer or similar) producing spritesheet.png +
               spritesheet.json. Document in packages/content/README.md.
             depends_on: [TASK-004]
-            pr: null
-            completed: null
+            pr: "https://github.com/g-chappell/colonize/pull/15"
+            completed: "2026-04-20"
             blocked_reason: null
             last_attempted: "2026-04-20T22:00:00Z"
             attempt_count: 1
