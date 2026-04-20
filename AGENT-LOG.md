@@ -129,3 +129,20 @@ gaps.
   - @colonize/shared's HealthResponse Zod schema served as both response validator and test assertion shape — one source of truth for /health across server tests and future client consumers (PR #7 shared scaffold pays off here).
   - Prettier wants multi-line function-argument wrapping when the expression grows beyond the print-width; new server tests tripped format:check on the first pass. Could be caught upfront by running `prettier --write` on the changed files before the validation step.
 - Notes: Sixth autonomous-run cycle. First success after the self-improvement review PR #8 / hotfix PR #9 — TASK-006 completes STORY-04's server entrypoint; TASK-007/TASK-008 (Fastify static + CI deploy workflow) now unblocked.
+
+---
+
+### Run [2026-04-20 21:30]
+- Task: TASK-007 — Wire apps/server to serve apps/web static build
+- Outcome: success
+- PR: https://github.com/g-chappell/colonize/pull/12 (auto-merge enabled)
+- Test counts: server=8 (was 2 — added 6), web=8, core=1, shared=2, content=2
+- Files changed: apps/server/package.json, apps/server/src/app.ts, apps/server/src/app.test.ts, apps/server/src/__fixtures__/web-dist/index.html, apps/server/src/__fixtures__/web-dist/assets/app.css, package-lock.json, roadmap/roadmap.yml, ROADMAP.md
+- Regression alert: false (server 2 → 8; all other counts steady)
+- Review proposed: pending (Step 15 evaluates after deploy)
+- Deploy: pending (Step 12 waits for PR merge)
+- Lessons learned:
+  - Opting into static serving via a `staticRoot` option (rather than checking `NODE_ENV` inline) kept the tests hermetic — fixture dir ships inside `apps/server/src/__fixtures__/` and only activates when the test passes the path. Keeps production auto-resolution (`apps/web/dist` relative to the compiled runtime file) separate from test concerns.
+  - First cap-sync failure of the run was a stale EACCES on `android/capacitor-cordova-android-plugins/src/main/AndroidManifest.xml` that cleared on re-run. If this recurs across cycles, `/autonomous-review` should flag adding a `chmod -R u+w apps/mobile/android` pre-step or gitignore-audit — see similar refinement in PR #9's learning trail.
+  - Prettier trips on bare `*.css` fixtures; running `prettier --write` on new content files before first validation pass saves a cycle (repeated lesson from TASK-006).
+- Notes: Seventh autonomous-run cycle. Streak: 2 consecutive successes since the TASK-005 review checkpoint (TASK-006 → TASK-007); 3 more to re-hit successThreshold=5.
