@@ -27,7 +27,7 @@
   "ghBin": "gh",
   "schedule": {
     "cron": "0 * * * *",
-    "enabled": false
+    "enabled": true
   },
   "host": {
     "method": "systemd",
