@@ -26,17 +26,19 @@
   "successThreshold": 5,
   "ghBin": "gh",
   "schedule": {
-    "cron": "0 */4 * * *",
+    "cron": "0 * * * *",
     "enabled": false
   },
   "host": {
     "method": "systemd",
-    "serviceName": "claude-colonize"
+    "serviceName": "claude-colonize",
+    "vpsHostname": "srv1604573.hstgr.cloud",
+    "vpsPublicIp": "72.61.207.12"
   },
   "deploy": {
-    "target": "",
+    "target": "colonize.blacksail.dev",
     "method": "docker",
-    "autoDeployOnMerge": false,
+    "autoDeployOnMerge": true,
     "healthCheckUrl": "http://localhost:3000/health",
     "healthCheckTimeoutSec": 90,
     "rollbackOnFail": true,

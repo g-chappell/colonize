@@ -1,0 +1,23 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "web-dev",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev", "--workspace=apps/web"],
+      "port": 5173
+    },
+    {
+      "name": "server-dev",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev", "--workspace=apps/server"],
+      "port": 3000
+    },
+    {
+      "name": "db (docker)",
+      "runtimeExecutable": "docker",
+      "runtimeArgs": ["compose", "-f", "docker/docker-compose.yml", "up", "db"],
+      "port": 5432
+    }
+  ]
+}
