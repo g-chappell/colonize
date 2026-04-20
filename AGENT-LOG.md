@@ -139,7 +139,7 @@ gaps.
 - Test counts: server=8 (was 2 — added 6), web=8, core=1, shared=2, content=2
 - Files changed: apps/server/package.json, apps/server/src/app.ts, apps/server/src/app.test.ts, apps/server/src/__fixtures__/web-dist/index.html, apps/server/src/__fixtures__/web-dist/assets/app.css, package-lock.json, roadmap/roadmap.yml, ROADMAP.md
 - Regression alert: false (server 2 → 8; all other counts steady)
-- Review proposed: pending (Step 15 evaluates after deploy)
+- Review proposed: false (2 consecutive successes since the TASK-005 review checkpoint; threshold = 5)
 - Deploy: success — image colonize:latest built, docker-app-1 up, healthcheck 200 on attempt 2 at http://localhost:3000/health. End-to-end verified on deployed app: GET / returns apps/web/dist/index.html (title "Colonize — NW 2191"), GET /some/spa/route falls back to index.html (SPA routing working in production), GET /favicon.svg serves directly as a static asset (200 + cache headers). Docker group perms unblocked since the TASK-006 failure (operator action implied). db container not spun up this deploy (likely pre-existing compose-ordering quirk when only app is needed for health gate) — not cascading.
 - Lessons learned:
   - Opting into static serving via a `staticRoot` option (rather than checking `NODE_ENV` inline) kept the tests hermetic — fixture dir ships inside `apps/server/src/__fixtures__/` and only activates when the test passes the path. Keeps production auto-resolution (`apps/web/dist` relative to the compiled runtime file) separate from test concerns.
