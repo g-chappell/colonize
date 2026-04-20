@@ -16,11 +16,11 @@
     { "name": "server", "path": "apps/server", "commands": { "dev": "npm run dev --workspace=apps/server" } }
   ],
   "commands": {
-    "typecheck": "npx tsc -b",
-    "test": "npm test --workspaces --if-present",
-    "lint": "npx eslint .",
-    "build": "npm run build --workspaces --if-present",
-    "dev": "npm run dev --workspace=apps/web"
+    "typecheck": "npm run typecheck",
+    "test": "npm test",
+    "lint": "npm run lint",
+    "build": "npm run build",
+    "dev": "npm run dev"
   },
   "branchPrefix": "auto/",
   "successThreshold": 5,

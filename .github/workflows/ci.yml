@@ -17,35 +17,20 @@ jobs:
           node-version: '20'
           cache: 'npm'
 
-      # Install root + workspaces. Uses `npm ci` when a lockfile exists
-      # (deterministic, CI-friendly); falls back to `npm install` for the
-      # pre-lockfile initial scaffolding period.
-      - name: Install (ci)
-        if: hashFiles('package-lock.json') != ''
+      - name: Install
         run: npm ci
-      - name: Install (no lockfile yet)
-        if: hashFiles('package-lock.json') == ''
-        run: npm install --no-save
 
-      # Typecheck via TS project references. Skip until the agent's first
-      # EPIC-01 PR lands the root tsconfig.json.
       - name: Typecheck
-        if: hashFiles('tsconfig.json') != ''
-        run: npx tsc -b
+        run: npm run typecheck
 
-      # Lint via ESLint flat config. Skip until lint config is scaffolded.
       - name: Lint
-        if: hashFiles('eslint.config.js') != '' || hashFiles('eslint.config.mjs') != '' || hashFiles('eslint.config.ts') != '' || hashFiles('.eslintrc*') != ''
-        run: npx eslint .
+        run: npm run lint
 
-      # Workspace tests. `--if-present` skips workspaces without a test script.
-      # Guard requires at least one workspace directory to exist; npm errors
-      # on --workspaces if the glob resolves to nothing.
+      - name: Format check
+        run: npm run format:check
+
       - name: Test
-        if: hashFiles('apps/*/package.json', 'packages/*/package.json') != ''
-        run: npm test --workspaces --if-present
+        run: npm test
 
-      # Workspace builds. `--if-present` skips workspaces without a build script.
       - name: Build
-        if: hashFiles('apps/*/package.json', 'packages/*/package.json') != ''
-        run: npm run build --workspaces --if-present
+        run: npm run build
