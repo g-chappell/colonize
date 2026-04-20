@@ -112,14 +112,38 @@ colonize/
 
 ## Autonomous workflow
 
-This project uses an autonomous development agent. Key facts:
+This project uses an autonomous development agent running on a VPS
+(`srv1604573.hstgr.cloud`). Key facts:
 
 - Tasks live in `roadmap/roadmap.yml`. Render with `node roadmap/render.mjs`.
 - Branches follow `auto/<TASK-ID>-<slug>`.
 - Roadmap status changes travel through the PR (branch-as-payload) — never committed directly to main.
-- Every 5 consecutive successful tasks, the agent proposes CLAUDE.md refinements. Review via `/autonomous-approve`.
-- CI required checks: `ci` (typecheck + lint + test + build). Optional: `e2e`.
+- CI required checks: `ci` (typecheck + lint + format:check + test + build).
 - Auto-merge enabled on main; branch protection requires `ci`.
 - VPS auto-deploy enabled on every merge to main (rolling, with auto-rollback on healthcheck fail).
+- Cadence: `claude-colonize.timer` systemd unit fires `claude-colonize.service` oneshot hourly. Stop with `systemctl stop claude-colonize.timer`.
+- Remote Control: persistent `claude-rc.service` keeps mobile/web push notifications routable.
+
+### Self-improvement — fully autonomous, PR-driven
+
+Every `successThreshold` consecutive successful runs, `/autonomous-review`
+drafts refinements anywhere in the repo (except CLAUDE.md Tier 1) as
+commits on a dedicated `auto/review-<date>` branch, opens a PR, and
+enables auto-merge. **No human approval gate** — the PR + commit history
+IS the audit trail.
+
+Override mechanisms (all standard git/gh):
+- Block a review PR before merge: `gh pr close <num>`
+- Revert a merged review: `gh pr revert <num>` (opens a revert PR)
+- Record a rejection to prevent re-proposal: append to `.claude/approvals/history.md`
+- Stop the agent entirely: `systemctl stop claude-colonize.timer`
+- See `/autonomous-approve` (now a revert helper) for guided commands
+
+### Notifications
+
+Every `/autonomous-run` cycle sends one `PushNotification` summarizing
+the outcome — routed via the paired Remote Control session
+(`claude-rc.service`). If RC is down, notifications silently drop; source
+of truth remains `AGENT-LOG.md` + PRs on GitHub.
 
 See `docs/RUNBOOK.md` for troubleshooting and `docs/ARCHITECTURE.md` for deeper context on why the workflow is shaped this way.

@@ -1,6 +1,6 @@
 ---
 name: autonomous-run
-description: THE scheduled entry point. Runs one autonomous dev cycle: sync main, recover any stuck CI, select next task, branch, implement, validate locally, open PR with auto-merge, log. Every 10th-13th step handles optional VPS auto-deploy. Do NOT invoke when a self-improvement review is pending approval.
+description: THE scheduled entry point. Runs one autonomous dev cycle: sync main, recover any stuck CI, select next task, branch, implement, validate locally, open PR with auto-merge, log, notify via PushNotification. Every 12th-14th step handles optional VPS auto-deploy. Self-improvement reviews (every N successes) are PR-driven and do not pause execution.
 user_invocable: true
 ---
 
@@ -8,24 +8,13 @@ user_invocable: true
 
 One cycle of the autonomous dev loop. Designed to be safe to re-run.
 
-This is a **13-step** procedure. Steps 11–13 only fire when VPS auto-deploy
+This is a **14-step** procedure. Steps 12–14 only fire when VPS auto-deploy
 is configured (`project.json.deploy.autoDeployOnMerge: true`).
 
-## Pre-run: check for pending review
-
-FIRST, before anything else:
-
-```bash
-test -f .claude/approvals/PENDING.md && echo "PENDING"
-```
-
-If `PENDING.md` exists AND is not marked `approved: true` in its frontmatter:
-- Write an AGENT-LOG entry with `outcome: skipped`, `reason: review_pending`
-- Notify user: "Self-improvement review pending — run `/autonomous-approve` to clear"
-- **Stop execution.** Do not continue to Step 1.
-
-If `PENDING.md` exists AND is `approved: true`: hand off to
-`autonomous-approve` to finalize and resume.
+There is **no approval gate**. Self-improvement refinements are proposed
+and auto-merged via PRs (see `/autonomous-review`); a bad refinement is
+revertible via `git revert` or `gh pr close`. Nothing pauses the hourly
+cadence short of `systemctl stop claude-colonize.timer`.
 
 ---
 
@@ -219,7 +208,7 @@ Append to `AGENT-LOG.md`:
 - Files changed: <list>
 - Regression alert: <true if any count decreased, else false>
 - Review proposed: <true if success-threshold reached, else false>
-- Deploy: <filled in Step 13 if applicable>
+- Deploy: <filled in Step 14 if applicable>
 - Lessons learned: <optional free text>
 ```
 
@@ -228,14 +217,52 @@ Append to `AGENT-LOG.md`:
 and outcome → `success_with_warning`.
 
 **Review trigger:** count trailing consecutive `success` / `success_with_warning`
-entries. If `>= successThreshold` AND no REVIEW-LOG entry exists in that
-streak, invoke `/autonomous-review` (adds a PENDING.md + pauses cron).
+entries. If `>= successThreshold` AND no REVIEW-LOG entry exists within
+that window AND no open PR matches `auto/review-*`, invoke
+`/autonomous-review`. That skill now writes changes directly to a PR
+branch and enables auto-merge — no PENDING.md, no pause. Capture its
+return value for Step 11's notification.
+
+## Step 11 — NOTIFY (always runs)
+
+Send one `PushNotification` summarizing this cycle. One notification per
+cycle, regardless of outcome. Format under 200 chars, single line, no
+markdown.
+
+Templates by outcome:
+
+| Outcome | Template |
+|---|---|
+| success (task merged) | `✅ TASK-XXX done: <short title>. PR #N merged. Streak <k>/<threshold>.` |
+| success + review fired | `✅ TASK-XXX done + 🔄 review PR #M opened (N refinements). Streak reset.` |
+| success_with_warning | `⚠️ TASK-XXX done w/ regression: <workspace> tests <old>→<new>. PR #N.` |
+| skipped: no_ready_tasks | `⏸️ Cycle skipped: no ready tasks. <k> ready remaining — consider /pm-brainstorm.` |
+| skipped: dirty_tree | `⏸️ Cycle skipped: dirty working tree. Check VPS state.` |
+| blocked: ci_auto_fix_failed | `🛑 PR #N stuck: CI fix failed 3×. Human attention needed.` |
+| blocked: roadmap_invalid | `🛑 roadmap.yml invalid. Manual intervention required.` |
+| blocked: local_validation | `🛑 TASK-XXX blocked after 3 fix attempts: <cmd> failed.` |
+| deploy.rolled_back | `🛑 TASK-XXX merged but deploy rolled back: health check failed.` |
+| deploy.deferred | `✅ TASK-XXX merged, deploy deferred (PR not merged in 10m).` |
+
+Call:
+
+```
+PushNotification({ message: "<templated string>", status: "proactive" })
+```
+
+PushNotification has a built-in 60s active-user guard — it silently
+suppresses if the user is typing in an interactive session. That's fine;
+the cycle continues regardless.
+
+If the notification call throws (network blip, RC server down), log the
+error to `AGENT-LOG.md` under `notify_error:` but DO NOT fail the cycle.
+Notifications are informational — the source of truth is AGENT-LOG + PRs.
 
 ---
 
-**Steps 11–13 only run if `deploy.autoDeployOnMerge: true`.**
+**Steps 12–14 only run if `deploy.autoDeployOnMerge: true`.**
 
-## Step 11 — WAIT FOR MERGE + DEPLOY
+## Step 12 — WAIT FOR MERGE + DEPLOY
 
 Poll for up to 10 minutes (120 * 5s) waiting for PR merge:
 
@@ -254,23 +281,25 @@ Invoke the `/deploy` skill.
 If PR doesn't merge in 10 min (CI slow or failing): write AGENT-LOG
 `deploy: deferred, reason: pr_not_merged_in_time` and stop (next run picks up).
 
-## Step 12 — HEALTH CHECK
+## Step 13 — HEALTH CHECK
 
 `/deploy` runs `scripts/healthcheck.sh` which polls `deploy.healthCheckUrl`
 until 200 OK or `healthCheckTimeoutSec` elapses.
 
-## Step 13 — ROLLBACK (if health fails)
+## Step 14 — ROLLBACK (if health fails)
 
 If health check times out:
 1. `/deploy` runs `scripts/rollback.sh` (restores previous image tag)
 2. Mark THIS TASK as `blocked` with `blocked_reason: "deploy failed health check"`
    on main (direct commit — exceptional case)
 3. Write AGENT-LOG `deploy: rolled_back`
-4. Send notification
+4. Update the PushNotification from Step 11 (or re-send) with the
+   `deploy.rolled_back` template from the table — this overrides the
+   success notification that was sent pre-deploy-check
 5. Do NOT cascade: other tasks are still pickupable. Next run proceeds.
 
 ---
 
-## After Step 13 (or Step 10 if no deploy): done.
+## After Step 14 (or Step 11 if no deploy): done.
 
 Return control to the scheduler. Next fire will be on the configured cron.
