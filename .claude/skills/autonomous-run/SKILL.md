@@ -195,7 +195,7 @@ Then enable auto-merge:
 gh pr merge <num> --auto --squash --delete-branch
 ```
 
-## Step 10 — LOG + MAYBE REVIEW
+## Step 10 — LOG CYCLE
 
 Append to `AGENT-LOG.md`:
 
@@ -207,7 +207,7 @@ Append to `AGENT-LOG.md`:
 - Test counts: <workspace>=<N>, <workspace>=<N>, ...
 - Files changed: <list>
 - Regression alert: <true if any count decreased, else false>
-- Review proposed: <true if success-threshold reached, else false>
+- Review proposed: <filled in Step 15 if applicable>
 - Deploy: <filled in Step 14 if applicable>
 - Lessons learned: <optional free text>
 ```
@@ -216,18 +216,26 @@ Append to `AGENT-LOG.md`:
 `success` entry in AGENT-LOG. If any decreased, set `regression_alert: true`
 and outcome → `success_with_warning`.
 
-**Review trigger:** count trailing consecutive `success` / `success_with_warning`
-entries. If `>= successThreshold` AND no REVIEW-LOG entry exists within
-that window AND no open PR matches `auto/review-*`, invoke
-`/autonomous-review`. That skill now writes changes directly to a PR
-branch and enables auto-merge — no PENDING.md, no pause. Capture its
-return value for Step 11's notification.
+Commit + push the log entry to main. The **review trigger is deliberately
+moved to Step 15 — AFTER deploy completes and its outcome is logged** so
+that `/autonomous-review`'s PR branch is created against the fully
+up-to-date main and doesn't end up `mergeStateStatus: BEHIND`.
 
 ## Step 11 — NOTIFY (always runs)
 
 Send one `PushNotification` summarizing this cycle. One notification per
 cycle, regardless of outcome. Format under 200 chars, single line, no
 markdown.
+
+**When invoked via the VPS systemd two-stage wrapper** (`claude-colonize.service`),
+the notification is actually fired by the *second* `claude -p` invocation
+(Stage 2) which reads the latest AGENT-LOG entry and calls PushNotification.
+In that case Stage 1 (this skill) does NOT need to call PushNotification
+itself — the wrapper handles it.
+
+**When invoked interactively** (e.g. manual `/autonomous-run` in a live
+Claude Code session), this step should call PushNotification directly
+using the template below.
 
 Templates by outcome:
 
@@ -298,8 +306,28 @@ If health check times out:
    success notification that was sent pre-deploy-check
 5. Do NOT cascade: other tasks are still pickupable. Next run proceeds.
 
+## Step 15 — MAYBE REVIEW (fires LAST so main is up to date)
+
+Count trailing consecutive `success` / `success_with_warning` entries in
+AGENT-LOG.md. If the count is `>= successThreshold` AND:
+- No REVIEW-LOG entry exists within that window
+- No open PR matches `auto/review-*`
+
+...then invoke `/autonomous-review`.
+
+This step runs **last** — after Steps 10–14 have pushed AGENT-LOG + deploy-
+outcome commits to main — so that the review skill's branch is created
+against the fully up-to-date main. This eliminates the `mergeStateStatus:
+BEHIND` race that otherwise stalls review PRs.
+
+`/autonomous-review` is responsible for its own auto-merge + BEHIND-handling
+(see its Steps 9 and 10). This skill just invokes it and returns.
+
+If the review was triggered: amend the AGENT-LOG entry from Step 10 to set
+`Review proposed: true` and include the review-PR number.
+
 ---
 
-## After Step 14 (or Step 11 if no deploy): done.
+## After Step 15 (or Step 11 if no deploy AND no review): done.
 
 Return control to the scheduler. Next fire will be on the configured cron.
