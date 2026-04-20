@@ -112,3 +112,20 @@ gaps.
   - Cross-workspace import worked transparently via npm workspaces' `node_modules/@colonize/core` symlink + a tsconfig project reference from apps/web → packages/core. No path alias needed in vite.config / tsconfig paths.
   - Zustand v5 ships ESM-only, integrates cleanly with Vite + Vitest jsdom env. Stores reset via `useGameStore.getState().reset()` between tests with `beforeEach` is enough — no global teardown needed.
 - Notes: Fifth autonomous-run cycle, first to cross the success-threshold. /autonomous-review fires next.
+
+---
+
+### Run [2026-04-20 20:40]
+- Task: TASK-006 — Scaffold apps/server with Fastify + /health endpoint
+- Outcome: success
+- PR: https://github.com/g-chappell/colonize/pull/10 (auto-merge enabled)
+- Test counts: server=2 (new baseline), web=8, core=1, shared=2, content=2
+- Files changed: apps/server/package.json, apps/server/tsconfig.json, apps/server/src/index.ts, apps/server/src/app.ts, apps/server/src/app.test.ts, tsconfig.json, package-lock.json, roadmap/roadmap.yml, ROADMAP.md
+- Regression alert: false (server is a new workspace; existing counts steady)
+- Review proposed: false (streak resets to 1/5 after PR #8 self-improvement merge)
+- Deploy: pending (post-merge deploy should now succeed — Dockerfile COPY targets apps/server which now exists; this is the TASK-005 blocker from last cycle)
+- Lessons learned:
+  - Split the Fastify binary from the app factory (src/index.ts vs src/app.ts) so tests can `app.inject()` against the factory without ever binding a port — avoids flaky port-in-use failures and keeps tests hermetic.
+  - @colonize/shared's HealthResponse Zod schema served as both response validator and test assertion shape — one source of truth for /health across server tests and future client consumers (PR #7 shared scaffold pays off here).
+  - Prettier wants multi-line function-argument wrapping when the expression grows beyond the print-width; new server tests tripped format:check on the first pass. Could be caught upfront by running `prettier --write` on the changed files before the validation step.
+- Notes: Sixth autonomous-run cycle. First success after the self-improvement review PR #8 / hotfix PR #9 — TASK-006 completes STORY-04's server entrypoint; TASK-007/TASK-008 (Fastify static + CI deploy workflow) now unblocked.
