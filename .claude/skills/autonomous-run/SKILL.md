@@ -221,50 +221,31 @@ moved to Step 15 — AFTER deploy completes and its outcome is logged** so
 that `/autonomous-review`'s PR branch is created against the fully
 up-to-date main and doesn't end up `mergeStateStatus: BEHIND`.
 
-## Step 11 — NOTIFY (always runs)
+## Step 11 — NOTIFY (handled externally by the systemd wrapper)
 
-Send one `PushNotification` summarizing this cycle. One notification per
-cycle, regardless of outcome. Format under 200 chars, single line, no
-markdown.
+**The skill itself does not fire the notification.** When invoked via the
+VPS systemd service (`claude-colonize.service`), a second Bash command in
+the unit's `ExecStart` runs `scripts/notify-cycle.sh` after this skill
+completes. That script parses the latest AGENT-LOG entry and pushes to
+ntfy.sh using `NTFY_TOPIC` and `NTFY_SERVER` from `.env`.
 
-**When invoked via the VPS systemd two-stage wrapper** (`claude-colonize.service`),
-the notification is actually fired by the *second* `claude -p` invocation
-(Stage 2) which reads the latest AGENT-LOG entry and calls PushNotification.
-In that case Stage 1 (this skill) does NOT need to call PushNotification
-itself — the wrapper handles it.
+ntfy.sh delivers regardless of Anthropic-side "user active" state, so no
+60s quiet window is required between Stage 1 and Stage 2.
 
-**When invoked interactively** (e.g. manual `/autonomous-run` in a live
-Claude Code session), this step should call PushNotification directly
-using the template below.
+**When invoked interactively** (e.g. manual `/autonomous-run`), you can
+also simply run `bash scripts/notify-cycle.sh` after the cycle — same
+script, same format, same delivery path.
 
-Templates by outcome:
+The notification body fields are (from AGENT-LOG):
+- Task title
+- Outcome (`success` / `success_with_warning` / `skipped` / `blocked`)
+- PR URL
+- Deploy result
+- Review proposed (if applicable)
+- Regression alert (if true)
 
-| Outcome | Template |
-|---|---|
-| success (task merged) | `✅ TASK-XXX done: <short title>. PR #N merged. Streak <k>/<threshold>.` |
-| success + review fired | `✅ TASK-XXX done + 🔄 review PR #M opened (N refinements). Streak reset.` |
-| success_with_warning | `⚠️ TASK-XXX done w/ regression: <workspace> tests <old>→<new>. PR #N.` |
-| skipped: no_ready_tasks | `⏸️ Cycle skipped: no ready tasks. <k> ready remaining — consider /pm-brainstorm.` |
-| skipped: dirty_tree | `⏸️ Cycle skipped: dirty working tree. Check VPS state.` |
-| blocked: ci_auto_fix_failed | `🛑 PR #N stuck: CI fix failed 3×. Human attention needed.` |
-| blocked: roadmap_invalid | `🛑 roadmap.yml invalid. Manual intervention required.` |
-| blocked: local_validation | `🛑 TASK-XXX blocked after 3 fix attempts: <cmd> failed.` |
-| deploy.rolled_back | `🛑 TASK-XXX merged but deploy rolled back: health check failed.` |
-| deploy.deferred | `✅ TASK-XXX merged, deploy deferred (PR not merged in 10m).` |
-
-Call:
-
-```
-PushNotification({ message: "<templated string>", status: "proactive" })
-```
-
-PushNotification has a built-in 60s active-user guard — it silently
-suppresses if the user is typing in an interactive session. That's fine;
-the cycle continues regardless.
-
-If the notification call throws (network blip, RC server down), log the
-error to `AGENT-LOG.md` under `notify_error:` but DO NOT fail the cycle.
-Notifications are informational — the source of truth is AGENT-LOG + PRs.
+Failures of the notify script are non-fatal — the cycle is already done
+and logged; missing a notification is informational only.
 
 ---
 
