@@ -9,9 +9,9 @@ _Created: 2026-04-20_
 ## Summary
 
 - **Total tasks:** 90
-- **Done:** 6 (7%)
+- **Done:** 7 (8%)
 - **Ready:** 83
-- **In progress:** 1
+- **In progress:** 0
 - **Blocked:** 0
 
 ---
@@ -75,7 +75,7 @@ the deploy pipeline from main → VPS docker compose.
     > build. Expose GET /health returning { ok: true, version,
     > uptime }. Add dev/build/start scripts. Bind to process.env
     > APP_PORT || 3000.
-  - :large_orange_diamond: **TASK-007** — Wire apps/server to serve apps/web static build  `high` `small` _(server, web)_  
+  - :white_check_mark: **TASK-007** — Wire apps/server to serve apps/web static build  `high` `small` _(server, web)_ · [PR](https://github.com/g-chappell/colonize/pull/12)  
     _depends on: TASK-006_
     > Add @fastify/static to apps/server. In production, serve
     > apps/web/dist as root and fall through unknown routes to
