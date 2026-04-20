@@ -146,9 +146,17 @@ Override mechanisms (all standard git/gh):
 
 ### Notifications
 
-Every `/autonomous-run` cycle sends one `PushNotification` summarizing
-the outcome — routed via the paired Remote Control session
-(`claude-rc.service`). If RC is down, notifications silently drop; source
-of truth remains `AGENT-LOG.md` + PRs on GitHub.
+Every `/autonomous-run` cycle ends by running `scripts/notify-cycle.sh`
+(wired as Stage 2 in `claude-colonize.service`). It parses the last
+AGENT-LOG entry and pushes a summary to **ntfy.sh** using `NTFY_TOPIC`
+from `.env`. Delivery is independent of any Claude.ai "user active"
+guard — reaches your phone even while you're using Claude Code
+interactively elsewhere.
+
+Subscribe by opening the ntfy mobile app (iOS / Android / web
+[ntfy.sh](https://ntfy.sh)) and adding the topic URL from `.env`.
+
+Failures are non-fatal — the source of truth remains `AGENT-LOG.md` and
+PRs on GitHub.
 
 See `docs/RUNBOOK.md` for troubleshooting and `docs/ARCHITECTURE.md` for deeper context on why the workflow is shaped this way.
