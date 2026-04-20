@@ -221,31 +221,25 @@ moved to Step 15 — AFTER deploy completes and its outcome is logged** so
 that `/autonomous-review`'s PR branch is created against the fully
 up-to-date main and doesn't end up `mergeStateStatus: BEHIND`.
 
-## Step 11 — NOTIFY (handled externally by the systemd wrapper)
+## Step 11 — (no skill-side notification)
 
-**The skill itself does not fire the notification.** When invoked via the
-VPS systemd service (`claude-colonize.service`), a second Bash command in
-the unit's `ExecStart` runs `scripts/notify-cycle.sh` after this skill
-completes. That script parses the latest AGENT-LOG entry and pushes to
-ntfy.sh using `NTFY_TOPIC` and `NTFY_SERVER` from `.env`.
+**Do NOT fire any notification from this skill.** Notifications are
+handled entirely by the systemd wrapper (`claude-colonize.service`),
+which runs `scripts/notify-cycle.sh` after this skill exits. That script
+reads the latest AGENT-LOG entry and pushes to ntfy.sh.
 
-ntfy.sh delivers regardless of Anthropic-side "user active" state, so no
-60s quiet window is required between Stage 1 and Stage 2.
+If you invoke this skill interactively (not via systemd) and want a
+manual notification, run the script separately *after* the skill
+completes:
 
-**When invoked interactively** (e.g. manual `/autonomous-run`), you can
-also simply run `bash scripts/notify-cycle.sh` after the cycle — same
-script, same format, same delivery path.
+```
+bash scripts/notify-cycle.sh
+```
 
-The notification body fields are (from AGENT-LOG):
-- Task title
-- Outcome (`success` / `success_with_warning` / `skipped` / `blocked`)
-- PR URL
-- Deploy result
-- Review proposed (if applicable)
-- Regression alert (if true)
-
-Failures of the notify script are non-fatal — the cycle is already done
-and logged; missing a notification is informational only.
+**The skill itself must never call notify-cycle.sh, never call
+PushNotification, never curl ntfy.sh.** Every such call from inside the
+cycle would duplicate the wrapper's push (both under systemd and
+interactively when you add a second call yourself).
 
 ---
 
