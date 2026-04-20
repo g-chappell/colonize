@@ -79,3 +79,20 @@ gaps.
   - Repo-level `deleteBranchOnMerge` setting is required for automatic remote branch deletion on squash-merge; `--delete-branch` on `gh pr merge --auto` alone is unreliable. Fixed in a manual step before this run.
   - Local branches from squash-merged PRs need `[gone]` upstream detection to clean up (not `git branch --merged main`, which doesn't see squashed branches). Candidate refinement for /autonomous-run Step 3 via /autonomous-review.
 - Notes: Third autonomous-run cycle. Branch cleanup verified working end-to-end this time.
+
+---
+
+### Run [2026-04-20 19:35]
+- Task: TASK-004 — Scaffold packages/core, packages/shared, packages/content
+- Outcome: success
+- PR: https://github.com/g-chappell/colonize/pull/6 (auto-merge enabled)
+- Test counts: web=3 (unchanged), core=1 (new baseline), shared=2 (new baseline), content=2 (new baseline)
+- Files changed: packages/core/* (4), packages/shared/* (4), packages/content/* (4), tsconfig.json, package-lock.json
+- Regression alert: false
+- Review proposed: false (4 consecutive successes; threshold = 5 — next success triggers /autonomous-review)
+- Deploy: deferred (apps/server still missing; Dockerfile COPY will fail until TASK-006 lands)
+- Lessons learned:
+  - Root tsconfig.json with `"files": []` + `references: [...]` is the correct shape now that workspaces have composite TS — resolves the TS18002-style problem flagged at TASK-001 by simply waiting until at least one referenced package exists.
+  - `npm install` at root is required after adding new workspace package.jsons before the symlinks under `node_modules/@colonize/*` are created — without it `--workspace=@colonize/shared` warns "no workspace folder present".
+  - Prettier-formatted package.json is the canonical form: arrays expanded one-per-line. Adding a `package.json` template to `/autonomous-run` would dodge the format:check round-trip step.
+- Notes: Fourth autonomous-run cycle. Streak is one short of `successThreshold` — TASK-005 (next likely pickup, depends on TASK-002 + TASK-004) will trigger the first /autonomous-review pass.
