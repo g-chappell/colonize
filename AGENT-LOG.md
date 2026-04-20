@@ -123,7 +123,7 @@ gaps.
 - Files changed: apps/server/package.json, apps/server/tsconfig.json, apps/server/src/index.ts, apps/server/src/app.ts, apps/server/src/app.test.ts, tsconfig.json, package-lock.json, roadmap/roadmap.yml, ROADMAP.md
 - Regression alert: false (server is a new workspace; existing counts steady)
 - Review proposed: false (streak resets to 1/5 after PR #8 self-improvement merge)
-- Deploy: pending (post-merge deploy should now succeed — Dockerfile COPY targets apps/server which now exists; this is the TASK-005 blocker from last cycle)
+- Deploy: build_failed (exit 1) — new failure mode: `docker build` cannot reach the Docker daemon from the agent user (`permission denied while trying to connect to the docker API at unix:///var/run/docker.sock`). The previous Dockerfile-COPY blocker IS resolved by this PR (apps/server now exists), but `colonize` (uid 999) is not in the `docker` group and `no_new_privileges` prevents sudo elevation. Operator action required on the VPS: `usermod -aG docker colonize && systemctl restart claude-colonize.service`. Not cascading — other roadmap tasks remain pickupable.
 - Lessons learned:
   - Split the Fastify binary from the app factory (src/index.ts vs src/app.ts) so tests can `app.inject()` against the factory without ever binding a port — avoids flaky port-in-use failures and keeps tests hermetic.
   - @colonize/shared's HealthResponse Zod schema served as both response validator and test assertion shape — one source of truth for /health across server tests and future client consumers (PR #7 shared scaffold pays off here).
