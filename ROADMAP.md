@@ -9,9 +9,9 @@ _Created: 2026-04-20_
 ## Summary
 
 - **Total tasks:** 90
-- **Done:** 1 (1%)
+- **Done:** 2 (2%)
 - **Ready:** 88
-- **In progress:** 1
+- **In progress:** 0
 - **Blocked:** 0
 
 ---
@@ -31,7 +31,7 @@ the deploy pipeline from main → VPS docker compose.
     > project references, eslint.config.js (flat), .prettierrc.
     > Install typescript, eslint, prettier, @typescript-eslint/* as
     > root devDeps. Commit package-lock.json update.
-  - :large_orange_diamond: **TASK-002** — Scaffold apps/web with Vite + React + TS  `high` `small` _(web)_  
+  - :white_check_mark: **TASK-002** — Scaffold apps/web with Vite + React + TS  `high` `small` _(web)_ · [PR](https://github.com/g-chappell/colonize/pull/3)  
     _depends on: TASK-001_
     > Create apps/web with package.json (workspace name
     > @colonize/web), Vite config, React 18, basic App component
