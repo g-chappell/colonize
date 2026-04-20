@@ -1,0 +1,48 @@
+{
+  "starterVersion": "0.1.0",
+  "project": {
+    "name": "Colonize",
+    "slug": "colonize",
+    "created": "2026-04-20"
+  },
+  "language": "typescript",
+  "framework": "phaser3+react+capacitor+fastify",
+  "workspaces": [
+    { "name": "core", "path": "packages/core", "commands": {} },
+    { "name": "content", "path": "packages/content", "commands": {} },
+    { "name": "shared", "path": "packages/shared", "commands": {} },
+    { "name": "web", "path": "apps/web", "commands": { "dev": "npm run dev --workspace=apps/web" } },
+    { "name": "mobile", "path": "apps/mobile", "commands": { "build": "npm run build --workspace=apps/mobile && npx cap sync" } },
+    { "name": "server", "path": "apps/server", "commands": { "dev": "npm run dev --workspace=apps/server" } }
+  ],
+  "commands": {
+    "typecheck": "npx tsc -b",
+    "test": "npm test --workspaces --if-present",
+    "lint": "npx eslint .",
+    "build": "npm run build --workspaces --if-present",
+    "dev": "npm run dev --workspace=apps/web"
+  },
+  "branchPrefix": "auto/",
+  "successThreshold": 5,
+  "ghBin": "gh",
+  "schedule": {
+    "cron": "0 */4 * * *",
+    "enabled": false
+  },
+  "host": {
+    "method": "systemd",
+    "serviceName": "claude-colonize"
+  },
+  "deploy": {
+    "target": "",
+    "method": "docker",
+    "autoDeployOnMerge": false,
+    "healthCheckUrl": "http://localhost:3000/health",
+    "healthCheckTimeoutSec": 90,
+    "rollbackOnFail": true,
+    "strategy": "rolling"
+  },
+  "hooks": {
+    "timeoutSec": 60
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "name": "colonize",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Colonize — 2D retro 4X reimagining of Sid Meier's Colonization, set in the Order of the Kraken universe",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "typecheck": "tsc -b",
+    "test": "npm test --workspaces --if-present",
+    "lint": "eslint .",
+    "build": "npm run build --workspaces --if-present",
+    "dev": "npm run dev --workspace=apps/web"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
