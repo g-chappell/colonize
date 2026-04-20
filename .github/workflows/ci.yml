@@ -39,11 +39,13 @@ jobs:
         run: npx eslint .
 
       # Workspace tests. `--if-present` skips workspaces without a test script.
+      # Guard requires at least one workspace directory to exist; npm errors
+      # on --workspaces if the glob resolves to nothing.
       - name: Test
-        if: hashFiles('package.json') != ''
+        if: hashFiles('apps/*/package.json', 'packages/*/package.json') != ''
         run: npm test --workspaces --if-present
 
       # Workspace builds. `--if-present` skips workspaces without a build script.
       - name: Build
-        if: hashFiles('package.json') != ''
+        if: hashFiles('apps/*/package.json', 'packages/*/package.json') != ''
         run: npm run build --workspaces --if-present
