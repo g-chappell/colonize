@@ -87,7 +87,7 @@ epics:
         tasks:
           - id: TASK-004
             title: "Scaffold packages/core, packages/shared, packages/content"
-            status: in-progress
+            status: done
             priority: high
             complexity: small
             workspaces: [core, shared, content]
@@ -97,8 +97,8 @@ epics:
               each. Add them to root tsconfig.json references. Verify tsc
               -b succeeds at root.
             depends_on: [TASK-001]
-            pr: null
-            completed: null
+            pr: "https://github.com/g-chappell/colonize/pull/6"
+            completed: "2026-04-20T19:35:00Z"
             blocked_reason: null
             last_attempted: "2026-04-20T19:30:00Z"
             attempt_count: 1
