@@ -23,7 +23,7 @@ epics:
         tasks:
           - id: TASK-001
             title: "Scaffold root TS tooling (tsconfig.base, ESLint, Prettier)"
-            status: ready
+            status: in-progress
             priority: high
             complexity: small
             workspaces: []
@@ -36,8 +36,8 @@ epics:
             pr: null
             completed: null
             blocked_reason: null
-            last_attempted: null
-            attempt_count: 0
+            last_attempted: "2026-04-20T18:18:00Z"
+            attempt_count: 1
           - id: TASK-002
             title: "Scaffold apps/web with Vite + React + TS"
             status: ready

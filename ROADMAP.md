@@ -10,8 +10,8 @@ _Created: 2026-04-20_
 
 - **Total tasks:** 90
 - **Done:** 0 (0%)
-- **Ready:** 90
-- **In progress:** 0
+- **Ready:** 89
+- **In progress:** 1
 - **Blocked:** 0
 
 ---
@@ -26,7 +26,7 @@ the deploy pipeline from main → VPS docker compose.
 - **STORY-01** — Web app shell
   > Scaffold apps/web as a Vite + React app that renders a placeholder
   > screen. Typecheck + test + build all green locally and in CI.
-  - :black_circle: **TASK-001** — Scaffold root TS tooling (tsconfig.base, ESLint, Prettier)  `high` `small`
+  - :large_orange_diamond: **TASK-001** — Scaffold root TS tooling (tsconfig.base, ESLint, Prettier)  `high` `small`
     > Add tsconfig.base.json (strict), root tsconfig.json with
     > project references, eslint.config.js (flat), .prettierrc.
     > Install typescript, eslint, prettier, @typescript-eslint/* as
