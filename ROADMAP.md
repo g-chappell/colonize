@@ -9,8 +9,8 @@ _Created: 2026-04-20_
 ## Summary
 
 - **Total tasks:** 90
-- **Done:** 8 (9%)
-- **Ready:** 82
+- **Done:** 9 (10%)
+- **Ready:** 81
 - **In progress:** 0
 - **Blocked:** 0
 
@@ -100,7 +100,7 @@ Phaser canvas with a shared event bus.
   > Pipeline for converting loose PNGs into packed atlases + JSON
   > metadata, consumed by Phaser at runtime. Includes palette
   > definition for retro consistency.
-  - :black_circle: **TASK-009** — Define OTK retro palette + pipeline script  `high` `medium` _(content)_  
+  - :white_check_mark: **TASK-009** — Define OTK retro palette + pipeline script  `high` `medium` _(content)_ · [PR](https://github.com/g-chappell/colonize/pull/15)  
     _depends on: TASK-004_
     > Pick a constrained retro palette (32–64 colours) appropriate
     > to the three tonal registers (salt-and-rum warm, eldritch
