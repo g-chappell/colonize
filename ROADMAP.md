@@ -10,8 +10,8 @@ _Created: 2026-04-20_
 
 - **Total tasks:** 90
 - **Done:** 3 (3%)
-- **Ready:** 87
-- **In progress:** 0
+- **Ready:** 86
+- **In progress:** 1
 - **Blocked:** 0
 
 ---
@@ -52,7 +52,7 @@ the deploy pipeline from main → VPS docker compose.
   > packages/core (pure TS game logic), packages/shared (Zod DTOs),
   > packages/content (assets + lore). All typecheck clean with
   > project references working end-to-end.
-  - :black_circle: **TASK-004** — Scaffold packages/core, packages/shared, packages/content  `high` `small` _(core, shared, content)_  
+  - :large_orange_diamond: **TASK-004** — Scaffold packages/core, packages/shared, packages/content  `high` `small` _(core, shared, content)_  
     _depends on: TASK-001_
     > Create three workspaces with package.json (composite: true in
     > their tsconfigs), index.ts exporting a placeholder symbol
