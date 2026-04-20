@@ -96,3 +96,19 @@ gaps.
   - `npm install` at root is required after adding new workspace package.jsons before the symlinks under `node_modules/@colonize/*` are created — without it `--workspace=@colonize/shared` warns "no workspace folder present".
   - Prettier-formatted package.json is the canonical form: arrays expanded one-per-line. Adding a `package.json` template to `/autonomous-run` would dodge the format:check round-trip step.
 - Notes: Fourth autonomous-run cycle. Streak is one short of `successThreshold` — TASK-005 (next likely pickup, depends on TASK-002 + TASK-004) will trigger the first /autonomous-review pass.
+
+---
+
+### Run [2026-04-20 20:10]
+- Task: TASK-005 — Wire shared state store (Zustand) in apps/web
+- Outcome: success
+- PR: https://github.com/g-chappell/colonize/pull/7 (auto-merge enabled)
+- Test counts: web=8 (was 3 — added 5 in src/store/game.test.ts), core=1, shared=2, content=2
+- Files changed: apps/web/package.json, apps/web/tsconfig.json, apps/web/src/store/game.ts, apps/web/src/store/game.test.ts, package-lock.json, roadmap/roadmap.yml, ROADMAP.md
+- Regression alert: false (web went 3 → 8, all other counts steady)
+- Review proposed: true (5 consecutive successes hits threshold; first /autonomous-review pass invoked)
+- Deploy: deferred (apps/server still missing; Dockerfile COPY will fail until TASK-006 lands)
+- Lessons learned:
+  - Cross-workspace import worked transparently via npm workspaces' `node_modules/@colonize/core` symlink + a tsconfig project reference from apps/web → packages/core. No path alias needed in vite.config / tsconfig paths.
+  - Zustand v5 ships ESM-only, integrates cleanly with Vite + Vitest jsdom env. Stores reset via `useGameStore.getState().reset()` between tests with `beforeEach` is enough — no global teardown needed.
+- Notes: Fifth autonomous-run cycle, first to cross the success-threshold. /autonomous-review fires next.
