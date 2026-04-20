@@ -11,9 +11,7 @@
       "WebSearch(*)",
       "TodoWrite(*)",
       "Agent(*)",
-      "mcp__scheduled-tasks__list_scheduled_tasks",
-      "mcp__scheduled-tasks__create_scheduled_task",
-      "mcp__scheduled-tasks__update_scheduled_task"
+      "PushNotification(*)"
     ]
   },
   "hooks": {
