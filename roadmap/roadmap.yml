@@ -63,7 +63,7 @@ epics:
         tasks:
           - id: TASK-003
             title: "Scaffold apps/mobile with Capacitor + add iOS/Android"
-            status: ready
+            status: in-progress
             priority: high
             complexity: medium
             workspaces: [mobile]
@@ -76,8 +76,8 @@ epics:
             pr: null
             completed: null
             blocked_reason: null
-            last_attempted: null
-            attempt_count: 0
+            last_attempted: "2026-04-20T18:55:00Z"
+            attempt_count: 1
       - id: STORY-03
         title: "Shared packages scaffold"
         description: |
