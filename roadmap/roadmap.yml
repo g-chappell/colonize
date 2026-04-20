@@ -128,7 +128,7 @@ epics:
         tasks:
           - id: TASK-006
             title: "Scaffold apps/server with Fastify + /health endpoint"
-            status: ready
+            status: done
             priority: high
             complexity: small
             workspaces: [server, shared]
@@ -138,11 +138,11 @@ epics:
               uptime }. Add dev/build/start scripts. Bind to process.env
               APP_PORT || 3000.
             depends_on: [TASK-004]
-            pr: null
-            completed: null
+            pr: "https://github.com/g-chappell/colonize/pull/10"
+            completed: "2026-04-20T20:40:00Z"
             blocked_reason: null
-            last_attempted: null
-            attempt_count: 0
+            last_attempted: "2026-04-20T19:25:00Z"
+            attempt_count: 1
           - id: TASK-007
             title: "Wire apps/server to serve apps/web static build"
             status: ready

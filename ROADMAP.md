@@ -9,8 +9,8 @@ _Created: 2026-04-20_
 ## Summary
 
 - **Total tasks:** 90
-- **Done:** 5 (6%)
-- **Ready:** 85
+- **Done:** 6 (7%)
+- **Ready:** 84
 - **In progress:** 0
 - **Blocked:** 0
 
@@ -69,7 +69,7 @@ the deploy pipeline from main → VPS docker compose.
   > apps/server as a Fastify app with /health. Docker build from
   > docker/Dockerfile succeeds locally. GitHub Actions workflow
   > deploys to VPS on merge-to-main via ssh + scripts/deploy.sh.
-  - :black_circle: **TASK-006** — Scaffold apps/server with Fastify + /health endpoint  `high` `small` _(server, shared)_  
+  - :white_check_mark: **TASK-006** — Scaffold apps/server with Fastify + /health endpoint  `high` `small` _(server, shared)_ · [PR](https://github.com/g-chappell/colonize/pull/10)  
     _depends on: TASK-004_
     > Create apps/server with Fastify, pino, tsx for dev, tsc for
     > build. Expose GET /health returning { ok: true, version,
