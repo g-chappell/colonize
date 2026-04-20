@@ -40,7 +40,7 @@ epics:
             attempt_count: 1
           - id: TASK-002
             title: "Scaffold apps/web with Vite + React + TS"
-            status: ready
+            status: in-progress
             priority: high
             complexity: small
             workspaces: [web]
@@ -53,8 +53,8 @@ epics:
             pr: null
             completed: null
             blocked_reason: null
-            last_attempted: null
-            attempt_count: 0
+            last_attempted: "2026-04-20T18:35:00Z"
+            attempt_count: 1
       - id: STORY-02
         title: "Mobile wrapper"
         description: |
