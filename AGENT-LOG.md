@@ -146,3 +146,19 @@ gaps.
   - First cap-sync failure of the run was a stale EACCES on `android/capacitor-cordova-android-plugins/src/main/AndroidManifest.xml` that cleared on re-run. If this recurs across cycles, `/autonomous-review` should flag adding a `chmod -R u+w apps/mobile/android` pre-step or gitignore-audit — see similar refinement in PR #9's learning trail.
   - Prettier trips on bare `*.css` fixtures; running `prettier --write` on new content files before first validation pass saves a cycle (repeated lesson from TASK-006).
 - Notes: Seventh autonomous-run cycle. Streak: 2 consecutive successes since the TASK-005 review checkpoint (TASK-006 → TASK-007); 3 more to re-hit successThreshold=5.
+
+---
+
+### Run [2026-04-20 22:05]
+- Task: TASK-008 — Add GitHub Actions deploy workflow (main → VPS)
+- Outcome: success
+- PR: https://github.com/g-chappell/colonize/pull/14 (auto-merge enabled)
+- Test counts: server=8, web=8, core=1, shared=2, content=2 (all unchanged)
+- Files changed: .github/workflows/deploy.yml (new), roadmap/roadmap.yml, ROADMAP.md
+- Regression alert: false
+- Review proposed: false (3 consecutive successes since the TASK-005 review checkpoint; threshold = 5)
+- Deploy: pending (fires via new workflow once PR #14 merges, assuming SSH_HOST + SSH_PRIVATE_KEY secrets are configured — otherwise the SSH step will fail visibly in the Actions tab)
+- Lessons learned:
+  - `git reset --hard origin/main` in the remote deploy script is dangerous when the VPS checkout doubles as the autonomous agent's working directory (mid-feature-branch work would be wiped). Guarded by a current-branch check that bails if HEAD != main, and fast-forward-only pull. Safer default.
+  - Two on-merge deploy actors now exist: (a) the systemd-timer agent running /autonomous-run step 12 on the VPS, (b) this new GH Actions workflow. `concurrency: deploy-production` serialises within Actions but the local-on-VPS run is a separate actor. Pick a winner in a follow-up; both race inside `docker compose build`.
+- Notes: Eighth autonomous-run cycle. Infra-only change (no workspace code touched). Streak: 3 consecutive successes since the TASK-005 review checkpoint; 2 more to re-hit successThreshold=5.
