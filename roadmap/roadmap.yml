@@ -23,7 +23,7 @@ epics:
         tasks:
           - id: TASK-001
             title: "Scaffold root TS tooling (tsconfig.base, ESLint, Prettier)"
-            status: ready
+            status: done
             priority: high
             complexity: small
             workspaces: []
@@ -33,11 +33,11 @@ epics:
               Install typescript, eslint, prettier, @typescript-eslint/* as
               root devDeps. Commit package-lock.json update.
             depends_on: []
-            pr: null
-            completed: null
+            pr: "https://github.com/g-chappell/colonize/pull/2"
+            completed: "2026-04-20T18:25:00Z"
             blocked_reason: null
-            last_attempted: null
-            attempt_count: 0
+            last_attempted: "2026-04-20T18:18:00Z"
+            attempt_count: 1
           - id: TASK-002
             title: "Scaffold apps/web with Vite + React + TS"
             status: ready
