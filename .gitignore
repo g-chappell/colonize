@@ -3,6 +3,26 @@
 .env.local
 .env.*.local
 
+# Capacitor — generated/copied, regenerated on every `cap sync`
+apps/mobile/ios/App/App/public/
+apps/mobile/android/app/src/main/assets/public/
+apps/mobile/ios/App/App/capacitor.config.json
+apps/mobile/android/app/src/main/assets/capacitor.config.json
+apps/mobile/android/app/src/main/assets/capacitor.plugins.json
+
+# Capacitor — native build outputs (IDE + build-tool artifacts)
+apps/mobile/ios/App/build/
+apps/mobile/ios/App/Pods/
+apps/mobile/ios/App/Podfile.lock
+apps/mobile/ios/DerivedData/
+apps/mobile/ios/App/App/xcuserdata/
+apps/mobile/android/app/build/
+apps/mobile/android/build/
+apps/mobile/android/.gradle/
+apps/mobile/android/local.properties
+apps/mobile/android/app/release/
+apps/mobile/android/app/debug/
+
 # Build outputs
 dist/
 build/
