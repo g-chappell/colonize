@@ -10,8 +10,8 @@ _Created: 2026-04-20_
 
 - **Total tasks:** 90
 - **Done:** 7 (8%)
-- **Ready:** 83
-- **In progress:** 0
+- **Ready:** 82
+- **In progress:** 1
 - **Blocked:** 0
 
 ---
@@ -81,7 +81,7 @@ the deploy pipeline from main → VPS docker compose.
     > apps/web/dist as root and fall through unknown routes to
     > index.html for SPA routing. Verify the Dockerfile artifact
     > copies both dist trees.
-  - :black_circle: **TASK-008** — Add GitHub Actions deploy workflow (main → VPS)  `high` `medium`  
+  - :large_orange_diamond: **TASK-008** — Add GitHub Actions deploy workflow (main → VPS)  `high` `medium`  
     _depends on: TASK-007_
     > Create .github/workflows/deploy.yml triggered on push to
     > main. Uses appleboy/ssh-action or similar to ssh root@
