@@ -100,6 +100,10 @@ colonize/
 - **Web e2e** via Playwright when/if added — smoke-test happy paths only.
 - **Phaser scene tests** are hard; prefer logic-first tests. Scene behaviour is verified via Playwright on the built web app.
 
+## Scaffolding hygiene
+
+- **Gitignore new tooling artefacts in the same PR that introduces the tool.** When scaffolding a new dependency, audit what the tool writes to disk on first use (`*.tsbuildinfo` for `tsc -b`, `ios/App/App/public/` and `capacitor.config.json` copies for `npx cap sync`, `build/`/`.gradle/`/`DerivedData/`/`Pods/` for native mobile builds, etc.) and add them to `.gitignore` before opening the PR. This avoids per-task follow-up commits cleaning up leaked artefacts.
+
 ## Architecture notes
 
 - **Pure core, impure shells.** `packages/core` is framework-free TS — it must run in Node (for server simulation + tests) and browser (for client). No `window`, no Phaser imports, no React.
@@ -107,6 +111,7 @@ colonize/
 - **Server API contract:** every endpoint's request + response schema lives in `packages/shared`. Client and server both import from there; mismatches become typecheck errors.
 - **Save format:** `packages/core` exports `serialize/deserialize` for game state. Same format used for local save and cloud save. Version with an integer; add migrations in `packages/core/migrations/`.
 - **Mobile:** `apps/mobile` is a Capacitor wrapper around `apps/web`'s build output. Never duplicate web UI code — all shared UI lives in `apps/web`.
+- **Cross-workspace TS imports** resolve via the `node_modules/@colonize/*` symlinks created by npm workspaces; the importing workspace also adds a `references: [{ "path": "../../packages/<dep>" }]` entry to its `tsconfig.json` so `tsc -b` builds dependencies in the right order. No `paths` aliases are needed in tsconfig or `vite.config.ts`. Run `npm install` at the repo root after adding any new workspace `package.json` so the symlinks materialise before `--workspace=…` commands run.
 
 ---
 
