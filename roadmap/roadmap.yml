@@ -162,7 +162,7 @@ epics:
             attempt_count: 1
           - id: TASK-008
             title: "Add GitHub Actions deploy workflow (main → VPS)"
-            status: ready
+            status: done
             priority: high
             complexity: medium
             workspaces: []
@@ -174,11 +174,11 @@ epics:
               secrets configured in repo settings. Document the secret
               names in the PR.
             depends_on: [TASK-007]
-            pr: null
-            completed: null
+            pr: "https://github.com/g-chappell/colonize/pull/14"
+            completed: "2026-04-20"
             blocked_reason: null
-            last_attempted: null
-            attempt_count: 0
+            last_attempted: "2026-04-20T00:00:00Z"
+            attempt_count: 1
 
   - id: EPIC-02
     title: "Retro art pipeline & UI shell"

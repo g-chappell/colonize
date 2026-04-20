@@ -9,8 +9,8 @@ _Created: 2026-04-20_
 ## Summary
 
 - **Total tasks:** 90
-- **Done:** 7 (8%)
-- **Ready:** 83
+- **Done:** 8 (9%)
+- **Ready:** 82
 - **In progress:** 0
 - **Blocked:** 0
 
@@ -81,7 +81,7 @@ the deploy pipeline from main → VPS docker compose.
     > apps/web/dist as root and fall through unknown routes to
     > index.html for SPA routing. Verify the Dockerfile artifact
     > copies both dist trees.
-  - :black_circle: **TASK-008** — Add GitHub Actions deploy workflow (main → VPS)  `high` `medium`  
+  - :white_check_mark: **TASK-008** — Add GitHub Actions deploy workflow (main → VPS)  `high` `medium` · [PR](https://github.com/g-chappell/colonize/pull/14)  
     _depends on: TASK-007_
     > Create .github/workflows/deploy.yml triggered on push to
     > main. Uses appleboy/ssh-action or similar to ssh root@
