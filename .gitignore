@@ -59,3 +59,6 @@ Thumbs.db
 # Deploy artifacts (transient, local only)
 scripts/.deploy-lock
 scripts/.previous-image
+
+# Generated texture atlases — packed by packages/content/scripts/pack-atlas.mjs
+packages/content/atlas-out/
