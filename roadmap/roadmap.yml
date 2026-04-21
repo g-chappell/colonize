@@ -279,7 +279,7 @@ epics:
         tasks:
           - id: TASK-013
             title: "Main menu screen (React)"
-            status: in-progress
+            status: done
             priority: high
             complexity: small
             workspaces: [web]
@@ -288,8 +288,8 @@ epics:
               Quit buttons. Style with OTK heraldry (paired dragons, hic
               sunt dracones motto). Wire New Game to go to faction select.
             depends_on: [TASK-012]
-            pr: null
-            completed: null
+            pr: "https://github.com/g-chappell/colonize/pull/20"
+            completed: "2026-04-21T03:15:00Z"
             blocked_reason: null
             last_attempted: "2026-04-21T00:00:00Z"
             attempt_count: 1
