@@ -19,9 +19,11 @@
     "build": "tsc -b",
     "typecheck": "tsc -b",
     "test": "vitest run",
-    "pack-atlas": "node scripts/pack-atlas.mjs"
+    "pack-atlas": "node scripts/pack-atlas.mjs",
+    "generate-placeholder-sources": "node scripts/generate-placeholder-sources.mjs"
   },
   "devDependencies": {
-    "free-tex-packer-core": "0.3.5"
+    "free-tex-packer-core": "0.3.5",
+    "pngjs": "^7.0.0"
   }
 }

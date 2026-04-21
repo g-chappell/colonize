@@ -62,3 +62,6 @@ scripts/.previous-image
 
 # Generated texture atlases — packed by packages/content/scripts/pack-atlas.mjs
 packages/content/atlas-out/
+
+# Atlases copied into the web app's public/ at predev/prebuild time.
+apps/web/public/atlas/
