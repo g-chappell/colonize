@@ -101,3 +101,18 @@ gap-free.
   1. bcf84cf — codify rules-vs-flavor split across `@colonize/core` and `@colonize/content` (engine-read stats live in core; descriptive/flavour stats live in content; duplicate the rule-relevant number rather than open a `content → core` import edge). Drove by TASK-027 ship stats split; supporting by TASK-026 UnitType registry location.
   2. e00d06f — codify exhaustive `switch` as the reader-side tripwire for save-format const-object unions (no `default` case → adding a new literal fails the build at every consumer). Reader-side complement to PR #23 refinement #3 (const-object writer rule). Driven by TASK-028 `tileCost` over `TileType`.
   3. 808d32f — codify publish-primitive-defer-wiring seam (ship the entity's verb; leave iteration/scheduling to the task that owns the collection). Driven by TASK-024 (`TurnManager` hooks non-serialized) + TASK-026 (`Unit.resetMovement()` primitive, wiring deferred to roster task).
+
+---
+
+## Review [2026-04-21T20:22Z] — after TASK-030 through TASK-016
+- Success streak: 5 (TASK-030 → TASK-015 → TASK-031 → TASK-032 → TASK-016 since PR #39 review checkpoint; crossed threshold on TASK-016)
+- Patterns identified: 2
+- Proposals drafted: 2
+- Proposals de-duplicated: 2 (both novel vs CLAUDE.md + approvals/history.md + PRs #8, #17, #23, #33, #39; Jaro-Winkler threshold 0.85 via `alreadyCovered`)
+- Refinements committed: 2
+- PR: https://github.com/g-chappell/colonize/pull/45
+- Outcome: opened
+- Files touched: CLAUDE.md (Tier 3 Architecture notes — bus + screen-routing bullets rewritten in place; Tier 1 [lines 57–73] untouched)
+- Refinements:
+  1. d60abbb — codify cross-side event bus contract + React-side listener location (GameEvents in packages/shared as wire contract, declaration-merged; React-side subscribers that touch the Phaser game instance live in `GameCanvas.useEffect`; React never holds a `Phaser.Game` ref). Driven by TASK-016 `'game:pause'` / `'game:resume'` + supporting evidence from TASK-025 `'turn:advanced'` + TASK-030 `'unit:selected'`.
+  2. 57caf4c — codify terminal-vs-overlay screen sub-shapes (overlay screens render on top of the mounted game view; App.tsx dispatches game-stage children for `'game'` AND every overlay family member; overlay tests assert hud + overlay root co-mount). Driven by TASK-016 `'pause'` overlay; pre-empts STORY-20 (colony), STORY-34 (diplomacy), STORY-26 (codex).
