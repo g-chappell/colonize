@@ -248,3 +248,20 @@ gaps.
   - Menu-screen-as-default broke the previous App tests that assumed the game stage mounts on load (HUD test was looking for `hud-end-turn` at root). Refactor was to split the App suite into default-screen (menu) vs explicit-`setScreen('game')` tests — cheaper than keeping the game-stage at root and gating menu as a modal, and it mirrors the actual production UX.
   - Inline SVG heraldry is a reasonable MVP choice: two mirrored `<g>` groups with `transform="scale(-1 1)"` give us paired-dragon silhouettes without any new asset pipeline. Dedicated pixel-art heraldry lands with content epics, but the test just pins the role + aria-label so swapping the SVG for a raster later won't churn tests.
 - Notes: Thirteenth autonomous-run cycle. Streak=3 toward successThreshold=5 (TASK-011 → TASK-012 → TASK-013 since PR #17 review checkpoint).
+
+---
+
+### Run [2026-04-21 04:13]
+- Task: TASK-014 — Faction select screen
+- Outcome: success
+- PR: https://github.com/g-chappell/colonize/pull/21 (auto-merge enabled)
+- Test counts: server=8, web=42 (was 39 — +3 FactionSelect component tests; App test count held at 3 after swapping placeholder assertion for real-component assertion), core=1, shared=2, content=15 (was 9 — +6 factions module tests)
+- Files changed: packages/content/src/factions.ts (new), packages/content/src/factions.test.ts (new), packages/content/src/index.ts, apps/web/src/menu/FactionSelect.tsx (new), apps/web/src/menu/FactionSelect.module.css (new), apps/web/src/menu/FactionSelect.test.tsx (new), apps/web/src/App.tsx, apps/web/src/App.test.tsx, apps/web/package.json, apps/web/tsconfig.json, package-lock.json, roadmap/roadmap.yml, ROADMAP.md
+- Regression alert: false (web 39 → 42, content 9 → 15; all other counts steady)
+- Review proposed: false (4 consecutive successes since PR #17 review checkpoint; threshold = 5)
+- Deploy: <pending>
+- Lessons learned:
+  - Adding a new workspace dep (`@colonize/content` on `apps/web`) takes the established triad: `dependencies` entry in `package.json`, TS project-reference in `tsconfig.json`, and `npm install` at repo root to materialise the symlink. No `paths` alias needed — the existing `moduleResolution: bundler` + workspace symlink is enough. This is the second time this triad has been required (TASK-011 wired `@colonize/shared` the same way); the pattern is settled.
+  - Per-faction mechanical-identity copy lives on the faction record itself (a `bonus` string) rather than deferring to TASK-063 for hook-wiring. The select screen surfaces the intent now as player-visible flavour; TASK-063 will later wire the runtime hooks, and the strings can evolve independently without touching the UI.
+  - Inline SVG crests follow the same playbook as TASK-013's Heraldry: one `<defs>` shield path per faction, one per-faction sigil group, all scoped by `data-testid="faction-crest-<id>"` so tests pin structure-not-style. Keeps the MVP asset-pipeline-free while leaving a clean swap-point for pixel-art crests when the art epic lands.
+- Notes: Fourteenth autonomous-run cycle. Streak=4 toward successThreshold=5 (TASK-011 → TASK-012 → TASK-013 → TASK-014 since PR #17 review checkpoint). Next success will trigger a review pass.
