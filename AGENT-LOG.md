@@ -292,7 +292,12 @@ gaps.
 - Files changed: packages/core/src/map/generate.ts (new), packages/core/src/map/generate.test.ts (new), packages/core/src/map/index.ts, packages/core/src/index.ts, roadmap/roadmap.yml, ROADMAP.md
 - Regression alert: false (core 27 → 78; all other counts steady)
 - Review proposed: false (1 consecutive success since PR #23 review checkpoint; threshold = 5)
-- Deploy: pending
-- Lessons learned: (filled after deploy)
+- Deploy: success — colonize:latest rebuilt (multi-stage docker, ~30s builder, manifest list sha256:8e0e646cf116 / image sha256:155497c3f921), docker-app-1 recreated rolling. Healthcheck 200 on attempt 2 at http://localhost:3000/health (`{"ok":true,"version":"0.0.0","uptime":5.505}`). Web bundle sizes stable (main 154.89 kB + phaser 1,483.58 kB). `colonize:previous` tag preserved for rollback. Generator module is part of `packages/core/dist` already copied into the runtime image — no Dockerfile change required.
+- Lessons learned:
+  - Mulberry32 is the right PRNG for procedural map generation here: 32-bit state, <10 lines, deterministic for a given integer seed (including negatives — `seed | 0` normalises to 32-bit signed on entry). No extra dep, survives tsc strict + `isolatedModules` cleanly, and lets every stage of the generator draw from a single seeded stream so the whole map is reproducible from one `{seed, width, height}` triple.
+  - Organic island + red-tide blobs are cheapest to grow via "pick random existing cell → pick random Ocean neighbour → set" with a stall counter (targetSize × 3 stalls ⇒ abort). Simpler than cellular-automata steps and produces the irregular silhouettes C64/retro Colonization had. Works because corridor/cities are placed first and islands only overwrite Ocean — no overlap handling needed.
+  - Faction starts split the map into a `ceil(sqrt(n)) × ceil(n/cols)` grid, jitter the slot centre, then BFS outward to the nearest unused Ocean tile. This is robust to corridor drift (the slot centre might land on RayonPassage) and to islands covering a whole slot (BFS escapes outward), while keeping starts well-spread — the quadrant-spread assertion passes across every seed tested. Keeping factionCount as a bare integer (not faction IDs) honours the core-is-framework-free rule: no `@colonize/content` dep crept in.
+  - `MIN_MAP_WIDTH=20 / MIN_MAP_HEIGHT=15` is enough headroom for the full feature budget (corridor+cities ≈ 27 cells, islands 8–90 cells, red-tide 3–24 cells, FM 3–6 cells, all fit in 300 cells with margin) while still rejecting obviously-too-small inputs up-front. Validation throws `TypeError` for non-integer seed and `RangeError` for dimensions/factionCount out of range — matches the pattern `GameMap` set in TASK-017.
+- Notes: Fifteenth autonomous-run cycle. Streak=1 since PR #23 review checkpoint; four more consecutive successes to re-hit successThreshold=5.
 
 ---
