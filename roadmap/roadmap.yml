@@ -522,7 +522,7 @@ epics:
         tasks:
           - id: TASK-024
             title: "Turn state machine in packages/core"
-            status: in-progress
+            status: done
             priority: high
             complexity: medium
             workspaces: [core]
@@ -532,8 +532,8 @@ epics:
               given same state + inputs. Unit tests for phase
               transitions.
             depends_on: [TASK-017]
-            pr: null
-            completed: null
+            pr: "https://github.com/g-chappell/colonize/pull/34"
+            completed: "2026-04-21"
             blocked_reason: null
             last_attempted: "2026-04-21T00:00:00Z"
             attempt_count: 1

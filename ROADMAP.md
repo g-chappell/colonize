@@ -9,9 +9,9 @@ _Created: 2026-04-20_
 ## Summary
 
 - **Total tasks:** 90
-- **Done:** 20 (22%)
+- **Done:** 21 (23%)
 - **Ready:** 69
-- **In progress:** 1
+- **In progress:** 0
 - **Blocked:** 0
 
 ---
@@ -241,7 +241,7 @@ rules including wind, currents, and Red Tide impassability.
   > Turn state machine: ActivePlayer → AIPlayers[] → WorldEvents
   > → Year+1. Yearly calendar matches NW dates (starting at NW
   > 2191). End-turn button advances.
-  - :large_orange_diamond: **TASK-024** — Turn state machine in packages/core  `high` `medium` _(core)_  
+  - :white_check_mark: **TASK-024** — Turn state machine in packages/core  `high` `medium` _(core)_ · [PR](https://github.com/g-chappell/colonize/pull/34)  
     _depends on: TASK-017_
     > TurnManager with phases: Start → PlayerAction → AI →
     > WorldEvents → End. Hooks for phase-enter/exit. Deterministic
