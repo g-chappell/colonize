@@ -12,3 +12,9 @@ export {
   OCEAN_ANIMATION_FRAMERATE,
   frameForTile,
 } from './tile-atlas';
+export {
+  CAMERA_MAX_ZOOM,
+  CAMERA_MIN_ZOOM,
+  CAMERA_KEY_PAN_SPEED,
+  CAMERA_WHEEL_ZOOM_FACTOR,
+} from './camera-controls';
