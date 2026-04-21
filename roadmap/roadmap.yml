@@ -295,7 +295,7 @@ epics:
             attempt_count: 1
           - id: TASK-014
             title: "Faction select screen"
-            status: in-progress
+            status: done
             priority: high
             complexity: medium
             workspaces: [web, content]
@@ -305,8 +305,8 @@ epics:
               a one-line bonus description. Pick → start new game.
               Content strings in packages/content/factions.ts.
             depends_on: [TASK-013]
-            pr: null
-            completed: null
+            pr: "https://github.com/g-chappell/colonize/pull/21"
+            completed: "2026-04-21T04:12:00Z"
             blocked_reason: null
             last_attempted: "2026-04-21T12:00:00Z"
             attempt_count: 1
