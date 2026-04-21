@@ -10,8 +10,8 @@ _Created: 2026-04-20_
 
 - **Total tasks:** 90
 - **Done:** 10 (11%)
-- **Ready:** 80
-- **In progress:** 0
+- **Ready:** 79
+- **In progress:** 1
 - **Blocked:** 0
 
 ---
@@ -118,7 +118,7 @@ Phaser canvas with a shared event bus.
   > React-based HUD overlay: resource bar, minimap placeholder,
   > end-turn button, year/era display. Communicates with Phaser via
   > a shared event bus.
-  - :black_circle: **TASK-011** — Create event bus in apps/web/src/bus.ts  `high` `small` _(web)_  
+  - :large_orange_diamond: **TASK-011** — Create event bus in apps/web/src/bus.ts  `high` `small` _(web)_  
     _depends on: TASK-010_
     > Simple typed pub/sub (mitt or hand-rolled). Events typed via
     > packages/shared. Used by React HUD and Phaser scenes to
