@@ -283,3 +283,16 @@ gaps.
   - `noUnusedLocals` + `exactOptionalPropertyTypes` made `tiles[i]!` non-null assertion necessary at the post-validation copy site in `fromJSON` even though the loop has just guarded each entry — this is the strict-mode tradeoff. Keeping the validation loop and the copy loop separate (rather than fusing them) keeps the error message specific to the offending index, which matters more for save-format debugging than the micro-cost of a second pass.
 
 ---
+
+### Run [2026-04-21 06:10]
+- Task: TASK-018 — Procedural map generator
+- Outcome: success
+- PR: https://github.com/g-chappell/colonize/pull/24 (auto-merge enabled)
+- Test counts: server=8, web=42, content=15, core=78 (was 27 — +51 generator tests), shared=2
+- Files changed: packages/core/src/map/generate.ts (new), packages/core/src/map/generate.test.ts (new), packages/core/src/map/index.ts, packages/core/src/index.ts, roadmap/roadmap.yml, ROADMAP.md
+- Regression alert: false (core 27 → 78; all other counts steady)
+- Review proposed: false (1 consecutive success since PR #23 review checkpoint; threshold = 5)
+- Deploy: pending
+- Lessons learned: (filled after deploy)
+
+---
