@@ -43,23 +43,116 @@ const SIZE = 16;
 // Placeholder tile recipes — each emits one 16×16 PNG whose fill +
 // border colours come from the OTK palette. Keeps the placeholder
 // atlas on-register rather than rainbow debug colours.
+//
+// `accent` is optional: when set, the recipe draws an extra
+// ornamentation band (see TILE_PATTERNS) so distinct tile types stay
+// visually distinguishable at 16px before the art epic ships.
 const SPRITES = [
-  { name: 'tile_ocean', fill: 'abyssal_teal', border: 'twilight_blue' },
-  { name: 'tile_deck', fill: 'driftwood', border: 'whiskey' },
-  { name: 'tile_hull', fill: 'riveted_steel', border: 'iron_dark' },
+  // Non-terrain chrome (still consumed by the placeholder main-menu preview).
+  { name: 'tile_deck', fill: 'driftwood', border: 'whiskey', pattern: 'plain' },
+  { name: 'tile_hull', fill: 'riveted_steel', border: 'iron_dark', pattern: 'plain' },
+
+  // Terrain tiles — one per TileType in @colonize/core.
+  { name: 'tile_ocean', fill: 'abyssal_teal', border: 'twilight_blue', pattern: 'plain' },
+  {
+    name: 'tile_ocean_01',
+    fill: 'abyssal_teal',
+    border: 'twilight_blue',
+    accent: 'tidewater_glow',
+    pattern: 'waves-a',
+  },
+  {
+    name: 'tile_ocean_02',
+    fill: 'abyssal_teal',
+    border: 'twilight_blue',
+    accent: 'moon_phosphor',
+    pattern: 'waves-b',
+  },
+  {
+    name: 'tile_rayon_passage',
+    fill: 'nightsky_blue',
+    border: 'twilight_blue',
+    accent: 'moon_phosphor',
+    pattern: 'corridor',
+  },
+  {
+    name: 'tile_island',
+    fill: 'driftwood',
+    border: 'whiskey',
+    accent: 'ochre_dust',
+    pattern: 'island',
+  },
+  {
+    name: 'tile_floating_city',
+    fill: 'riveted_steel',
+    border: 'brass',
+    accent: 'safety_amber',
+    pattern: 'city',
+  },
+  {
+    name: 'tile_red_tide',
+    fill: 'bilge_red',
+    border: 'bloodflag_red',
+    accent: 'coral_pink',
+    pattern: 'tide',
+  },
+  {
+    name: 'tile_fata_morgana',
+    fill: 'ink_violet',
+    border: 'bruise_violet',
+    accent: 'bioluminescent_cyan',
+    pattern: 'mirage',
+  },
 ];
 
-function drawTile(fillHex, borderHex) {
+function pixelInAccent(pattern, x, y) {
+  switch (pattern) {
+    case 'plain':
+      return false;
+    // Two offset single-row wave streaks — the paired frames swap which
+    // row is lit to produce the animation.
+    case 'waves-a':
+      return y === 5 && x >= 3 && x <= 12;
+    case 'waves-b':
+      return y === 10 && x >= 3 && x <= 12;
+    // Central horizontal channel suggesting the Rayon Passage corridor.
+    case 'corridor':
+      return y === 7 || y === 8;
+    // Rough rounded landmass blob centred in the tile.
+    case 'island': {
+      const dx = x - 7.5;
+      const dy = y - 7.5;
+      return dx * dx + dy * dy < 18;
+    }
+    // Cruciform city footprint.
+    case 'city':
+      return (x === 7 || x === 8) && y >= 3 && y <= 12;
+    // Diagonal slash for red-tide currents.
+    case 'tide':
+      return Math.abs(x - y) <= 1 && x >= 2 && x <= 13;
+    // Diamond outline for the fata-morgana shimmer.
+    case 'mirage': {
+      const d = Math.abs(x - 7.5) + Math.abs(y - 7.5);
+      return d > 4 && d < 6;
+    }
+    default:
+      return false;
+  }
+}
+
+function drawTile(fillHex, borderHex, accentHex, pattern) {
   const png = new PNG({ width: SIZE, height: SIZE });
   const [fr, fg, fb] = hexToRgb(fillHex);
   const [br, bg, bb] = hexToRgb(borderHex);
+  const [ar, ag, ab] = accentHex ? hexToRgb(accentHex) : [fr, fg, fb];
   for (let y = 0; y < SIZE; y++) {
     for (let x = 0; x < SIZE; x++) {
       const isBorder = x === 0 || y === 0 || x === SIZE - 1 || y === SIZE - 1;
+      const isAccent = !isBorder && accentHex && pixelInAccent(pattern, x, y);
       const idx = (y * SIZE + x) << 2;
-      png.data[idx] = isBorder ? br : fr;
-      png.data[idx + 1] = isBorder ? bg : fg;
-      png.data[idx + 2] = isBorder ? bb : fb;
+      png.data[idx] = isBorder ? br : isAccent ? ar : fr;
+      png.data[idx + 1] = isBorder ? bg : isAccent ? ag : fg;
+      png.data[idx + 2] = isBorder ? bb : isAccent ? ab : fb;
       png.data[idx + 3] = 0xff;
     }
   }
@@ -75,7 +168,12 @@ for (const sprite of SPRITES) {
     );
     process.exit(1);
   }
-  const buffer = drawTile(fillHex, borderHex);
+  const accentHex = sprite.accent ? byName[sprite.accent] : undefined;
+  if (sprite.accent && !accentHex) {
+    console.error(`generate-placeholder-sources: unknown palette entry ${sprite.accent}`);
+    process.exit(1);
+  }
+  const buffer = drawTile(fillHex, borderHex, accentHex, sprite.pattern);
   const outPath = resolve(outDir, `${sprite.name}.png`);
   const existed = existsSync(outPath);
   writeFileSync(outPath, buffer);
