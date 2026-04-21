@@ -409,7 +409,7 @@ epics:
         tasks:
           - id: TASK-019
             title: "Phaser GameScene + tile renderer"
-            status: in-progress
+            status: done
             priority: high
             complexity: large
             workspaces: [web, core, content]
@@ -419,8 +419,8 @@ epics:
               frames). Camera follows a target; uses culling for
               off-screen tiles.
             depends_on: [TASK-010, TASK-018]
-            pr: null
-            completed: null
+            pr: "https://github.com/g-chappell/colonize/pull/25"
+            completed: "2026-04-21"
             blocked_reason: null
             last_attempted: "2026-04-21T13:00:00Z"
             attempt_count: 1
