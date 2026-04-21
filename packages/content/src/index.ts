@@ -9,3 +9,5 @@ export {
   type PaletteEntry,
   type ToneRegister,
 } from './palette.js';
+
+export { FACTIONS, getFaction, type FactionEntry, type PlayableFactionId } from './factions.js';

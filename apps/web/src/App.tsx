@@ -2,6 +2,7 @@ import './App.css';
 import { GameCanvas } from './GameCanvas';
 import { Hud } from './hud/Hud';
 import { MainMenu } from './menu/MainMenu';
+import { FactionSelect } from './menu/FactionSelect';
 import { useGameStore } from './store/game';
 
 export function App() {
@@ -12,7 +13,7 @@ export function App() {
   }
 
   if (screen === 'faction-select') {
-    return <FactionSelectPlaceholder />;
+    return <FactionSelect />;
   }
 
   return (
@@ -24,19 +25,6 @@ export function App() {
         <GameCanvas />
         <Hud />
       </div>
-    </main>
-  );
-}
-
-function FactionSelectPlaceholder(): JSX.Element {
-  const setScreen = useGameStore((s) => s.setScreen);
-  return (
-    <main className="app-root" data-testid="faction-select-placeholder">
-      <h1>Choose your faction</h1>
-      <p className="motto">The tide runs out.</p>
-      <button type="button" onClick={() => setScreen('menu')}>
-        Back
-      </button>
     </main>
   );
 }

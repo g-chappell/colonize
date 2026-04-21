@@ -15,6 +15,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
+    "@colonize/content": "*",
     "@colonize/core": "*",
     "@colonize/shared": "*",
     "phaser": "^3.90.0",

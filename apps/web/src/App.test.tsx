@@ -14,10 +14,11 @@ describe('App', () => {
     expect(screen.getByRole('heading', { level: 1, name: 'Colonize' })).toBeInTheDocument();
   });
 
-  it('shows the faction-select placeholder when the screen advances', () => {
+  it('shows the faction select screen when the screen advances', () => {
     useGameStore.getState().setScreen('faction-select');
     render(<App />);
-    expect(screen.getByTestId('faction-select-placeholder')).toBeInTheDocument();
+    expect(screen.getByTestId('faction-select')).toBeInTheDocument();
+    expect(screen.getByTestId('faction-card-otk')).toBeInTheDocument();
   });
 
   it('mounts the HUD over the game stage once the game starts', () => {
