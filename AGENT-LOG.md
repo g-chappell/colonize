@@ -301,3 +301,20 @@ gaps.
 - Notes: Fifteenth autonomous-run cycle. Streak=1 since PR #23 review checkpoint; four more consecutive successes to re-hit successThreshold=5.
 
 ---
+
+### Run [2026-04-21 07:10]
+- Task: TASK-019 — Phaser GameScene + tile renderer
+- Outcome: success
+- PR: https://github.com/g-chappell/colonize/pull/25 (auto-merge enabled)
+- Test counts: server=8, web=50 (was 42 — +8 tile-atlas tests covering frame coverage, packed-atlas presence, layout arithmetic), content=15, core=78, shared=2
+- Files changed: apps/web/src/game/game-scene.ts (new), apps/web/src/game/tile-atlas.ts (new), apps/web/src/game/tile-atlas.test.ts (new), apps/web/src/game/asset-keys.ts, apps/web/src/game/create-game.ts, apps/web/src/game/index.ts, apps/web/src/game/boot-scene.test.ts, packages/content/scripts/generate-placeholder-sources.mjs, packages/content/atlas-src/core/tile_ocean_01.png (new), packages/content/atlas-src/core/tile_ocean_02.png (new), packages/content/atlas-src/core/tile_rayon_passage.png (new), packages/content/atlas-src/core/tile_island.png (new), packages/content/atlas-src/core/tile_floating_city.png (new), packages/content/atlas-src/core/tile_red_tide.png (new), packages/content/atlas-src/core/tile_fata_morgana.png (new), roadmap/roadmap.yml, ROADMAP.md
+- Regression alert: false (web 42 → 50; all other counts steady)
+- Review proposed: false (2 consecutive successes since PR #23 review checkpoint; threshold = 5)
+- Deploy: pending (log will be amended once deploy completes)
+- Lessons learned:
+  - The source/packed/served atlas pipeline landed in TASK-010 finally paid off this cycle — adding six new terrain sprites + two extra ocean frames only needed extensions to `generate-placeholder-sources.mjs` and the committed `atlas-src/core/*.png` inputs; `prepare-assets` auto-repacks on `predev`/`prebuild` so no one has to remember the intermediate step. The packed JSON (`atlas-out/core/spritesheet.json`) is the contract that `tile-atlas.test.ts` reads at runtime to assert every `TileType` frame actually exists on disk before Phaser ever tries to load it.
+  - Pulling the tile-layout maths into three pure helpers (`tileCenterInWorld`, `mapWorldBounds`, `renderedTileSize`) in `tile-atlas.ts` kept GameScene's arithmetic unit-testable under jsdom without spinning up a real Phaser runtime. Phaser's module graph pokes WebGL/Canvas at import time, so anything that needs test coverage has to live outside `game-scene.ts`'s import chain — otherwise the test-runner setup's `getContext → null` stub isn't enough and the whole scene module cascades Phaser into the test.
+  - Ocean-tile animation phase is seeded deterministically from `((x*7 + y*3) % 11) / 11` via `anims.setProgress()`. This gives every ocean tile a per-tile offset without any RNG dependency, so two runs from the same GameMap produce the same animation state — useful later for deterministic replays, and cheaper than storing per-tile phase state.
+- Notes: Sixteenth autonomous-run cycle. Streak=2 since PR #23 review checkpoint (TASK-018 → TASK-019); three more consecutive successes to re-hit successThreshold=5.
+
+---
