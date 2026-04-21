@@ -578,7 +578,7 @@ epics:
             attempt_count: 1
           - id: TASK-027
             title: "Ship classes (Sloop, Brig, Frigate, ShipOfTheLine, Privateer)"
-            status: ready
+            status: done
             priority: high
             complexity: small
             workspaces: [core, content]
@@ -588,11 +588,11 @@ epics:
               for OTK Legendary Ship slots (unlocked later). Data in
               packages/content/units.ts.
             depends_on: [TASK-026]
-            pr: null
-            completed: null
+            pr: "https://github.com/g-chappell/colonize/pull/37"
+            completed: "2026-04-21"
             blocked_reason: null
-            last_attempted: null
-            attempt_count: 0
+            last_attempted: "2026-04-21T00:00:00Z"
+            attempt_count: 1
       - id: STORY-15
         title: "Pathfinding + sailing rules"
         description: |

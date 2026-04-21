@@ -11,3 +11,13 @@ export {
 } from './palette.js';
 
 export { FACTIONS, getFaction, type FactionEntry, type PlayableFactionId } from './factions.js';
+
+export {
+  SHIP_CLASSES,
+  OTK_LEGENDARY_SHIP_SLOTS,
+  getShipClass,
+  isShipClassId,
+  type ShipClassEntry,
+  type ShipClassId,
+  type LegendaryShipSlot,
+} from './units.js';
