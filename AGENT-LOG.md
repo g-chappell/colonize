@@ -389,3 +389,23 @@ gaps.
 - Notes: Twentieth autonomous-run cycle. Streak=4 since PR #23 review checkpoint (TASK-018 → TASK-019 → TASK-020 → TASK-021); one more consecutive success to re-hit successThreshold=5 and arm `/autonomous-review`.
 
 ---
+
+### Run [2026-04-21 10:17]
+- Task: TASK-022 — Fog overlay in GameScene renderer
+- Outcome: success
+- PR: https://github.com/g-chappell/colonize/pull/32 (auto-merge enabled)
+- Test counts: web=94 (was 77 — +17 fog-overlay-state tests covering alpha constants, `fogAlphaFor` mapping, `interpolateFogAlpha` clamping + linearity, construction dimension validation, sync no-op/same-state, unseen→seen + unseen→visible animated reveals with mid-animation sampling, visible→seen and seen→visible instant snaps, mid-animation re-sync, `hasActiveTransitions` idle vs in-flight), core=105, content=15, shared=2, server=8
+- Files changed: apps/web/src/game/fog-overlay-state.ts (new), apps/web/src/game/fog-overlay-state.test.ts (new), apps/web/src/game/fog-overlay.ts (new), apps/web/src/game/game-scene.ts, apps/web/src/game/create-game.ts, apps/web/src/game/index.ts, roadmap/roadmap.yml, ROADMAP.md
+- Regression alert: false (web 77 → 94; all other counts steady)
+- Review proposed: pending (streak=5 since PR #23 review checkpoint — successThreshold met; `/autonomous-review` fires at Step 15 after deploy log is pushed)
+- Deploy: pending (awaiting merge)
+- Lessons learned:
+  - Split the fog into two modules — `fog-overlay-state.ts` (pure TS, imports only @colonize/core, fully unit-testable under jsdom) and `fog-overlay.ts` (Phaser wrapper, untestable under jsdom per the "browser-only libraries under jsdom" note in CLAUDE.md). Mirrors the same separation already used for camera math (`camera-controls.ts` tested + `game-scene.ts` untested). All 17 new tests live in the pure module; the Phaser wrapper is verified at build-time via typecheck + ships unverified to Playwright territory, as CLAUDE.md mandates ("Phaser scene tests are hard; prefer logic-first tests").
+  - Chose `RenderTexture.fill(color, alpha, x, y, w, h)` per tile inside a single RenderTexture GameObject over a `BitmapMask` on the terrain layer. The task brief said "single render-texture mask rather than per-tile sprites" — the "single" part is satisfied (one overlay GameObject, O(W*H) fillRect calls per redraw, no sprites). Going the BitmapMask route would have forced the "seen" dimming into terrain-layer alpha, coupling the overlay's rendering to the terrain's blend stack. Keeping fog as a top-layer tinted texture lets "seen" be a simple alpha-0.5 black tint that composites cleanly on top of whatever the terrain layer draws (including the animated ocean).
+  - Unseen→seen and unseen→visible animate over 400ms; demotions (visible→seen) and re-reveals of known terrain (seen→visible) snap instantly. The task text said "animated reveal when a tile transitions unseen→seen" — only the *revelation* moment (first exposure to a tile) reads as a "reveal" to the player. Demotions happen as a whole-faction batch at turn end and would look noisy if each one faded. Re-reveals of already-seen terrain don't surprise the player with new information, so a fade is wasted motion. Kept the policy symmetric in the code (the `before === Visibility.Unseen` predicate in `FogOverlayState.sync`) so it's trivial to flip later if play-testing disagrees.
+  - `GameSceneInitData.visibility` is optional. No existing caller passes it (the web UI currently only invokes `createGame()`, not `startGameScene()`), so the overlay is opt-in until the turn-advance / faction-bootstrap flows land. `GameScene.syncFogOverlay(visibility)` is exposed for that future wiring; for now it's a public hook with no caller, which keeps the scope of this PR to "the overlay exists and works when given a visibility model" rather than sweeping in the turn-loop integration.
+  - `exactOptionalPropertyTypes: true` (set in tsconfig.base) forbids writing `{ foo: undefined }` into a type where `foo?` is declared. Tripped on `startGameScene`'s spread-options pattern; fixed by conditional object spread (`options.visibility ? { ...data, visibility } : data`) rather than passing the value through as-maybe-undefined. Worth remembering for any future task that threads optional fields through a config object.
+  - Prettier's `--write` on new files is a must before `format:check` — ran it up front this cycle and the check passed first try, no fix-cycle needed. Consistent with TASK-006/007/010 learning in Step 8 of the skill.
+- Notes: Twenty-first autonomous-run cycle. Streak=5 since PR #23 review checkpoint — `successThreshold` hit; `/autonomous-review` arms at Step 15 after the merge + deploy land.
+
+---
