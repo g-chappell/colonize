@@ -208,7 +208,7 @@ gaps.
 - Files changed: apps/web/src/bus.ts (new), apps/web/src/bus.test.ts (new), apps/web/package.json, apps/web/tsconfig.json, packages/shared/src/index.ts, package-lock.json, roadmap/roadmap.yml, ROADMAP.md
 - Regression alert: false (web 11 → 20; all other counts steady)
 - Review proposed: false (1 consecutive success since PR #17 review checkpoint; threshold = 5)
-- Deploy: pending (will be filled by Step 14)
+- Deploy: success — colonize:latest rebuilt (multi-stage docker, ~33s builder), manifest sha256:4fec4e54b48f, docker-app-1 recreated rolling. Healthcheck 200 on attempt 2 at http://localhost:3000/health (`{"ok":true,"version":"0.0.0","uptime":4.465}`); `/` serves apps/web/dist (HTTP 200). `@colonize/shared` now emitted into the runtime image via `COPY packages/shared/dist` (was already in the Dockerfile from earlier epics) — no Dockerfile edit required.
 - Lessons learned:
   - `Record<string, unknown>` is too strict as a generic constraint for event-map types: an `interface { 'turn:advanced': { turn: number } }` is NOT assignable to it under `strict` because it lacks an index signature. Using `extends object` for the bus generic and removing the `EventMap` alias entirely keeps the typing end-to-end ergonomic for interface-shaped event maps (which are what GameEvents will be as feature tasks extend it via declaration merging).
   - ESLint `@typescript-eslint/no-empty-object-type` is on via `recommended`, so `interface GameEvents {}` would fail lint. Seeded the contract with one real starter event (`turn:advanced` — naturally needed by TASK-012 HUD + TASK-025 end-turn wiring) rather than disabling the rule; keeps the shared-package API tested end-to-end from day one.
