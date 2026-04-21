@@ -2,9 +2,24 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { CORE_VERSION, TurnPhase, UnitType, type UnitJSON } from '@colonize/core';
 import { useGameStore } from './game';
 
+const EMPTY_CARGO = { resources: {}, artifacts: [] } as const;
 const sampleUnits: readonly UnitJSON[] = [
-  { id: 'u1', faction: 'otk', position: { x: 3, y: 4 }, type: UnitType.Sloop, movement: 4 },
-  { id: 'u2', faction: 'otk', position: { x: 5, y: 6 }, type: UnitType.Settler, movement: 1 },
+  {
+    id: 'u1',
+    faction: 'otk',
+    position: { x: 3, y: 4 },
+    type: UnitType.Sloop,
+    movement: 4,
+    cargo: EMPTY_CARGO,
+  },
+  {
+    id: 'u2',
+    faction: 'otk',
+    position: { x: 5, y: 6 },
+    type: UnitType.Settler,
+    movement: 1,
+    cargo: EMPTY_CARGO,
+  },
 ];
 
 describe('useGameStore', () => {

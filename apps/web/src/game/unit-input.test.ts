@@ -6,10 +6,32 @@ import { findUnitById, isTileInBounds, pickUnitIdAtTile, worldToTile } from './u
 
 const TILE = renderedTileSize();
 
+const EMPTY_CARGO = { resources: {}, artifacts: [] } as const;
 const roster: readonly UnitJSON[] = [
-  { id: 'u1', faction: 'otk', position: { x: 3, y: 4 }, type: UnitType.Sloop, movement: 4 },
-  { id: 'u2', faction: 'otk', position: { x: 5, y: 6 }, type: UnitType.Settler, movement: 1 },
-  { id: 'u3', faction: 'phantom', position: { x: 3, y: 4 }, type: UnitType.Privateer, movement: 4 },
+  {
+    id: 'u1',
+    faction: 'otk',
+    position: { x: 3, y: 4 },
+    type: UnitType.Sloop,
+    movement: 4,
+    cargo: EMPTY_CARGO,
+  },
+  {
+    id: 'u2',
+    faction: 'otk',
+    position: { x: 5, y: 6 },
+    type: UnitType.Settler,
+    movement: 1,
+    cargo: EMPTY_CARGO,
+  },
+  {
+    id: 'u3',
+    faction: 'phantom',
+    position: { x: 3, y: 4 },
+    type: UnitType.Privateer,
+    movement: 4,
+    cargo: EMPTY_CARGO,
+  },
 ];
 
 describe('worldToTile', () => {

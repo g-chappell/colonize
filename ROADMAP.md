@@ -9,8 +9,8 @@ _Created: 2026-04-20_
 ## Summary
 
 - **Total tasks:** 90
-- **Done:** 32 (36%)
-- **Ready:** 58
+- **Done:** 33 (37%)
+- **Ready:** 57
 - **In progress:** 0
 - **Blocked:** 0
 
@@ -324,7 +324,7 @@ Ship blueprints (OTK-only).
 - **STORY-18** — Treasures as carried items
   > Salvage tech + Abyssal materia as transportable resources that
   > convert to in-colony benefits when delivered.
-  - :black_circle: **TASK-034** — Carried-cargo model on units + delivery flow  `high` `medium` _(core)_  
+  - :white_check_mark: **TASK-034** — Carried-cargo model on units + delivery flow  `high` `medium` _(core)_ · [PR](https://github.com/g-chappell/colonize/pull/48)  
     _depends on: TASK-026_
     > Units have a CargoHold (typed map of resource→qty + unique
     > artifacts). Transfer happens when entering a friendly

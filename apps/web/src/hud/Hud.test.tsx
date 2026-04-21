@@ -14,12 +14,15 @@ import {
   YearDisplay,
 } from './Hud';
 
+const EMPTY_CARGO = { resources: {}, artifacts: [] } as const;
+
 const sampleSloop: UnitJSON = {
   id: 'u-sloop',
   faction: 'otk',
   position: { x: 7, y: 12 },
   type: UnitType.Sloop,
   movement: 3,
+  cargo: EMPTY_CARGO,
 };
 
 const sampleSettler: UnitJSON = {
@@ -28,6 +31,7 @@ const sampleSettler: UnitJSON = {
   position: { x: 2, y: 9 },
   type: UnitType.Settler,
   movement: 1,
+  cargo: EMPTY_CARGO,
 };
 
 describe('Hud', () => {
@@ -165,6 +169,7 @@ describe('Hud', () => {
         position: { x: 1, y: 1 },
         type: UnitType.Frigate,
         movement: 3,
+        cargo: EMPTY_CARGO,
       };
       useGameStore.getState().setUnits([npc]);
       useGameStore.getState().setSelectedUnit(npc.id);
