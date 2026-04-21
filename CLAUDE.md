@@ -99,6 +99,7 @@ colonize/
 - **Shared schemas** in `packages/shared` are validated with Zod; tests verify round-trip serialisation.
 - **Web e2e** via Playwright when/if added — smoke-test happy paths only.
 - **Phaser scene tests** are hard; prefer logic-first tests. Scene behaviour is verified via Playwright on the built web app.
+- **Browser-only libraries under jsdom.** Libraries like Phaser 3 run canvas/WebGL probes at module-load time (e.g. `CanvasFeatures.init` calls `canvas.getContext('2d')`), which throws inside Vitest's jsdom environment. Never `import` them at the top of a module a test pulls in. Two pieces together: (a) dynamic-import the library *inside* a React effect or lazy factory — `void import('./game').then(({ createGame }) => …)` — so the library never enters the test module graph; and (b) in `apps/web/src/test-setup.ts`, override `HTMLCanvasElement.prototype.getContext` to a `() => null` stub so any intentional mount-guard probes stay quiet instead of spraying jsdom's "not implemented" virtualConsole warnings.
 
 ## Scaffolding hygiene
 
