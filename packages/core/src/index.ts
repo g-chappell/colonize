@@ -27,6 +27,8 @@ export { TurnPhase, ALL_TURN_PHASES, isTurnPhase, TurnManager } from './turn/ind
 export type { TurnHook, TurnHookContext, TurnHookEvent, TurnStateJSON } from './turn/index.js';
 export { UnitType, ALL_UNIT_TYPES, isUnitType, getUnitTypeDefinition, Unit } from './unit/index.js';
 export type { UnitTypeDefinition, UnitJSON, UnitInit, FactionId } from './unit/index.js';
+export { CargoHold } from './cargo/index.js';
+export type { CargoHoldJSON, CargoHoldInit, ResourceId, ArtifactId } from './cargo/index.js';
 export {
   RumourKind,
   ALL_RUMOUR_KINDS,

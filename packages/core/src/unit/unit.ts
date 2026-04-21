@@ -1,3 +1,5 @@
+import { CargoHold } from '../cargo/cargo-hold.js';
+import type { CargoHoldInit, CargoHoldJSON } from '../cargo/cargo-hold.js';
 import type { Coord } from '../map/map.js';
 import { getUnitTypeDefinition, isUnitType } from './unit-type.js';
 import type { UnitType } from './unit-type.js';
@@ -10,6 +12,7 @@ export interface UnitJSON {
   readonly position: Coord;
   readonly type: UnitType;
   readonly movement: number;
+  readonly cargo: CargoHoldJSON;
 }
 
 export interface UnitInit {
@@ -18,12 +21,14 @@ export interface UnitInit {
   readonly position: Coord;
   readonly type: UnitType;
   readonly movement?: number;
+  readonly cargo?: CargoHoldInit;
 }
 
 export class Unit {
   readonly id: string;
   readonly faction: FactionId;
   readonly type: UnitType;
+  readonly cargo: CargoHold;
   private _position: Coord;
   private _movement: number;
 
@@ -55,6 +60,7 @@ export class Unit {
     this.type = init.type;
     this._position = { x: init.position.x, y: init.position.y };
     this._movement = movement;
+    this.cargo = new CargoHold(init.cargo);
   }
 
   get position(): Coord {
@@ -104,6 +110,7 @@ export class Unit {
       position: { x: this._position.x, y: this._position.y },
       type: this.type,
       movement: this._movement,
+      cargo: this.cargo.toJSON(),
     };
   }
 
@@ -111,12 +118,16 @@ export class Unit {
     if (data === null || typeof data !== 'object') {
       throw new TypeError('UnitJSON must be an object');
     }
+    if (data.cargo === undefined || data.cargo === null) {
+      throw new TypeError('UnitJSON.cargo must be present');
+    }
     return new Unit({
       id: data.id,
       faction: data.faction,
       position: data.position,
       type: data.type,
       movement: data.movement,
+      cargo: data.cargo,
     });
   }
 }

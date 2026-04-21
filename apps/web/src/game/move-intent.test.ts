@@ -4,9 +4,24 @@ import { UnitType, type UnitJSON } from '@colonize/core';
 import type { ProposedMove } from '../store/game';
 import { decideMoveClick } from './move-intent';
 
+const EMPTY_CARGO = { resources: {}, artifacts: [] } as const;
 const roster: readonly UnitJSON[] = [
-  { id: 'u1', faction: 'otk', position: { x: 3, y: 4 }, type: UnitType.Sloop, movement: 4 },
-  { id: 'u2', faction: 'phantom', position: { x: 5, y: 6 }, type: UnitType.Privateer, movement: 4 },
+  {
+    id: 'u1',
+    faction: 'otk',
+    position: { x: 3, y: 4 },
+    type: UnitType.Sloop,
+    movement: 4,
+    cargo: EMPTY_CARGO,
+  },
+  {
+    id: 'u2',
+    faction: 'phantom',
+    position: { x: 5, y: 6 },
+    type: UnitType.Privateer,
+    movement: 4,
+    cargo: EMPTY_CARGO,
+  },
 ];
 
 function proposal(goal: { x: number; y: number }, unitId = 'u1'): ProposedMove {

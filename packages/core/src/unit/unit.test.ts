@@ -186,6 +186,7 @@ describe('Unit.toJSON / fromJSON', () => {
       position: { x: 5, y: 7 },
       type: 'settler',
       movement: 0,
+      cargo: { resources: {}, artifacts: [] },
     });
     const revived = Unit.fromJSON(json);
     expect(revived.id).toBe('u-9');
@@ -214,6 +215,7 @@ describe('Unit.toJSON / fromJSON', () => {
       position: { x: 0, y: 0 },
       type: 'dragoon' as UnitType,
       movement: 0,
+      cargo: { resources: {}, artifacts: [] },
     };
     expect(() => Unit.fromJSON(bad)).toThrow(TypeError);
   });
@@ -225,6 +227,7 @@ describe('Unit.toJSON / fromJSON', () => {
       position: { x: 0, y: 0 },
       type: UnitType.Settler,
       movement: 99,
+      cargo: { resources: {}, artifacts: [] },
     };
     expect(() => Unit.fromJSON(bad)).toThrow(RangeError);
   });
@@ -234,5 +237,62 @@ describe('Unit.toJSON / fromJSON', () => {
     const b = Unit.fromJSON(a.toJSON());
     a.spendMovement(1);
     expect(b.movement).toBe(a.maxMovement);
+  });
+});
+
+describe('Unit cargo', () => {
+  it('defaults to an empty cargo hold', () => {
+    const u = makeScout();
+    expect(u.cargo.isEmpty).toBe(true);
+  });
+
+  it('accepts seed cargo and exposes it via unit.cargo', () => {
+    const u = new Unit({
+      id: 'u',
+      faction: 'otk',
+      position: { x: 0, y: 0 },
+      type: UnitType.Settler,
+      cargo: { resources: { provisions: 3 }, artifacts: ['kraken-talisman'] },
+    });
+    expect(u.cargo.getQuantity('provisions')).toBe(3);
+    expect(u.cargo.hasArtifact('kraken-talisman')).toBe(true);
+  });
+
+  it('round-trips cargo through toJSON / fromJSON', () => {
+    const u = new Unit({
+      id: 'u',
+      faction: 'otk',
+      position: { x: 1, y: 2 },
+      type: UnitType.Settler,
+    });
+    u.cargo.addResource('timber', 2);
+    u.cargo.addArtifact('shard');
+    const revived = Unit.fromJSON(u.toJSON());
+    expect(revived.cargo.getQuantity('timber')).toBe(2);
+    expect(revived.cargo.hasArtifact('shard')).toBe(true);
+  });
+
+  it('revived unit has an independent cargo hold', () => {
+    const a = new Unit({
+      id: 'a',
+      faction: 'otk',
+      position: { x: 0, y: 0 },
+      type: UnitType.Settler,
+    });
+    a.cargo.addResource('timber', 1);
+    const b = Unit.fromJSON(a.toJSON());
+    a.cargo.addResource('timber', 5);
+    expect(b.cargo.getQuantity('timber')).toBe(1);
+  });
+
+  it('fromJSON rejects missing cargo', () => {
+    const bad = {
+      id: 'u',
+      faction: 'otk',
+      position: { x: 0, y: 0 },
+      type: UnitType.Settler,
+      movement: 0,
+    } as unknown as UnitJSON;
+    expect(() => Unit.fromJSON(bad)).toThrow(TypeError);
   });
 });
