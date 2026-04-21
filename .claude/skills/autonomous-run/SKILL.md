@@ -129,7 +129,16 @@ Co-Authored-By: Claude <noreply@anthropic.com>"
 
 ## Step 8 — LOCAL VALIDATION
 
-Run every workspace command from `project.json.commands`:
+Before running validation, apply Prettier to the files you edited. New
+files and edits that cross the print-width boundary reliably trip
+`format:check` on the first pass (seen across TASK-006, TASK-007, and
+TASK-010), costing a fix-cycle for a mechanical reformatting:
+
+```bash
+npx prettier --write <every file you touched in Step 7>
+```
+
+Then run every workspace command from `project.json.commands`:
 
 ```bash
 commands.typecheck   # must pass
@@ -216,10 +225,15 @@ Append to `AGENT-LOG.md`:
 `success` entry in AGENT-LOG. If any decreased, set `regression_alert: true`
 and outcome → `success_with_warning`.
 
-Commit + push the log entry to main. The **review trigger is deliberately
-moved to Step 15 — AFTER deploy completes and its outcome is logged** so
-that `/autonomous-review`'s PR branch is created against the fully
-up-to-date main and doesn't end up `mergeStateStatus: BEHIND`.
+**Do NOT push the log entry to main yet.** Strict branch protection with
+required status checks means any commit pushed to main *between* enabling
+auto-merge (Step 9) and the PR actually landing puts the feature branch
+into `mergeStateStatus: BEHIND` and auto-merge stalls indefinitely. Stage
+the AGENT-LOG edit in the working tree here; Step 12 pushes it once the
+PR has merged (and `git pull origin main` has brought in its squash
+commit). The **review trigger is deliberately moved to Step 15 — AFTER
+deploy completes and its outcome is logged** so that `/autonomous-review`'s
+PR branch is created against the fully up-to-date main.
 
 ## Step 11 — (no skill-side notification)
 
@@ -259,10 +273,30 @@ Once merged, pull main:
 git checkout main && git pull origin main
 ```
 
-Invoke the `/deploy` skill.
+Now push the deferred AGENT-LOG entry from Step 10 (the squash-merge is
+already on main, so this commit lands on top of it without racing the
+feature branch):
 
-If PR doesn't merge in 10 min (CI slow or failing): write AGENT-LOG
-`deploy: deferred, reason: pr_not_merged_in_time` and stop (next run picks up).
+```bash
+git add AGENT-LOG.md
+git commit -m "log: <TASK-ID> cycle entry (success, awaiting deploy)"
+git push origin main
+```
+
+Invoke the `/deploy` skill. After it returns, edit the same AGENT-LOG
+entry to fill in the `Deploy:` line with the outcome, then commit + push
+again:
+
+```bash
+git add AGENT-LOG.md
+git commit -m "log: <TASK-ID> deploy outcome (<success|rolled_back>)"
+git push origin main
+```
+
+If PR doesn't merge in 10 min (CI slow or failing): append the log entry
+to AGENT-LOG with `deploy: deferred, reason: pr_not_merged_in_time`,
+commit + push to main (the feature PR's auto-merge has given up by then,
+so the BEHIND race no longer applies), and stop (next run picks up).
 
 ## Step 13 — HEALTH CHECK
 

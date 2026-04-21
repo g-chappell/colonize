@@ -99,6 +99,7 @@ colonize/
 - **Shared schemas** in `packages/shared` are validated with Zod; tests verify round-trip serialisation.
 - **Web e2e** via Playwright when/if added — smoke-test happy paths only.
 - **Phaser scene tests** are hard; prefer logic-first tests. Scene behaviour is verified via Playwright on the built web app.
+- **Browser-only libraries under jsdom.** Libraries like Phaser 3 run canvas/WebGL probes at module-load time (e.g. `CanvasFeatures.init` calls `canvas.getContext('2d')`), which throws inside Vitest's jsdom environment. Never `import` them at the top of a module a test pulls in. Two pieces together: (a) dynamic-import the library *inside* a React effect or lazy factory — `void import('./game').then(({ createGame }) => …)` — so the library never enters the test module graph; and (b) in `apps/web/src/test-setup.ts`, override `HTMLCanvasElement.prototype.getContext` to a `() => null` stub so any intentional mount-guard probes stay quiet instead of spraying jsdom's "not implemented" virtualConsole warnings.
 
 ## Scaffolding hygiene
 
@@ -112,6 +113,7 @@ colonize/
 - **Save format:** `packages/core` exports `serialize/deserialize` for game state. Same format used for local save and cloud save. Version with an integer; add migrations in `packages/core/migrations/`.
 - **Mobile:** `apps/mobile` is a Capacitor wrapper around `apps/web`'s build output. Never duplicate web UI code — all shared UI lives in `apps/web`.
 - **Cross-workspace TS imports** resolve via the `node_modules/@colonize/*` symlinks created by npm workspaces; the importing workspace also adds a `references: [{ "path": "../../packages/<dep>" }]` entry to its `tsconfig.json` so `tsc -b` builds dependencies in the right order. No `paths` aliases are needed in tsconfig or `vite.config.ts`. Run `npm install` at the repo root after adding any new workspace `package.json` so the symlinks materialise before `--workspace=…` commands run.
+- **Generated asset pipelines use the source/packed/served triad.** For any binary asset that gets preprocessed before the web app consumes it (atlas sprites today; audio stems, tilemap exports, shader blobs later): commit the *source* inputs under `packages/content/<asset>-src/<name>/` so CI has deterministic input, gitignore the *packed* output under `packages/content/<asset>-out/` (regenerated per build and non-deterministic across packer versions), and gitignore the *served* copy under `apps/web/public/<asset>/` (consumed by Vite / Fastify-static at runtime). `apps/web`'s `predev` and `prebuild` scripts run the packer then copy packed → served, so `npm run dev` and CI share one code path and neither has to remember the intermediate step. See `packages/content/scripts/pack-atlas.mjs` + `apps/web/scripts/prepare-assets.mjs` for the canonical example.
 
 ---
 
