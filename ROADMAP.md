@@ -10,8 +10,8 @@ _Created: 2026-04-20_
 
 - **Total tasks:** 90
 - **Done:** 17 (19%)
-- **Ready:** 73
-- **In progress:** 0
+- **Ready:** 72
+- **In progress:** 1
 - **Blocked:** 0
 
 ---
@@ -197,7 +197,7 @@ touch. All tiles fixed at map-gen; no island-emergence.
     > atlas. Supports variable tile sizes (animated water
     > frames). Camera follows a target; uses culling for
     > off-screen tiles.
-  - :black_circle: **TASK-020** — Camera controls: pan / zoom / mobile touch  `high` `medium` _(web)_  
+  - :large_orange_diamond: **TASK-020** — Camera controls: pan / zoom / mobile touch  `high` `medium` _(web)_  
     _depends on: TASK-019_
     > Mouse drag to pan, wheel to zoom, arrow keys to pan on
     > desktop. Single-finger drag pan + pinch zoom on mobile.
