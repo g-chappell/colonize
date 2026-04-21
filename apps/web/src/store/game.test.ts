@@ -1,6 +1,11 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { CORE_VERSION, TurnPhase } from '@colonize/core';
+import { CORE_VERSION, TurnPhase, UnitType, type UnitJSON } from '@colonize/core';
 import { useGameStore } from './game';
+
+const sampleUnits: readonly UnitJSON[] = [
+  { id: 'u1', faction: 'otk', position: { x: 3, y: 4 }, type: UnitType.Sloop, movement: 4 },
+  { id: 'u2', faction: 'otk', position: { x: 5, y: 6 }, type: UnitType.Settler, movement: 1 },
+];
 
 describe('useGameStore', () => {
   beforeEach(() => {
@@ -101,5 +106,30 @@ describe('useGameStore', () => {
     useGameStore.getState().setPhase(TurnPhase.WorldEvents);
     useGameStore.getState().reset();
     expect(useGameStore.getState().phase).toBe(TurnPhase.PlayerAction);
+  });
+
+  it('starts with an empty unit roster and no selection', () => {
+    expect(useGameStore.getState().units).toEqual([]);
+    expect(useGameStore.getState().selectedUnitId).toBeNull();
+  });
+
+  it('replaces the unit roster wholesale', () => {
+    useGameStore.getState().setUnits(sampleUnits);
+    expect(useGameStore.getState().units).toEqual(sampleUnits);
+  });
+
+  it('stores and clears the selected unit id', () => {
+    useGameStore.getState().setSelectedUnit('u1');
+    expect(useGameStore.getState().selectedUnitId).toBe('u1');
+    useGameStore.getState().setSelectedUnit(null);
+    expect(useGameStore.getState().selectedUnitId).toBeNull();
+  });
+
+  it('drops units and selection on reset', () => {
+    useGameStore.getState().setUnits(sampleUnits);
+    useGameStore.getState().setSelectedUnit('u1');
+    useGameStore.getState().reset();
+    expect(useGameStore.getState().units).toEqual([]);
+    expect(useGameStore.getState().selectedUnitId).toBeNull();
   });
 });

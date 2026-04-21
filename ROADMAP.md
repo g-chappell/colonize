@@ -9,8 +9,8 @@ _Created: 2026-04-20_
 ## Summary
 
 - **Total tasks:** 90
-- **Done:** 25 (28%)
-- **Ready:** 65
+- **Done:** 26 (29%)
+- **Ready:** 64
 - **In progress:** 0
 - **Blocked:** 0
 
@@ -287,7 +287,7 @@ rules including wind, currents, and Red Tide impassability.
   > Click to select unit; click destination to move. Path preview
   > highlights route. Animation moves sprite along path at
   > reasonable speed.
-  - :black_circle: **TASK-030** — Unit sprite rendering + click-to-select  `high` `medium` _(web, core)_  
+  - :white_check_mark: **TASK-030** — Unit sprite rendering + click-to-select  `high` `medium` _(web, core)_ · [PR](https://github.com/g-chappell/colonize/pull/40)  
     _depends on: TASK-019, TASK-026_
     > GameScene renders units from store. Click selects (emits
     > event via bus); selection highlights sprite + shows stats

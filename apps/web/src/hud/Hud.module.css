@@ -33,10 +33,53 @@
   right: 0.75rem;
 }
 
+.bottomLeft {
+  position: absolute;
+  bottom: 0.75rem;
+  left: 0.75rem;
+}
+
 .bottomRight {
   position: absolute;
   bottom: 0.75rem;
   right: 0.75rem;
+}
+
+.unitStats {
+  min-width: 11rem;
+  padding: 0.5rem 0.75rem;
+  background: rgba(12, 30, 43, 0.9);
+  border: 1px solid #d6b466;
+  color: #e8d8b8;
+  font-size: 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.unitStatsName {
+  color: #d6b466;
+  font-weight: bold;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 0.2rem;
+}
+
+.unitStatsRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.unitStatsLabel {
+  opacity: 0.6;
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+}
+
+.unitStatsValue {
+  color: #e8d8b8;
 }
 
 .year {

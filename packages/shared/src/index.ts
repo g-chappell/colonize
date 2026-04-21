@@ -14,4 +14,8 @@ export type HealthResponse = z.infer<typeof HealthResponse>;
 // Extend via declaration merging as HUD↔Phaser events are introduced.
 export interface GameEvents {
   'turn:advanced': { turn: number };
+  // Fired when the player selects a unit on the map (or clears the
+  // selection by clicking empty water). `unitId` is null when nothing
+  // is selected.
+  'unit:selected': { unitId: string | null };
 }
