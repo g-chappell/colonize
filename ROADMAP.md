@@ -9,9 +9,9 @@ _Created: 2026-04-20_
 ## Summary
 
 - **Total tasks:** 90
-- **Done:** 26 (29%)
+- **Done:** 27 (30%)
 - **Ready:** 63
-- **In progress:** 1
+- **In progress:** 0
 - **Blocked:** 0
 
 ---
@@ -151,7 +151,7 @@ Phaser canvas with a shared event bus.
   > Phaser audio manager wired through an SFX bus and a BGM bus.
   > Priming tap for iOS autoplay restrictions. BGM stems by mood
   > (sea / tavern / combat / event).
-  - :large_orange_diamond: **TASK-015** — Audio manager with SFX + BGM buses  `med` `medium` _(web, content)_  
+  - :white_check_mark: **TASK-015** — Audio manager with SFX + BGM buses  `med` `medium` _(web, content)_ · [PR](https://github.com/g-chappell/colonize/pull/41)  
     _depends on: TASK-010_
     > Wrap Phaser.Sound with typed play()/playBgm()/stopBgm().
     > Prime audio on first user interaction (critical for iOS).
