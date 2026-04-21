@@ -242,7 +242,7 @@ gaps.
 - Files changed: apps/web/src/menu/MainMenu.tsx (new), apps/web/src/menu/MainMenu.module.css (new), apps/web/src/menu/MainMenu.test.tsx (new), apps/web/src/store/game.ts, apps/web/src/store/game.test.ts, apps/web/src/App.tsx, apps/web/src/App.test.tsx, roadmap/roadmap.yml, ROADMAP.md
 - Regression alert: false (web 32 → 39; all other counts steady)
 - Review proposed: false (3 consecutive successes since PR #17 review checkpoint; threshold = 5)
-- Deploy: pending
+- Deploy: success — colonize:latest rebuilt (multi-stage docker, manifest sha256:38938ce5e829), docker-app-1 recreated rolling. Healthcheck 200 on attempt 2 at http://localhost:3000/health. Build artefact sizes stable (web main 151.16 kB + phaser 1,483.58 kB).
 - Lessons learned:
   - Screen routing for single-page flows lives cleanly in the zustand store as a `screen` literal-union (`'menu' | 'faction-select' | 'game'`) rather than a router — no extra dep, faction-select stub is trivially ownable by TASK-014, and tests can set the screen state directly in `beforeEach` without spelunking through navigation events.
   - Menu-screen-as-default broke the previous App tests that assumed the game stage mounts on load (HUD test was looking for `hud-end-turn` at root). Refactor was to split the App suite into default-screen (menu) vs explicit-`setScreen('game')` tests — cheaper than keeping the game-stage at root and gating menu as a modal, and it mirrors the actual production UX.
