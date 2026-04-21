@@ -336,7 +336,7 @@ epics:
             attempt_count: 1
           - id: TASK-016
             title: "Pause overlay (React) + resume"
-            status: in-progress
+            status: done
             priority: med
             complexity: small
             workspaces: [web]
@@ -345,8 +345,8 @@ epics:
               Quit-to-menu. Calls phaser.scene.pause() while open.
               Settings include audio bus volumes (writes to store).
             depends_on: [TASK-013, TASK-015]
-            pr: null
-            completed: null
+            pr: "https://github.com/g-chappell/colonize/pull/44"
+            completed: "2026-04-21T17:25:00Z"
             blocked_reason: null
             last_attempted: "2026-04-21T17:15:00Z"
             attempt_count: 1

@@ -9,9 +9,9 @@ _Created: 2026-04-20_
 ## Summary
 
 - **Total tasks:** 90
-- **Done:** 29 (32%)
+- **Done:** 30 (33%)
 - **Ready:** 60
-- **In progress:** 1
+- **In progress:** 0
 - **Blocked:** 0
 
 ---
@@ -157,7 +157,7 @@ Phaser canvas with a shared event bus.
     > Prime audio on first user interaction (critical for iOS).
     > Placeholder stems in packages/content/audio/ — can be
     > silent/short for now; real composition is later.
-  - :large_orange_diamond: **TASK-016** — Pause overlay (React) + resume  `med` `small` _(web)_  
+  - :white_check_mark: **TASK-016** — Pause overlay (React) + resume  `med` `small` _(web)_ · [PR](https://github.com/g-chappell/colonize/pull/44)  
     _depends on: TASK-013, TASK-015_
     > Esc / menu-icon opens pause overlay: Resume, Settings, Save,
     > Quit-to-menu. Calls phaser.scene.pause() while open.
