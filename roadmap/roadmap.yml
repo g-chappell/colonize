@@ -384,7 +384,7 @@ epics:
             attempt_count: 1
           - id: TASK-018
             title: "Procedural map generator"
-            status: ready
+            status: in-progress
             priority: high
             complexity: large
             workspaces: [core]
@@ -398,8 +398,8 @@ epics:
             pr: null
             completed: null
             blocked_reason: null
-            last_attempted: null
-            attempt_count: 0
+            last_attempted: "2026-04-21T06:00:00Z"
+            attempt_count: 1
       - id: STORY-10
         title: "Map rendering"
         description: |
