@@ -318,3 +318,21 @@ gaps.
 - Notes: Sixteenth autonomous-run cycle. Streak=2 since PR #23 review checkpoint (TASK-018 → TASK-019); three more consecutive successes to re-hit successThreshold=5.
 
 ---
+
+### Run [2026-04-21 08:10]
+- Task: TASK-020 — Camera controls: pan / zoom / mobile touch
+- Outcome: success
+- PR: https://github.com/g-chappell/colonize/pull/26 (auto-merge enabled)
+- Test counts: server=8, web=77 (was 50 — +23 camera-controls.test.ts, +4 store/game.test.ts), content=15, core=78, shared=2
+- Files changed: apps/web/src/game/camera-controls.ts (new), apps/web/src/game/camera-controls.test.ts (new), apps/web/src/game/game-scene.ts, apps/web/src/game/index.ts, apps/web/src/store/game.ts, apps/web/src/store/game.test.ts, roadmap/roadmap.yml, ROADMAP.md
+- Regression alert: false (web 50 → 77; all other counts steady)
+- Review proposed: false (3 consecutive successes since PR #23 review checkpoint; threshold = 5)
+- Deploy: pending
+- Lessons learned:
+  - Pure-TS camera math (clampZoom, applyWheelZoom, applyPinchZoom, keyPanDelta, pointerDistance) lives in its own `camera-controls.ts` module so it stays out of `game-scene.ts`'s Phaser-importing module graph and is unit-testable under jsdom. Same pattern as TASK-019's tile-atlas helpers — anything that needs test coverage in apps/web has to live outside any module Phaser-importing module's transitive closure, otherwise the test-runner's `getContext → null` stub isn't enough and Phaser's WebGL/Canvas init cascades into the test environment.
+  - The follow-target sprite from TASK-019 stays as the programmatic "jump-to" mechanism, but manual user input (drag, pinch, wheel, arrow keys) calls `cam.stopFollow()` so the user is always in control once they touch the camera. `setCameraFocus()` re-engages follow so the next programmatic recenter still glides — this gives both APIs a clean coexistence without either fighting the other.
+  - Cursor-anchored wheel zoom (the world point under the pointer stays under the pointer) makes the wheel feel native — without it, zooming in zooms toward the screen centre and the player loses their bearing. The math is straightforward (compute world coord under pointer pre-zoom, set new zoom, re-pan to keep that world coord under pointer) and self-contained inside `handleWheel`.
+  - Per-game camera memory persists in the zustand store (`cameraView: { scrollX, scrollY, zoom } | null`) rather than localStorage. Reset clears it so a new game starts at the default focus; persistence across browser reloads will fall out for free if/when EPIC-08's save system serialises the store. No new dependencies required.
+- Notes: Seventeenth autonomous-run cycle. Streak=3 since PR #23 review checkpoint (TASK-018 → TASK-019 → TASK-020); two more consecutive successes to re-hit successThreshold=5.
+
+---
