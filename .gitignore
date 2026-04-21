@@ -70,3 +70,9 @@ packages/content/atlas-out/
 
 # Atlases copied into the web app's public/ at predev/prebuild time.
 apps/web/public/atlas/
+
+# Generated silent WAV stems — packed by packages/content/scripts/generate-placeholder-audio.mjs
+packages/content/audio-out/
+
+# Audio copied into the web app's public/ at predev/prebuild time.
+apps/web/public/audio/

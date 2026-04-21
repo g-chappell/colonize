@@ -319,7 +319,7 @@ epics:
         tasks:
           - id: TASK-015
             title: "Audio manager with SFX + BGM buses"
-            status: ready
+            status: done
             priority: med
             complexity: medium
             workspaces: [web, content]
@@ -329,11 +329,11 @@ epics:
               Placeholder stems in packages/content/audio/ — can be
               silent/short for now; real composition is later.
             depends_on: [TASK-010]
-            pr: null
-            completed: null
+            pr: "https://github.com/g-chappell/colonize/pull/41"
+            completed: "2026-04-21T17:17:04.187Z"
             blocked_reason: null
-            last_attempted: null
-            attempt_count: 0
+            last_attempted: "2026-04-21T17:03:01.270Z"
+            attempt_count: 1
           - id: TASK-016
             title: "Pause overlay (React) + resume"
             status: ready

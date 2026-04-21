@@ -1,7 +1,27 @@
 export { BootScene } from './boot-scene';
 export { MainMenuScene } from './main-menu-scene';
 export { GameScene, FOG_OVERLAY_DEPTH, type GameSceneInitData } from './game-scene';
-export { createGame, startGameScene, type CreateGameOptions } from './create-game';
+export {
+  AUDIO_REGISTRY_KEY,
+  createGame,
+  startGameScene,
+  type CreateGameOptions,
+} from './create-game';
+export { AudioManager, loadAudioStems, type SoundManager } from './audio-manager';
+export {
+  type AudioBus,
+  type AudioState,
+  type AudioStateInit,
+  type BgmTransition,
+  canPlay,
+  createAudioState,
+  effectiveVolume,
+  planBgmTransition,
+  withCurrentBgm,
+  withMuted,
+  withPrimed,
+  withVolume,
+} from './audio-state';
 export { ATLAS_KEYS, ATLAS_PATHS, SCENE_KEYS } from './asset-keys';
 export {
   TILE_SIZE,
