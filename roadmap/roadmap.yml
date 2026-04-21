@@ -687,7 +687,7 @@ epics:
         tasks:
           - id: TASK-032
             title: "Rumour-tile entity in core + generator integration"
-            status: ready
+            status: in-progress
             priority: high
             complexity: medium
             workspaces: [core]
@@ -699,8 +699,8 @@ epics:
             pr: null
             completed: null
             blocked_reason: null
-            last_attempted: null
-            attempt_count: 0
+            last_attempted: "2026-04-21T00:00:00Z"
+            attempt_count: 1
           - id: TASK-033
             title: "Rumour outcome table + UI reveal modal"
             status: ready

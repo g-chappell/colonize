@@ -10,8 +10,8 @@ _Created: 2026-04-20_
 
 - **Total tasks:** 90
 - **Done:** 28 (31%)
-- **Ready:** 62
-- **In progress:** 0
+- **Ready:** 61
+- **In progress:** 1
 - **Blocked:** 0
 
 ---
@@ -308,7 +308,7 @@ Ship blueprints (OTK-only).
 - **STORY-17** — Rumour-tile mechanic
   > Hidden contents on certain tiles. Revealed when a unit enters.
   > Outcomes pull from a weighted table per tile-type.
-  - :black_circle: **TASK-032** — Rumour-tile entity in core + generator integration  `high` `medium` _(core)_  
+  - :large_orange_diamond: **TASK-032** — Rumour-tile entity in core + generator integration  `high` `medium` _(core)_  
     _depends on: TASK-018, TASK-026_
     > RumourTile associated with a map position. Map generator
     > sprinkles them in unexplored regions. On entry, resolve()
