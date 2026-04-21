@@ -13,6 +13,8 @@ export {
   MAX_FACTION_COUNT,
 } from './map/index.js';
 export type { Coord, MapJSON, GenerateMapOptions, GeneratedMap } from './map/index.js';
+export { findPath, tileCost } from './map/index.js';
+export type { PathfindFlags, PathResult } from './map/index.js';
 export {
   Visibility,
   ALL_VISIBILITY_STATES,
