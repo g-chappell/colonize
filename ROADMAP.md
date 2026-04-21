@@ -9,8 +9,8 @@ _Created: 2026-04-20_
 ## Summary
 
 - **Total tasks:** 90
-- **Done:** 27 (30%)
-- **Ready:** 63
+- **Done:** 28 (31%)
+- **Ready:** 62
 - **In progress:** 0
 - **Blocked:** 0
 
@@ -292,7 +292,7 @@ rules including wind, currents, and Red Tide impassability.
     > GameScene renders units from store. Click selects (emits
     > event via bus); selection highlights sprite + shows stats
     > panel in HUD.
-  - :black_circle: **TASK-031** — Click-to-move with path preview + animation  `high` `medium` _(web, core)_  
+  - :white_check_mark: **TASK-031** — Click-to-move with path preview + animation  `high` `medium` _(web, core)_ · [PR](https://github.com/g-chappell/colonize/pull/42)  
     _depends on: TASK-030, TASK-028_
     > Second click proposes path (via TASK-028); confirm commits
     > move. Sprite tweens along path; camera can follow. Handles

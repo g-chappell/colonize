@@ -132,4 +132,99 @@ describe('useGameStore', () => {
     expect(useGameStore.getState().units).toEqual([]);
     expect(useGameStore.getState().selectedUnitId).toBeNull();
   });
+
+  it('starts with no proposed move', () => {
+    expect(useGameStore.getState().proposedMove).toBeNull();
+  });
+
+  it('stores and clears a proposed move', () => {
+    const proposal = {
+      unitId: 'u1',
+      path: [
+        { x: 3, y: 4 },
+        { x: 4, y: 4 },
+      ],
+      cost: 1,
+      reachable: 1,
+    };
+    useGameStore.getState().setProposedMove(proposal);
+    expect(useGameStore.getState().proposedMove).toEqual(proposal);
+    useGameStore.getState().setProposedMove(null);
+    expect(useGameStore.getState().proposedMove).toBeNull();
+  });
+
+  it('clears the proposed move when selection changes to a different unit', () => {
+    useGameStore.getState().setUnits(sampleUnits);
+    useGameStore.getState().setSelectedUnit('u1');
+    useGameStore.getState().setProposedMove({
+      unitId: 'u1',
+      path: [
+        { x: 3, y: 4 },
+        { x: 4, y: 4 },
+      ],
+      cost: 1,
+      reachable: 1,
+    });
+    useGameStore.getState().setSelectedUnit('u2');
+    expect(useGameStore.getState().proposedMove).toBeNull();
+  });
+
+  it('keeps the proposed move when the same unit is re-selected', () => {
+    useGameStore.getState().setUnits(sampleUnits);
+    useGameStore.getState().setSelectedUnit('u1');
+    const proposal = {
+      unitId: 'u1',
+      path: [
+        { x: 3, y: 4 },
+        { x: 4, y: 4 },
+      ],
+      cost: 1,
+      reachable: 1,
+    };
+    useGameStore.getState().setProposedMove(proposal);
+    useGameStore.getState().setSelectedUnit('u1');
+    expect(useGameStore.getState().proposedMove).toEqual(proposal);
+  });
+
+  it('commits a move by updating the unit and clearing the proposal', () => {
+    useGameStore.getState().setUnits(sampleUnits);
+    useGameStore.getState().setSelectedUnit('u1');
+    useGameStore.getState().setProposedMove({
+      unitId: 'u1',
+      path: [
+        { x: 3, y: 4 },
+        { x: 4, y: 4 },
+      ],
+      cost: 1,
+      reachable: 1,
+    });
+    useGameStore.getState().commitMove('u1', { x: 4, y: 4 }, 1);
+    const moved = useGameStore.getState().units.find((u) => u.id === 'u1');
+    expect(moved?.position).toEqual({ x: 4, y: 4 });
+    expect(moved?.movement).toBe(3);
+    const other = useGameStore.getState().units.find((u) => u.id === 'u2');
+    expect(other?.position).toEqual({ x: 5, y: 6 });
+    expect(useGameStore.getState().proposedMove).toBeNull();
+  });
+
+  it('clamps spent movement to zero (never negative)', () => {
+    useGameStore.getState().setUnits(sampleUnits);
+    useGameStore.getState().commitMove('u2', { x: 6, y: 6 }, 5);
+    const moved = useGameStore.getState().units.find((u) => u.id === 'u2');
+    expect(moved?.movement).toBe(0);
+  });
+
+  it('drops the proposed move on reset', () => {
+    useGameStore.getState().setProposedMove({
+      unitId: 'u1',
+      path: [
+        { x: 3, y: 4 },
+        { x: 4, y: 4 },
+      ],
+      cost: 1,
+      reachable: 1,
+    });
+    useGameStore.getState().reset();
+    expect(useGameStore.getState().proposedMove).toBeNull();
+  });
 });

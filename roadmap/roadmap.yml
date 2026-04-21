@@ -656,7 +656,7 @@ epics:
             attempt_count: 1
           - id: TASK-031
             title: "Click-to-move with path preview + animation"
-            status: ready
+            status: done
             priority: high
             complexity: medium
             workspaces: [web, core]
@@ -665,11 +665,11 @@ epics:
               move. Sprite tweens along path; camera can follow. Handles
               partial moves when path cost > remaining MP.
             depends_on: [TASK-030, TASK-028]
-            pr: null
-            completed: null
+            pr: "https://github.com/g-chappell/colonize/pull/42"
+            completed: "2026-04-21"
             blocked_reason: null
-            last_attempted: null
-            attempt_count: 0
+            last_attempted: "2026-04-21T00:00:00.000Z"
+            attempt_count: 1
 
   - id: EPIC-05
     title: "Exploration & discoveries"
