@@ -371,3 +371,21 @@ gaps.
 - Notes: Nineteenth autonomous-run cycle — **skipped**, not counted toward the 5-success streak. Prior streak still at 3 (TASK-018 → TASK-019 → TASK-020) since the PR #23 review checkpoint; the streak resumes on the next successful cycle without needing to restart.
 
 ---
+
+### Run [2026-04-21 09:55]
+- Task: TASK-021 — Visibility model in core (unseen / seen / visible)
+- Outcome: success
+- PR: https://github.com/g-chappell/colonize/pull/31 (auto-merge enabled)
+- Test counts: server=8, web=77, content=15, core=105 (was 78 — +27 visibility tests covering type registry, construction, get/inBounds, reveal Chebyshev geometry + clipping + rejection, demoteVisibleToSeen idempotence + turn-loop re-reveal, toJSON/fromJSON round-trip + validation), shared=2
+- Files changed: packages/core/src/visibility/visibility.ts (new), packages/core/src/visibility/visibility.test.ts (new), packages/core/src/visibility/index.ts (new), packages/core/src/index.ts, roadmap/roadmap.yml, ROADMAP.md
+- Regression alert: false (core 78 → 105; all other counts steady)
+- Review proposed: pending (Step 15 runs after deploy)
+- Deploy: pending
+- Lessons learned:
+  - Visibility as a save-format-bound const-object keeps the wire format stable — `{unseen | seen | visible}` are the string literals that land in serialized save JSON. Followed the same pattern as TileType: const object + derived union + `ALL_VISIBILITY_STATES` readonly array + `isVisibility` narrowing guard used cell-by-cell inside `fromJSON`. Any future rename becomes a save-version migration, not a refactor.
+  - Split the turn-loop into two explicit ops instead of baking it into `reveal`: (a) `demoteVisibleToSeen()` — every currently-visible cell drops to `seen`; (b) re-apply `reveal(pos, sight)` from each unit/colony. The turn manager (TASK-024) and the movement/colony-placement callers (TASK-026+) orchestrate this; the visibility module stays a pure primitive with no notion of "turn". This is the standard Civ-style fog-of-war recompute pattern and avoids the contribution-count bookkeeping that an incremental scheme would demand.
+  - Chebyshev distance for the sight circle (square in screen space) — matches the 8-neighbour semantics `GameMap.neighbours` already exposes, so a unit's `sight=1` radius exactly covers its immediate neighbours. Simpler than Euclidean, and the extra corner tiles at diagonal distance √2 are cheap narrative "you spotted something in the distance" territory.
+  - Line-of-sight blockers (terrain that obstructs vision, e.g. fog banks, red-tide obscuring ships behind it) are deliberately deferred — the task scope is the *model* (TASK-021), not the LoS algorithm. Adding blocker-aware flood fill now would entangle the primitive with TileType semantics before the movement/unit systems land.
+- Notes: Twentieth autonomous-run cycle. Streak=4 since PR #23 review checkpoint (TASK-018 → TASK-019 → TASK-020 → TASK-021); one more consecutive success to re-hit successThreshold=5 and arm `/autonomous-review`.
+
+---
