@@ -1,7 +1,8 @@
 import Phaser from 'phaser';
-import { TileType } from '@colonize/core';
+import { TileType, type UnitJSON } from '@colonize/core';
 import type { FactionVisibility, GameMap } from '@colonize/core';
 
+import { bus } from '../bus';
 import { useGameStore } from '../store/game';
 import { ATLAS_KEYS, SCENE_KEYS } from './asset-keys';
 import {
@@ -21,13 +22,30 @@ import {
   TILE_RENDER_SCALE,
   frameForTile,
   mapWorldBounds,
+  renderedTileSize,
   tileCenterInWorld,
 } from './tile-atlas';
+import { findUnitById, isTileInBounds, pickUnitIdAtTile, worldToTile } from './unit-input';
+import {
+  SELECTION_RING_COLOR,
+  SELECTION_RING_SCALE,
+  UNIT_BODY_SCALE,
+  colorForFaction,
+  visualForUnitType,
+} from './unit-visuals';
 
-// Depth of the fog overlay — above all terrain tiles but below any
-// future HUD-anchored in-world indicators (selection rings, damage
-// numbers) which will claim higher depths.
+// Depth ordering: terrain tiles draw at the default depth (0),
+// units sit above tiles, the selection ring sits above units, and
+// the fog overlay sits above everything so unseen units stay
+// hidden behind the fog.
+export const UNIT_LAYER_DEPTH = 50;
+export const SELECTION_RING_DEPTH = 60;
 export const FOG_OVERLAY_DEPTH = 100;
+
+// Pointer displacement (in screen pixels) above which a pointerup is
+// treated as the end of a drag rather than a click. Keeps trembly
+// touch taps from being eaten by the camera-drag handler.
+const CLICK_PIXEL_THRESHOLD = 6;
 
 export interface GameSceneInitData {
   readonly map: GameMap;
@@ -53,6 +71,18 @@ export class GameScene extends Phaser.Scene {
   private pinchStartDistance = 0;
   private pinchStartZoom = 1;
 
+  // Track pointer-down screen position so pointerup can decide whether
+  // the gesture was a tap (→ click-to-select) or a drag (→ camera move).
+  private pointerDownScreen: { x: number; y: number } | null = null;
+
+  // Per-unit visual containers, keyed by UnitJSON.id. Diffed on every
+  // store roster update — added on insert, repositioned on move,
+  // destroyed on removal.
+  private unitContainers = new Map<string, Phaser.GameObjects.Container>();
+  private selectionRing: Phaser.GameObjects.Graphics | null = null;
+  private unsubscribeUnits: (() => void) | null = null;
+  private unsubscribeSelection: (() => void) | null = null;
+
   constructor() {
     super({ key: SCENE_KEYS.game });
   }
@@ -76,6 +106,7 @@ export class GameScene extends Phaser.Scene {
     this.renderTiles(map);
     this.configureCamera(map, data.cameraFocus);
     this.setupCameraControls();
+    this.setupUnitLayer();
 
     const visibility = this.initialVisibility ?? data.visibility;
     if (visibility) {
@@ -83,6 +114,11 @@ export class GameScene extends Phaser.Scene {
         FOG_OVERLAY_DEPTH,
       );
     }
+
+    // Drop store subscriptions when the scene is torn down (e.g.
+    // returning to the main menu) so listeners don't accumulate.
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, this.teardownUnitLayer, this);
+    this.events.once(Phaser.Scenes.Events.DESTROY, this.teardownUnitLayer, this);
   }
 
   private ensureOceanAnimation(): void {
@@ -150,6 +186,7 @@ export class GameScene extends Phaser.Scene {
       this.cursors = this.input.keyboard.createCursorKeys();
     }
 
+    this.input.on('pointerdown', this.handlePointerDown, this);
     this.input.on('pointermove', this.handlePointerMove, this);
     this.input.on('pointerup', this.handlePointerUp, this);
     this.input.on('pointerupoutside', this.handlePointerUp, this);
@@ -158,6 +195,17 @@ export class GameScene extends Phaser.Scene {
     // Persist the initial state so the store always reflects the
     // active view — even before the player touches anything.
     this.persistCameraView();
+  }
+
+  private handlePointerDown(pointer: Phaser.Input.Pointer): void {
+    // Record the screen-space anchor; pointerup compares against it
+    // to decide tap-vs-drag. Two-finger gestures clear the anchor so
+    // a pinch never resolves as a click on the second finger lift.
+    if (this.input.pointer1.isDown && this.input.pointer2.isDown) {
+      this.pointerDownScreen = null;
+      return;
+    }
+    this.pointerDownScreen = { x: pointer.x, y: pointer.y };
   }
 
   private handlePointerMove(pointer: Phaser.Input.Pointer): void {
@@ -183,10 +231,35 @@ export class GameScene extends Phaser.Scene {
     this.persistCameraView();
   }
 
-  private handlePointerUp(): void {
+  private handlePointerUp(pointer: Phaser.Input.Pointer): void {
     // End any in-flight pinch when either pointer lifts.
     this.pinchStartDistance = 0;
     this.persistCameraView();
+
+    // Decide tap-vs-drag using the screen-pixel distance from the
+    // original pointerdown. Below the threshold counts as a click.
+    const anchor = this.pointerDownScreen;
+    this.pointerDownScreen = null;
+    if (!anchor) return;
+    const dx = pointer.x - anchor.x;
+    const dy = pointer.y - anchor.y;
+    if (Math.hypot(dx, dy) > CLICK_PIXEL_THRESHOLD) return;
+
+    this.handleMapClick(pointer);
+  }
+
+  private handleMapClick(pointer: Phaser.Input.Pointer): void {
+    if (!this.mapModel) return;
+    const tile = worldToTile(pointer.worldX, pointer.worldY);
+    if (!isTileInBounds(tile, this.mapModel.width, this.mapModel.height)) return;
+
+    const units = useGameStore.getState().units;
+    const unitId = pickUnitIdAtTile(tile, units);
+    const previous = useGameStore.getState().selectedUnitId;
+    if (previous === unitId) return;
+
+    useGameStore.getState().setSelectedUnit(unitId);
+    bus.emit('unit:selected', { unitId });
   }
 
   private handlePinch(p1: Phaser.Input.Pointer, p2: Phaser.Input.Pointer): void {
@@ -252,6 +325,120 @@ export class GameScene extends Phaser.Scene {
   // overlay. No-op when the scene has no fog overlay configured.
   syncFogOverlay(visibility: FactionVisibility): void {
     this.fogOverlay?.sync(visibility, this.time.now);
+  }
+
+  private setupUnitLayer(): void {
+    this.selectionRing = this.add.graphics();
+    this.selectionRing.setDepth(SELECTION_RING_DEPTH);
+    this.selectionRing.setVisible(false);
+
+    const initial = useGameStore.getState();
+    this.syncUnitContainers(initial.units);
+    this.syncSelectionRing(initial.selectedUnitId, initial.units);
+
+    this.unsubscribeUnits = useGameStore.subscribe((state, prev) => {
+      if (state.units === prev.units) return;
+      this.syncUnitContainers(state.units);
+      this.syncSelectionRing(state.selectedUnitId, state.units);
+    });
+    this.unsubscribeSelection = useGameStore.subscribe((state, prev) => {
+      if (state.selectedUnitId === prev.selectedUnitId) return;
+      this.syncSelectionRing(state.selectedUnitId, state.units);
+    });
+  }
+
+  private teardownUnitLayer(): void {
+    this.unsubscribeUnits?.();
+    this.unsubscribeUnits = null;
+    this.unsubscribeSelection?.();
+    this.unsubscribeSelection = null;
+    for (const container of this.unitContainers.values()) {
+      container.destroy();
+    }
+    this.unitContainers.clear();
+    this.selectionRing?.destroy();
+    this.selectionRing = null;
+  }
+
+  private syncUnitContainers(units: readonly UnitJSON[]): void {
+    const presentIds = new Set(units.map((u) => u.id));
+    for (const [id, container] of this.unitContainers) {
+      if (!presentIds.has(id)) {
+        container.destroy();
+        this.unitContainers.delete(id);
+      }
+    }
+    for (const unit of units) {
+      const existing = this.unitContainers.get(unit.id);
+      const { x, y } = tileCenterInWorld(unit.position.x, unit.position.y);
+      if (existing) {
+        existing.setPosition(x, y);
+        continue;
+      }
+      this.unitContainers.set(unit.id, this.createUnitContainer(unit, x, y));
+    }
+  }
+
+  private createUnitContainer(unit: UnitJSON, x: number, y: number): Phaser.GameObjects.Container {
+    const tilePx = renderedTileSize();
+    const bodyPx = tilePx * UNIT_BODY_SCALE;
+    const visual = visualForUnitType(unit.type);
+    const fill = colorForFaction(unit.faction);
+
+    const body = this.buildUnitBody(visual.shape, bodyPx, fill);
+    const label = this.add
+      .text(0, 0, visual.label, {
+        fontFamily: 'Georgia, "Times New Roman", serif',
+        fontSize: `${Math.round(bodyPx * 0.55)}px`,
+        color: '#f4ecd8',
+      })
+      .setOrigin(0.5, 0.5);
+
+    const container = this.add.container(x, y, [body, label]);
+    container.setDepth(UNIT_LAYER_DEPTH);
+    container.setSize(bodyPx, bodyPx);
+    container.setData('unitId', unit.id);
+    return container;
+  }
+
+  private buildUnitBody(
+    shape: ReturnType<typeof visualForUnitType>['shape'],
+    bodyPx: number,
+    fill: number,
+  ): Phaser.GameObjects.GameObject {
+    const stroke = 0x0c1e2b;
+    if (shape === 'circle') {
+      const arc = this.add.circle(0, 0, bodyPx / 2, fill);
+      arc.setStrokeStyle(2, stroke);
+      return arc;
+    }
+    if (shape === 'diamond') {
+      // Rotate a square 45° to read as a diamond silhouette without
+      // building a custom Polygon — kept simple on purpose.
+      const square = this.add.rectangle(0, 0, bodyPx * 0.75, bodyPx * 0.75, fill);
+      square.setStrokeStyle(2, stroke);
+      square.setRotation(Math.PI / 4);
+      return square;
+    }
+    const square = this.add.rectangle(0, 0, bodyPx, bodyPx, fill);
+    square.setStrokeStyle(2, stroke);
+    return square;
+  }
+
+  private syncSelectionRing(selectedUnitId: string | null, units: readonly UnitJSON[]): void {
+    const ring = this.selectionRing;
+    if (!ring) return;
+    const unit = findUnitById(selectedUnitId, units);
+    if (!unit) {
+      ring.setVisible(false);
+      return;
+    }
+    const { x, y } = tileCenterInWorld(unit.position.x, unit.position.y);
+    const radius = (renderedTileSize() * SELECTION_RING_SCALE) / 2;
+    ring.clear();
+    ring.lineStyle(2, SELECTION_RING_COLOR, 1);
+    ring.strokeCircle(x, y, radius);
+    ring.setVisible(true);
   }
 
   private persistCameraView(): void {

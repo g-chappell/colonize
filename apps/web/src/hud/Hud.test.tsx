@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { TurnPhase } from '@colonize/core';
+import { TurnPhase, UnitType, type UnitJSON } from '@colonize/core';
 import { bus } from '../bus';
 import { turnController } from '../game/turn-controller';
 import { useGameStore } from '../store/game';
@@ -10,8 +10,25 @@ import {
   FactionChip,
   Hud,
   ResourceBar,
+  UnitStatsPanel,
   YearDisplay,
 } from './Hud';
+
+const sampleSloop: UnitJSON = {
+  id: 'u-sloop',
+  faction: 'otk',
+  position: { x: 7, y: 12 },
+  type: UnitType.Sloop,
+  movement: 3,
+};
+
+const sampleSettler: UnitJSON = {
+  id: 'u-settler',
+  faction: 'bloodborne',
+  position: { x: 2, y: 9 },
+  type: UnitType.Settler,
+  movement: 1,
+};
 
 describe('Hud', () => {
   beforeEach(() => {
@@ -92,6 +109,68 @@ describe('Hud', () => {
         useGameStore.getState().setPhase(TurnPhase.PlayerAction);
       });
       expect(screen.queryByTestId('hud-ai-thinking')).not.toBeInTheDocument();
+    });
+  });
+
+  describe('UnitStatsPanel', () => {
+    it('renders nothing when no unit is selected', () => {
+      render(<UnitStatsPanel />);
+      expect(screen.queryByTestId('hud-unit-stats')).not.toBeInTheDocument();
+    });
+
+    it('renders nothing when the selected id is not in the roster', () => {
+      useGameStore.getState().setUnits([sampleSloop]);
+      useGameStore.getState().setSelectedUnit('u-missing');
+      render(<UnitStatsPanel />);
+      expect(screen.queryByTestId('hud-unit-stats')).not.toBeInTheDocument();
+    });
+
+    it('shows the selected unit name, faction, position, and movement', () => {
+      useGameStore.getState().setUnits([sampleSloop]);
+      useGameStore.getState().setSelectedUnit(sampleSloop.id);
+      render(<UnitStatsPanel />);
+      expect(screen.getByTestId('hud-unit-stats-name')).toHaveTextContent('Sloop');
+      expect(screen.getByTestId('hud-unit-stats-faction')).toHaveTextContent('Order of the Kraken');
+      expect(screen.getByTestId('hud-unit-stats-position')).toHaveTextContent('7,12');
+      expect(screen.getByTestId('hud-unit-stats-movement')).toHaveTextContent('3/4');
+    });
+
+    it('updates when the selection changes', () => {
+      useGameStore.getState().setUnits([sampleSloop, sampleSettler]);
+      useGameStore.getState().setSelectedUnit(sampleSloop.id);
+      render(<UnitStatsPanel />);
+      expect(screen.getByTestId('hud-unit-stats-name')).toHaveTextContent('Sloop');
+      act(() => {
+        useGameStore.getState().setSelectedUnit(sampleSettler.id);
+      });
+      expect(screen.getByTestId('hud-unit-stats-name')).toHaveTextContent('Settler');
+      expect(screen.getByTestId('hud-unit-stats-faction')).toHaveTextContent('Bloodborne Legion');
+      expect(screen.getByTestId('hud-unit-stats-movement')).toHaveTextContent('1/1');
+    });
+
+    it('falls back to the raw faction id for non-playable factions', () => {
+      const npc: UnitJSON = {
+        id: 'u-npc',
+        faction: 'rayon-concord',
+        position: { x: 1, y: 1 },
+        type: UnitType.Frigate,
+        movement: 3,
+      };
+      useGameStore.getState().setUnits([npc]);
+      useGameStore.getState().setSelectedUnit(npc.id);
+      render(<UnitStatsPanel />);
+      expect(screen.getByTestId('hud-unit-stats-faction')).toHaveTextContent('rayon-concord');
+    });
+
+    it('disappears when the selection clears', () => {
+      useGameStore.getState().setUnits([sampleSloop]);
+      useGameStore.getState().setSelectedUnit(sampleSloop.id);
+      render(<UnitStatsPanel />);
+      expect(screen.getByTestId('hud-unit-stats')).toBeInTheDocument();
+      act(() => {
+        useGameStore.getState().setSelectedUnit(null);
+      });
+      expect(screen.queryByTestId('hud-unit-stats')).not.toBeInTheDocument();
     });
   });
 

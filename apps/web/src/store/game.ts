@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { GameVersion, TurnPhase } from '@colonize/core';
+import type { GameVersion, TurnPhase, UnitJSON } from '@colonize/core';
 import { CORE_VERSION, TurnPhase as TurnPhaseEnum } from '@colonize/core';
 
 export type PlayableFaction = 'otk' | 'ironclad' | 'phantom' | 'bloodborne';
@@ -29,6 +29,13 @@ export interface GameState {
   faction: PlayableFaction;
   screen: Screen;
   cameraView: CameraView | null;
+  // Plain-data unit roster (UnitJSON, not Unit instances) — zustand
+  // state must be cloneable for devtools / time-travel and not all
+  // class instances survive that round-trip. The roster owner (a
+  // future task) reconstitutes Unit instances on demand for game
+  // logic; renderers and HUD just read the JSON.
+  units: readonly UnitJSON[];
+  selectedUnitId: string | null;
   setCurrentTurn: (turn: number) => void;
   advanceTurn: () => void;
   setPhase: (phase: TurnPhase) => void;
@@ -36,6 +43,8 @@ export interface GameState {
   setScreen: (screen: Screen) => void;
   setCameraView: (view: CameraView) => void;
   clearCameraView: () => void;
+  setUnits: (units: readonly UnitJSON[]) => void;
+  setSelectedUnit: (unitId: string | null) => void;
   reset: () => void;
 }
 
@@ -46,6 +55,8 @@ const initialState = {
   faction: 'otk' as PlayableFaction,
   screen: 'menu' as Screen,
   cameraView: null as CameraView | null,
+  units: [] as readonly UnitJSON[],
+  selectedUnitId: null as string | null,
 } as const;
 
 export const useGameStore = create<GameState>((set) => ({
@@ -57,5 +68,7 @@ export const useGameStore = create<GameState>((set) => ({
   setScreen: (screen) => set({ screen }),
   setCameraView: (view) => set({ cameraView: view }),
   clearCameraView: () => set({ cameraView: null }),
+  setUnits: (units) => set({ units }),
+  setSelectedUnit: (unitId) => set({ selectedUnitId: unitId }),
   reset: () => set({ ...initialState }),
 }));
