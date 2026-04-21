@@ -47,4 +47,19 @@ describe('useGameStore', () => {
     useGameStore.getState().reset();
     expect(useGameStore.getState().faction).toBe('otk');
   });
+
+  it('defaults to the main menu screen', () => {
+    expect(useGameStore.getState().screen).toBe('menu');
+  });
+
+  it('allows switching the active screen', () => {
+    useGameStore.getState().setScreen('faction-select');
+    expect(useGameStore.getState().screen).toBe('faction-select');
+  });
+
+  it('restores the default screen on reset', () => {
+    useGameStore.getState().setScreen('game');
+    useGameStore.getState().reset();
+    expect(useGameStore.getState().screen).toBe('menu');
+  });
 });
