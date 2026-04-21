@@ -319,6 +319,23 @@ gaps.
 
 ---
 
+### Run [2026-04-21 09:04]
+- Task: N/A — cycle skipped before selection
+- Outcome: skipped
+- PR: N/A
+- Test counts: N/A — no validation run
+- Files changed: AGENT-LOG.md (this entry)
+- Regression alert: false
+- Review proposed: false
+- Deploy: n/a
+- Lessons learned:
+  - Step 2 precheck halted the run: `git status --porcelain` reported `M scripts/notify-cycle.sh` — an uncommitted edit in the working tree (adds a PR-body "## Summary" blurb and a condensed "Outcome · Deploy" header line to the ntfy.sh payload). The diff pre-dates this cycle; treating it as in-progress user work per the skill's "never discard dirty tree" contract.
+  - Also cleaned up post-merge: fast-forwarded local main over 8caeead (PR #27 merge — `.github/workflows/deploy.yml` deletion from chore/remove-deploy-workflow). The now-merged feature branch is left in place for the user to delete; `git branch -d` on a branch still holding the HEAD we came from would refuse anyway, and the Step 3 cleanup only runs on clean runs.
+  - Action required: either commit or stash `scripts/notify-cycle.sh` and re-fire `/autonomous-run` (next scheduled fire is top-of-hour via `claude-colonize.timer`). The edit itself looks intentional and mergeable — a short commit on a dedicated branch would unblock the queue.
+- Notes: Eighteenth autonomous-run cycle — **skipped**, not counted toward the 5-success streak. Prior streak still at 3 (TASK-018 → TASK-019 → TASK-020) since the PR #23 review checkpoint; the streak resumes on the next successful cycle without needing to restart.
+
+---
+
 ### Run [2026-04-21 08:10]
 - Task: TASK-020 — Camera controls: pan / zoom / mobile touch
 - Outcome: success
