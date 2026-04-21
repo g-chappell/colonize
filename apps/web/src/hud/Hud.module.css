@@ -20,6 +20,13 @@
   align-items: flex-start;
 }
 
+.topCenter {
+  position: absolute;
+  top: 0.75rem;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
 .topRight {
   position: absolute;
   top: 0.75rem;
@@ -104,6 +111,32 @@
   cursor: pointer;
 }
 
-.endTurn:hover {
+.endTurn:hover:not(:disabled) {
   background: #e6c477;
+}
+
+.endTurn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.aiThinking {
+  padding: 0.3rem 0.9rem;
+  background: rgba(12, 30, 43, 0.9);
+  border: 1px solid #6a4fa0;
+  color: #c6a3ff;
+  font-size: 0.85rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  animation: aiPulse 1.2s ease-in-out infinite;
+}
+
+@keyframes aiPulse {
+  0%,
+  100% {
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 1;
+  }
 }

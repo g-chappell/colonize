@@ -1,12 +1,22 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { TurnPhase } from '@colonize/core';
 import { bus } from '../bus';
+import { turnController } from '../game/turn-controller';
 import { useGameStore } from '../store/game';
-import { EndTurnButton, FactionChip, Hud, ResourceBar, YearDisplay } from './Hud';
+import {
+  AiThinkingIndicator,
+  EndTurnButton,
+  FactionChip,
+  Hud,
+  ResourceBar,
+  YearDisplay,
+} from './Hud';
 
 describe('Hud', () => {
   beforeEach(() => {
     useGameStore.getState().reset();
+    turnController.reset();
   });
 
   afterEach(() => {
@@ -60,20 +70,62 @@ describe('Hud', () => {
     });
   });
 
+  describe('AiThinkingIndicator', () => {
+    it('is hidden while the player acts', () => {
+      render(<AiThinkingIndicator />);
+      expect(screen.queryByTestId('hud-ai-thinking')).not.toBeInTheDocument();
+    });
+
+    it('is visible during the AI phase', () => {
+      useGameStore.getState().setPhase(TurnPhase.AI);
+      render(<AiThinkingIndicator />);
+      const indicator = screen.getByTestId('hud-ai-thinking');
+      expect(indicator).toHaveTextContent(/ai thinking/i);
+      expect(indicator).toHaveAttribute('role', 'status');
+    });
+
+    it('is hidden once phase returns to player-action', () => {
+      useGameStore.getState().setPhase(TurnPhase.AI);
+      render(<AiThinkingIndicator />);
+      expect(screen.getByTestId('hud-ai-thinking')).toBeInTheDocument();
+      act(() => {
+        useGameStore.getState().setPhase(TurnPhase.PlayerAction);
+      });
+      expect(screen.queryByTestId('hud-ai-thinking')).not.toBeInTheDocument();
+    });
+  });
+
   describe('EndTurnButton', () => {
-    it('advances the store turn when clicked', () => {
+    it('enters the AI phase synchronously when clicked', async () => {
       render(<EndTurnButton />);
       fireEvent.click(screen.getByTestId('hud-end-turn'));
+      expect(useGameStore.getState().phase).toBe(TurnPhase.AI);
+      await waitFor(() => expect(useGameStore.getState().phase).toBe(TurnPhase.PlayerAction));
+    });
+
+    it('lands back on player-action with an incremented turn', async () => {
+      render(<EndTurnButton />);
+      fireEvent.click(screen.getByTestId('hud-end-turn'));
+      await waitFor(() => {
+        expect(useGameStore.getState().phase).toBe(TurnPhase.PlayerAction);
+      });
       expect(useGameStore.getState().currentTurn).toBe(1);
     });
 
-    it('emits turn:advanced with the new turn', () => {
+    it('is disabled while the AI is resolving its phase', () => {
+      useGameStore.getState().setPhase(TurnPhase.AI);
+      render(<EndTurnButton />);
+      expect(screen.getByTestId('hud-end-turn')).toBeDisabled();
+    });
+
+    it('emits turn:advanced with the new turn after a full cycle', async () => {
       const received: number[] = [];
       bus.on('turn:advanced', (payload) => received.push(payload.turn));
       render(<EndTurnButton />);
       fireEvent.click(screen.getByTestId('hud-end-turn'));
+      await waitFor(() => expect(received).toEqual([1]));
       fireEvent.click(screen.getByTestId('hud-end-turn'));
-      expect(received).toEqual([1, 2]);
+      await waitFor(() => expect(received).toEqual([1, 2]));
     });
   });
 });

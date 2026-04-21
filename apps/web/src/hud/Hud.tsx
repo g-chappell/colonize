@@ -1,4 +1,5 @@
-import { bus } from '../bus';
+import { TurnPhase } from '@colonize/core';
+import { turnController } from '../game/turn-controller';
 import { FACTION_NAMES, useGameStore } from '../store/game';
 import styles from './Hud.module.css';
 
@@ -16,6 +17,9 @@ export function Hud(): JSX.Element {
       <div className={styles.topLeft}>
         <YearDisplay />
         <FactionChip />
+      </div>
+      <div className={styles.topCenter}>
+        <AiThinkingIndicator />
       </div>
       <div className={styles.topRight}>
         <ResourceBar />
@@ -59,17 +63,28 @@ export function ResourceBar(): JSX.Element {
   );
 }
 
+export function AiThinkingIndicator(): JSX.Element | null {
+  const phase = useGameStore((s) => s.phase);
+  if (phase !== TurnPhase.AI) return null;
+  return (
+    <div className={styles.aiThinking} data-testid="hud-ai-thinking" role="status">
+      AI thinking…
+    </div>
+  );
+}
+
 export function EndTurnButton(): JSX.Element {
-  const advanceTurn = useGameStore((s) => s.advanceTurn);
+  const phase = useGameStore((s) => s.phase);
+  const disabled = phase !== TurnPhase.PlayerAction;
   const handleClick = (): void => {
-    advanceTurn();
-    bus.emit('turn:advanced', { turn: useGameStore.getState().currentTurn });
+    turnController.endPlayerTurn();
   };
   return (
     <button
       type="button"
       className={styles.endTurn}
       onClick={handleClick}
+      disabled={disabled}
       data-testid="hud-end-turn"
     >
       End Turn

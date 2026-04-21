@@ -9,8 +9,8 @@ _Created: 2026-04-20_
 ## Summary
 
 - **Total tasks:** 90
-- **Done:** 21 (23%)
-- **Ready:** 69
+- **Done:** 22 (24%)
+- **Ready:** 68
 - **In progress:** 0
 - **Blocked:** 0
 
@@ -247,7 +247,7 @@ rules including wind, currents, and Red Tide impassability.
     > WorldEvents → End. Hooks for phase-enter/exit. Deterministic
     > given same state + inputs. Unit tests for phase
     > transitions.
-  - :black_circle: **TASK-025** — End-turn button wiring + year display  `high` `small` _(web, core)_  
+  - :white_check_mark: **TASK-025** — End-turn button wiring + year display  `high` `small` _(web, core)_ · [PR](https://github.com/g-chappell/colonize/pull/35)  
     _depends on: TASK-012, TASK-024_
     > HUD end-turn button dispatches to TurnManager. Year display
     > shows current NW year (start 2191). Show "AI thinking…"

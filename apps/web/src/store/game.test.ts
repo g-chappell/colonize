@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { CORE_VERSION } from '@colonize/core';
+import { CORE_VERSION, TurnPhase } from '@colonize/core';
 import { useGameStore } from './game';
 
 describe('useGameStore', () => {
@@ -86,5 +86,20 @@ describe('useGameStore', () => {
     useGameStore.getState().setCameraView({ scrollX: 50, scrollY: 60, zoom: 2 });
     useGameStore.getState().reset();
     expect(useGameStore.getState().cameraView).toBeNull();
+  });
+
+  it('starts on the PlayerAction phase', () => {
+    expect(useGameStore.getState().phase).toBe(TurnPhase.PlayerAction);
+  });
+
+  it('stores the current turn phase', () => {
+    useGameStore.getState().setPhase(TurnPhase.AI);
+    expect(useGameStore.getState().phase).toBe(TurnPhase.AI);
+  });
+
+  it('restores the default phase on reset', () => {
+    useGameStore.getState().setPhase(TurnPhase.WorldEvents);
+    useGameStore.getState().reset();
+    expect(useGameStore.getState().phase).toBe(TurnPhase.PlayerAction);
   });
 });

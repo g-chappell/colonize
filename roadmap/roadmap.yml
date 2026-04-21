@@ -539,7 +539,7 @@ epics:
             attempt_count: 1
           - id: TASK-025
             title: "End-turn button wiring + year display"
-            status: ready
+            status: done
             priority: high
             complexity: small
             workspaces: [web, core]
@@ -548,11 +548,11 @@ epics:
               shows current NW year (start 2191). Show "AI thinking…"
               indicator during AI phases.
             depends_on: [TASK-012, TASK-024]
-            pr: null
-            completed: null
+            pr: "https://github.com/g-chappell/colonize/pull/35"
+            completed: "2026-04-21"
             blocked_reason: null
-            last_attempted: null
-            attempt_count: 0
+            last_attempted: "2026-04-21T12:07:25Z"
+            attempt_count: 1
       - id: STORY-14
         title: "Unit entities & stats"
         description: |
