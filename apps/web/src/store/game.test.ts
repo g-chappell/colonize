@@ -32,4 +32,19 @@ describe('useGameStore', () => {
     expect(useGameStore.getState().currentTurn).toBe(0);
     expect(useGameStore.getState().gameVersion).toBe(CORE_VERSION);
   });
+
+  it('defaults to the Order of the Kraken', () => {
+    expect(useGameStore.getState().faction).toBe('otk');
+  });
+
+  it('allows switching the active faction', () => {
+    useGameStore.getState().setFaction('ironclad');
+    expect(useGameStore.getState().faction).toBe('ironclad');
+  });
+
+  it('restores the default faction on reset', () => {
+    useGameStore.getState().setFaction('phantom');
+    useGameStore.getState().reset();
+    expect(useGameStore.getState().faction).toBe('otk');
+  });
 });

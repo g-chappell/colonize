@@ -1,0 +1,109 @@
+.hud {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  font-family: 'Georgia', 'Times New Roman', serif;
+  color: #e8d8b8;
+}
+
+.hud > * {
+  pointer-events: auto;
+}
+
+.topLeft {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: flex-start;
+}
+
+.topRight {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+}
+
+.bottomRight {
+  position: absolute;
+  bottom: 0.75rem;
+  right: 0.75rem;
+}
+
+.year {
+  display: inline-flex;
+  gap: 0.4rem;
+  padding: 0.25rem 0.75rem;
+  background: rgba(12, 30, 43, 0.85);
+  border: 1px solid #2e2a26;
+  color: #d6b466;
+  font-size: 0.9rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.yearLabel {
+  opacity: 0.6;
+}
+
+.yearValue {
+  font-weight: bold;
+}
+
+.factionChip {
+  padding: 0.2rem 0.75rem;
+  background: rgba(12, 30, 43, 0.85);
+  border: 1px solid #d6b466;
+  color: #d6b466;
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.resourceBar {
+  display: flex;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0.25rem 0.5rem;
+  list-style: none;
+  background: rgba(12, 30, 43, 0.85);
+  border: 1px solid #2e2a26;
+}
+
+.resource {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 3rem;
+}
+
+.resourceLabel {
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  opacity: 0.65;
+}
+
+.resourceValue {
+  color: #d6b466;
+  font-size: 1.1rem;
+}
+
+.endTurn {
+  padding: 0.5rem 1.25rem;
+  background: #d6b466;
+  border: 1px solid #0c1e2b;
+  color: #0c1e2b;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: bold;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.endTurn:hover {
+  background: #e6c477;
+}
