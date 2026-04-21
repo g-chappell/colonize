@@ -10,8 +10,8 @@ _Created: 2026-04-20_
 
 - **Total tasks:** 90
 - **Done:** 13 (14%)
-- **Ready:** 77
-- **In progress:** 0
+- **Ready:** 76
+- **In progress:** 1
 - **Blocked:** 0
 
 ---
@@ -140,7 +140,7 @@ Phaser canvas with a shared event bus.
     > React page with New Game / Continue / Settings / Codex /
     > Quit buttons. Style with OTK heraldry (paired dragons, hic
     > sunt dracones motto). Wire New Game to go to faction select.
-  - :black_circle: **TASK-014** — Faction select screen  `high` `medium` _(web, content)_  
+  - :large_orange_diamond: **TASK-014** — Faction select screen  `high` `medium` _(web, content)_  
     _depends on: TASK-013_
     > Four-panel select: OTK / Ironclad / Phantom / Bloodborne.
     > Each panel shows faction crest, 2-sentence lore blurb, and

@@ -295,7 +295,7 @@ epics:
             attempt_count: 1
           - id: TASK-014
             title: "Faction select screen"
-            status: ready
+            status: in-progress
             priority: high
             complexity: medium
             workspaces: [web, content]
@@ -308,8 +308,8 @@ epics:
             pr: null
             completed: null
             blocked_reason: null
-            last_attempted: null
-            attempt_count: 0
+            last_attempted: "2026-04-21T12:00:00Z"
+            attempt_count: 1
       - id: STORY-08
         title: "Audio hooks"
         description: |
