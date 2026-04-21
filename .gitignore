@@ -52,6 +52,11 @@ Thumbs.db
 
 # Claude Code state
 .claude/.setup-progress
+# Per-machine Bash permission allow-list — mutated by Claude Code on every
+# interactive session as new commands are approved. Untracked state here
+# fails `/autonomous-run`'s strict clean-tree precheck when the scheduled
+# agent runs as a different OS user (no personal core.excludesFile).
+.claude/settings.local.json
 
 # Approvals (history.md, PENDING.md, and archived approvals) ARE committed
 # per the branch-as-payload / auditable-approvals design.
