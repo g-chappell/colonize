@@ -640,7 +640,7 @@ epics:
         tasks:
           - id: TASK-030
             title: "Unit sprite rendering + click-to-select"
-            status: in-progress
+            status: done
             priority: high
             complexity: medium
             workspaces: [web, core]
@@ -649,8 +649,8 @@ epics:
               event via bus); selection highlights sprite + shows stats
               panel in HUD.
             depends_on: [TASK-019, TASK-026]
-            pr: null
-            completed: null
+            pr: "https://github.com/g-chappell/colonize/pull/40"
+            completed: "2026-04-21"
             blocked_reason: null
             last_attempted: "2026-04-21T00:00:00.000Z"
             attempt_count: 1
