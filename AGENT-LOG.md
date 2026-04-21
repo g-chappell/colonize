@@ -225,7 +225,7 @@ gaps.
 - Files changed: apps/web/src/hud/Hud.tsx (new), apps/web/src/hud/Hud.module.css (new), apps/web/src/hud/Hud.test.tsx (new), apps/web/src/store/game.ts, apps/web/src/store/game.test.ts, apps/web/src/App.tsx, apps/web/src/App.test.tsx, apps/web/src/App.css, CLAUDE.md, roadmap/roadmap.yml, ROADMAP.md
 - Regression alert: false (web 20 → 32; all other counts steady)
 - Review proposed: false (2 consecutive successes since PR #17 review checkpoint; threshold = 5)
-- Deploy: pending
+- Deploy: success — colonize:latest rebuilt (manifest sha256:f54212936827), docker-app-1 recreated rolling. Healthcheck 200 on attempt 2 at http://localhost:3000/health (`{"ok":true,"version":"0.0.0","uptime":7.063}`); `/` serves apps/web/dist (HTTP 200). Build artefacts sizes stable (web bundle 148.85 kB main + 1,483.58 kB phaser).
 - Lessons learned:
   - Vite supports `*.module.css` out of the box and `vite/client` (already in `apps/web/tsconfig.json` types) declares the ambient import — no extra tooling, no `.d.ts` shim, no devDep bump. Picking CSS Modules over Tailwind for the HUD kept the PR surface-area at just source files.
   - Under vitest `css: false` (default), CSS Module imports return a Proxy that resolves any accessed key to a stub — tests see `styles.hud` as undefined/ignored className. Identifying HUD elements via `data-testid` rather than class names makes tests robust to that and to future CSS-Module hashing in production.
