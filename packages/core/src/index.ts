@@ -20,3 +20,5 @@ export {
   FactionVisibility,
 } from './visibility/index.js';
 export type { VisibilityJSON } from './visibility/index.js';
+export { TurnPhase, ALL_TURN_PHASES, isTurnPhase, TurnManager } from './turn/index.js';
+export type { TurnHook, TurnHookContext, TurnHookEvent, TurnStateJSON } from './turn/index.js';
