@@ -10,8 +10,8 @@ _Created: 2026-04-20_
 
 - **Total tasks:** 90
 - **Done:** 12 (13%)
-- **Ready:** 78
-- **In progress:** 0
+- **Ready:** 77
+- **In progress:** 1
 - **Blocked:** 0
 
 ---
@@ -135,7 +135,7 @@ Phaser canvas with a shared event bus.
   > Top-level app flow between screens: Splash → Main Menu → Faction
   > Select → In-Game → Pause overlay. Implemented as Phaser scene
   > transitions for canvas states + React routes for menu states.
-  - :black_circle: **TASK-013** — Main menu screen (React)  `high` `small` _(web)_  
+  - :large_orange_diamond: **TASK-013** — Main menu screen (React)  `high` `small` _(web)_  
     _depends on: TASK-012_
     > React page with New Game / Continue / Settings / Codex /
     > Quit buttons. Style with OTK heraldry (paired dragons, hic
