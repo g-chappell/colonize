@@ -215,7 +215,7 @@ epics:
             attempt_count: 1
           - id: TASK-010
             title: "Load placeholder atlas in Phaser boot scene"
-            status: ready
+            status: in-progress
             priority: high
             complexity: small
             workspaces: [web, content]
@@ -227,8 +227,8 @@ epics:
             pr: null
             completed: null
             blocked_reason: null
-            last_attempted: null
-            attempt_count: 0
+            last_attempted: "2026-04-21T00:00:00Z"
+            attempt_count: 1
       - id: STORY-06
         title: "HUD chrome"
         description: |

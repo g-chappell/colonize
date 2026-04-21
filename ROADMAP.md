@@ -10,8 +10,8 @@ _Created: 2026-04-20_
 
 - **Total tasks:** 90
 - **Done:** 9 (10%)
-- **Ready:** 81
-- **In progress:** 0
+- **Ready:** 80
+- **In progress:** 1
 - **Blocked:** 0
 
 ---
@@ -108,7 +108,7 @@ Phaser canvas with a shared event bus.
     > packages/content/scripts/pack-atlas.mjs (wraps
     > free-tex-packer or similar) producing spritesheet.png +
     > spritesheet.json. Document in packages/content/README.md.
-  - :black_circle: **TASK-010** — Load placeholder atlas in Phaser boot scene  `high` `small` _(web, content)_  
+  - :large_orange_diamond: **TASK-010** — Load placeholder atlas in Phaser boot scene  `high` `small` _(web, content)_  
     _depends on: TASK-002, TASK-009_
     > Add Phaser 3 to apps/web. Create a BootScene that loads the
     > packaged atlas + shows a loading bar. On load complete,
