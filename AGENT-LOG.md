@@ -197,3 +197,20 @@ gaps.
   - Placeholder sprite generator uses `pngjs` directly (added to content devDeps — was transitively available via free-tex-packer-core, but making it explicit keeps the script's deps honest) and pulls colours from the OTK palette so the placeholder atlas already respects tonal registers.
   - Vite build warns on the Phaser chunk (~1.48 MB uncompressed / 340 kB gzip). Acceptable for MVP — code-splitting is a later concern and not in task scope.
 - Notes: Tenth autonomous-run cycle. Fifth consecutive success since the TASK-005 review checkpoint (TASK-006 → TASK-007 → TASK-008 → TASK-009 → TASK-010). Streak hits successThreshold=5 — /autonomous-review should fire in Step 15 against this log + main.
+
+---
+
+### Run [2026-04-21 01:10]
+- Task: TASK-011 — Create event bus in apps/web/src/bus.ts
+- Outcome: success
+- PR: https://github.com/g-chappell/colonize/pull/18 (auto-merge enabled)
+- Test counts: server=8, web=20 (was 11 — added 9 bus tests), core=1, shared=2, content=9
+- Files changed: apps/web/src/bus.ts (new), apps/web/src/bus.test.ts (new), apps/web/package.json, apps/web/tsconfig.json, packages/shared/src/index.ts, package-lock.json, roadmap/roadmap.yml, ROADMAP.md
+- Regression alert: false (web 11 → 20; all other counts steady)
+- Review proposed: false (1 consecutive success since PR #17 review checkpoint; threshold = 5)
+- Deploy: pending (will be filled by Step 14)
+- Lessons learned:
+  - `Record<string, unknown>` is too strict as a generic constraint for event-map types: an `interface { 'turn:advanced': { turn: number } }` is NOT assignable to it under `strict` because it lacks an index signature. Using `extends object` for the bus generic and removing the `EventMap` alias entirely keeps the typing end-to-end ergonomic for interface-shaped event maps (which are what GameEvents will be as feature tasks extend it via declaration merging).
+  - ESLint `@typescript-eslint/no-empty-object-type` is on via `recommended`, so `interface GameEvents {}` would fail lint. Seeded the contract with one real starter event (`turn:advanced` — naturally needed by TASK-012 HUD + TASK-025 end-turn wiring) rather than disabling the rule; keeps the shared-package API tested end-to-end from day one.
+  - `apps/web` wiring a new workspace dep (`@colonize/shared`) requires three co-ordinated touches: dependency in `package.json`, TS project reference in `tsconfig.json`, and running `npm install` at repo root to materialise the `node_modules/@colonize/shared` symlink. All three were needed this run — future workspace-linking tasks should expect the same triad.
+- Notes: Eleventh autonomous-run cycle. First success since PR #17 merged the prior review batch (streak reset). Four more consecutive successes to re-hit successThreshold=5.
