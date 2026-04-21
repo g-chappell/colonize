@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { readFileSync } from 'node:fs';
+import { readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { ALL_TILE_TYPES, TileType } from '@colonize/core';
 
@@ -13,22 +13,27 @@ import {
   frameForTile,
 } from './tile-atlas';
 
-// The packed placeholder atlas is the ground truth for which frames
-// actually exist on disk. Load it once and assert every frame we
-// reference in tile-atlas.ts is present.
-const spritesheetPath = resolve(
+// The committed atlas sources in packages/content/atlas-src/core/ are
+// the ground truth for which frames the packer can emit. Reading them
+// directly (instead of the packed output) keeps the test stable in CI,
+// where the packed atlas is a gitignored build artefact that may not
+// have been produced before `npm test` runs.
+const atlasSrcDir = resolve(
   __dirname,
   '..',
   '..',
-  'public',
-  'atlas',
+  '..',
+  '..',
+  'packages',
+  'content',
+  'atlas-src',
   'core',
-  'spritesheet.json',
 );
-const spritesheet = JSON.parse(readFileSync(spritesheetPath, 'utf8')) as {
-  frames: Record<string, unknown>;
-};
-const packedFrames = new Set(Object.keys(spritesheet.frames));
+const atlasSrcFrames = new Set(
+  readdirSync(atlasSrcDir)
+    .filter((f) => f.toLowerCase().endsWith('.png'))
+    .map((f) => f.replace(/\.png$/i, '')),
+);
 
 describe('tile atlas mapping', () => {
   it('covers every TileType with a frame name', () => {
@@ -43,17 +48,23 @@ describe('tile atlas mapping', () => {
     expect(frameForTile(TileType.FloatingCity)).toBe('tile_floating_city');
   });
 
-  it('every tile frame resolves to an entry in the packed atlas', () => {
+  it('every tile frame resolves to a committed atlas source PNG', () => {
     for (const type of ALL_TILE_TYPES) {
       const frame = TILE_FRAMES[type];
-      expect(packedFrames.has(frame), `atlas missing frame ${frame} for ${type}`).toBe(true);
+      expect(
+        atlasSrcFrames.has(frame),
+        `no committed atlas-src PNG for frame ${frame} (TileType=${type})`,
+      ).toBe(true);
     }
   });
 
-  it('ocean animation references at least two frames, all present in the atlas', () => {
+  it('ocean animation references at least two frames, all backed by atlas sources', () => {
     expect(OCEAN_ANIMATION_FRAMES.length).toBeGreaterThanOrEqual(2);
     for (const f of OCEAN_ANIMATION_FRAMES) {
-      expect(packedFrames.has(f), `atlas missing ocean animation frame ${f}`).toBe(true);
+      expect(
+        atlasSrcFrames.has(f),
+        `no committed atlas-src PNG for ocean animation frame ${f}`,
+      ).toBe(true);
     }
   });
 
