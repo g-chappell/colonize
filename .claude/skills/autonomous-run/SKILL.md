@@ -129,7 +129,16 @@ Co-Authored-By: Claude <noreply@anthropic.com>"
 
 ## Step 8 — LOCAL VALIDATION
 
-Run every workspace command from `project.json.commands`:
+Before running validation, apply Prettier to the files you edited. New
+files and edits that cross the print-width boundary reliably trip
+`format:check` on the first pass (seen across TASK-006, TASK-007, and
+TASK-010), costing a fix-cycle for a mechanical reformatting:
+
+```bash
+npx prettier --write <every file you touched in Step 7>
+```
+
+Then run every workspace command from `project.json.commands`:
 
 ```bash
 commands.typecheck   # must pass
