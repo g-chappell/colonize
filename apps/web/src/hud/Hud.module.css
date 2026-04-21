@@ -31,6 +31,39 @@
   position: absolute;
   top: 0.75rem;
   right: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: flex-end;
+}
+
+.menuButton {
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
+  background: rgba(12, 30, 43, 0.85);
+  border: 1px solid #d6b466;
+  color: #d6b466;
+  font-family: inherit;
+  font-size: 1.15rem;
+  line-height: 1;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    background 120ms ease,
+    color 120ms ease;
+}
+
+.menuButton:hover {
+  background: #d6b466;
+  color: #0c1e2b;
+}
+
+.menuButton:focus-visible {
+  outline: 2px solid #e6c477;
+  outline-offset: 2px;
 }
 
 .bottomLeft {

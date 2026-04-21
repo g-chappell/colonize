@@ -11,7 +11,20 @@ export const FACTION_NAMES: Record<PlayableFaction, string> = {
   bloodborne: 'Bloodborne Legion',
 };
 
-export type Screen = 'menu' | 'faction-select' | 'game';
+export type Screen = 'menu' | 'faction-select' | 'game' | 'pause';
+
+// User-editable game settings that survive pause/resume. Audio volumes
+// mirror the `AudioState` defaults in apps/web/src/game/audio-state.ts —
+// kept in sync here so the pause-overlay sliders have somewhere to write
+// that is independent of the Phaser audio manager (which lives on the
+// game registry and is not accessible from React tests).
+export type AudioBus = 'sfx' | 'bgm';
+
+export interface SettingsState {
+  readonly sfxVolume: number;
+  readonly bgmVolume: number;
+  readonly muted: boolean;
+}
 
 // Persisted across scene re-entries within a single game session so
 // the player returns to wherever they were last looking. Reset clears
@@ -53,6 +66,7 @@ export interface GameState {
   units: readonly UnitJSON[];
   selectedUnitId: string | null;
   proposedMove: ProposedMove | null;
+  settings: SettingsState;
   setCurrentTurn: (turn: number) => void;
   advanceTurn: () => void;
   setPhase: (phase: TurnPhase) => void;
@@ -67,7 +81,25 @@ export interface GameState {
   // spent movement cost. Emitted once the sprite tween finishes so the
   // store snapshot stays in sync with the on-screen visual.
   commitMove: (unitId: string, position: Coord, movementCost: number) => void;
+  setAudioVolume: (bus: AudioBus, volume: number) => void;
+  setAudioMuted: (muted: boolean) => void;
   reset: () => void;
+}
+
+// Mirrors `DEFAULTS` in apps/web/src/game/audio-state.ts. Duplicated
+// rather than imported so the store stays importable from test files
+// that must not pull Phaser into their module graph.
+const DEFAULT_SETTINGS: SettingsState = {
+  sfxVolume: 0.8,
+  bgmVolume: 0.5,
+  muted: false,
+};
+
+function clampVolume(v: number): number {
+  if (!Number.isFinite(v)) return 0;
+  if (v < 0) return 0;
+  if (v > 1) return 1;
+  return v;
 }
 
 const initialState = {
@@ -80,6 +112,7 @@ const initialState = {
   units: [] as readonly UnitJSON[],
   selectedUnitId: null as string | null,
   proposedMove: null as ProposedMove | null,
+  settings: DEFAULT_SETTINGS,
 } as const;
 
 export const useGameStore = create<GameState>((set) => ({
@@ -114,5 +147,13 @@ export const useGameStore = create<GameState>((set) => ({
       ),
       proposedMove: null,
     })),
+  setAudioVolume: (bus, volume) =>
+    set((state) => ({
+      settings:
+        bus === 'sfx'
+          ? { ...state.settings, sfxVolume: clampVolume(volume) }
+          : { ...state.settings, bgmVolume: clampVolume(volume) },
+    })),
+  setAudioMuted: (muted) => set((state) => ({ settings: { ...state.settings, muted } })),
   reset: () => set({ ...initialState }),
 }));

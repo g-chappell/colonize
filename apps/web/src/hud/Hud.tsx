@@ -46,6 +46,7 @@ export function Hud(): JSX.Element {
         <AiThinkingIndicator />
       </div>
       <div className={styles.topRight}>
+        <MenuButton />
         <ResourceBar />
       </div>
       <div className={styles.bottomLeft}>
@@ -55,6 +56,21 @@ export function Hud(): JSX.Element {
         <EndTurnButton />
       </div>
     </div>
+  );
+}
+
+export function MenuButton(): JSX.Element {
+  const setScreen = useGameStore((s) => s.setScreen);
+  return (
+    <button
+      type="button"
+      className={styles.menuButton}
+      onClick={() => setScreen('pause')}
+      aria-label="Open pause menu"
+      data-testid="hud-menu-button"
+    >
+      ☰
+    </button>
   );
 }
 

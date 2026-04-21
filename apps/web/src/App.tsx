@@ -1,12 +1,34 @@
+import { useEffect } from 'react';
 import './App.css';
 import { GameCanvas } from './GameCanvas';
 import { Hud } from './hud/Hud';
 import { MainMenu } from './menu/MainMenu';
 import { FactionSelect } from './menu/FactionSelect';
+import { PauseOverlay } from './pause/PauseOverlay';
 import { useGameStore } from './store/game';
 
 export function App() {
   const screen = useGameStore((s) => s.screen);
+  const setScreen = useGameStore((s) => s.setScreen);
+
+  // Global Esc-key shortcut: toggles between 'game' and 'pause'. Other
+  // screens (menu, faction-select) ignore Esc — they have their own
+  // navigation. Attached at the document level so the key works even
+  // when focus is on the Phaser canvas.
+  useEffect(() => {
+    const handler = (event: KeyboardEvent): void => {
+      if (event.key !== 'Escape') return;
+      if (screen === 'game') {
+        event.preventDefault();
+        setScreen('pause');
+      } else if (screen === 'pause') {
+        event.preventDefault();
+        setScreen('game');
+      }
+    };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  }, [screen, setScreen]);
 
   if (screen === 'menu') {
     return <MainMenu />;
@@ -24,6 +46,7 @@ export function App() {
       <div className="game-stage">
         <GameCanvas />
         <Hud />
+        {screen === 'pause' && <PauseOverlay />}
       </div>
     </main>
   );
