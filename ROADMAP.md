@@ -9,8 +9,8 @@ _Created: 2026-04-20_
 ## Summary
 
 - **Total tasks:** 90
-- **Done:** 14 (16%)
-- **Ready:** 76
+- **Done:** 15 (17%)
+- **Ready:** 75
 - **In progress:** 0
 - **Blocked:** 0
 
@@ -173,7 +173,7 @@ touch. All tiles fixed at map-gen; no island-emergence.
 - **STORY-09** — Map data model
   > Framework-free representation of the map in packages/core:
   > tile types, coords, neighbours. Serializable.
-  - :black_circle: **TASK-017** — Tile type enum + Map model in packages/core  `high` `medium` _(core)_  
+  - :white_check_mark: **TASK-017** — Tile type enum + Map model in packages/core  `high` `medium` _(core)_ · [PR](https://github.com/g-chappell/colonize/pull/22)  
     _depends on: TASK-004_
     > Define TileType (Ocean, RayonPassage, Island, FloatingCity,
     > RedTide, FataMorgana). Map class with get(x,y), neighbours,
