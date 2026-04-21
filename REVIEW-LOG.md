@@ -35,3 +35,20 @@ gap-free.
 - PR: https://github.com/g-chappell/colonize/pull/8
 - Outcome: opened
 - Files touched: CLAUDE.md (Tier 3 — Architecture notes + new "Scaffolding hygiene" section)
+
+---
+
+## Review [2026-04-21T00:37Z] — after TASK-006 through TASK-010
+- Success streak: 5
+- Patterns identified: 4
+- Proposals drafted: 4
+- Proposals de-duplicated: 4 (all novel vs CLAUDE.md + approvals/history.md + last 5 review PRs, Jaro-Winkler threshold 0.85)
+- Refinements committed: 4
+- PR: https://github.com/g-chappell/colonize/pull/17
+- Outcome: opened
+- Files touched: CLAUDE.md (Tier 3 — Testing patterns + Architecture notes), .claude/skills/autonomous-run/SKILL.md (Steps 8, 10, 12)
+- Refinements:
+  1. dae9f62 — codify jsdom guard for browser-only libraries (Phaser/canvas → dynamic import + getContext stub)
+  2. 1caef8a — codify asset-pipeline source/packed/served triad
+  3. 5827d01 — defer AGENT-LOG push to main until feature PR merges (fixes feature-PR BEHIND race — PR #9 covered only the review-PR variant)
+  4. 849db43 — prettier --write edited files before local validation (TASK-006/007/010 recurrence)
