@@ -1,6 +1,6 @@
 import { create } from 'zustand';
-import type { GameVersion } from '@colonize/core';
-import { CORE_VERSION } from '@colonize/core';
+import type { GameVersion, TurnPhase } from '@colonize/core';
+import { CORE_VERSION, TurnPhase as TurnPhaseEnum } from '@colonize/core';
 
 export type PlayableFaction = 'otk' | 'ironclad' | 'phantom' | 'bloodborne';
 
@@ -25,11 +25,13 @@ export interface CameraView {
 export interface GameState {
   gameVersion: GameVersion;
   currentTurn: number;
+  phase: TurnPhase;
   faction: PlayableFaction;
   screen: Screen;
   cameraView: CameraView | null;
   setCurrentTurn: (turn: number) => void;
   advanceTurn: () => void;
+  setPhase: (phase: TurnPhase) => void;
   setFaction: (faction: PlayableFaction) => void;
   setScreen: (screen: Screen) => void;
   setCameraView: (view: CameraView) => void;
@@ -40,6 +42,7 @@ export interface GameState {
 const initialState = {
   gameVersion: CORE_VERSION,
   currentTurn: 0,
+  phase: TurnPhaseEnum.PlayerAction as TurnPhase,
   faction: 'otk' as PlayableFaction,
   screen: 'menu' as Screen,
   cameraView: null as CameraView | null,
@@ -49,6 +52,7 @@ export const useGameStore = create<GameState>((set) => ({
   ...initialState,
   setCurrentTurn: (turn) => set({ currentTurn: turn }),
   advanceTurn: () => set((state) => ({ currentTurn: state.currentTurn + 1 })),
+  setPhase: (phase) => set({ phase }),
   setFaction: (faction) => set({ faction }),
   setScreen: (screen) => set({ screen }),
   setCameraView: (view) => set({ cameraView: view }),
