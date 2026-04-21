@@ -35,8 +35,16 @@ export function createGame({ parent, width = 960, height = 540 }: CreateGameOpti
 export function startGameScene(
   game: Phaser.Game,
   map: GameMap,
-  cameraFocus?: GameSceneInitData['cameraFocus'],
+  options: {
+    cameraFocus?: GameSceneInitData['cameraFocus'];
+    visibility?: GameSceneInitData['visibility'];
+  } = {},
 ): void {
-  const data: GameSceneInitData = cameraFocus ? { map, cameraFocus } : { map };
-  game.scene.start(SCENE_KEYS.game, data);
+  // Only attach optional fields when explicitly provided — TS strict
+  // mode's `exactOptionalPropertyTypes` forbids writing `undefined`
+  // into an optional property.
+  const data: GameSceneInitData = { map };
+  const withFocus = options.cameraFocus ? { ...data, cameraFocus: options.cameraFocus } : data;
+  const final = options.visibility ? { ...withFocus, visibility: options.visibility } : withFocus;
+  game.scene.start(SCENE_KEYS.game, final);
 }
