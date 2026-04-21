@@ -336,7 +336,7 @@ epics:
             attempt_count: 1
           - id: TASK-016
             title: "Pause overlay (React) + resume"
-            status: ready
+            status: in-progress
             priority: med
             complexity: small
             workspaces: [web]
@@ -348,8 +348,8 @@ epics:
             pr: null
             completed: null
             blocked_reason: null
-            last_attempted: null
-            attempt_count: 0
+            last_attempted: "2026-04-21T17:15:00Z"
+            attempt_count: 1
 
   - id: EPIC-03
     title: "World & map"
