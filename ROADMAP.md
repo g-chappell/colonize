@@ -9,8 +9,8 @@ _Created: 2026-04-20_
 ## Summary
 
 - **Total tasks:** 90
-- **Done:** 15 (17%)
-- **Ready:** 75
+- **Done:** 16 (18%)
+- **Ready:** 74
 - **In progress:** 0
 - **Blocked:** 0
 
@@ -179,7 +179,7 @@ touch. All tiles fixed at map-gen; no island-emergence.
     > RedTide, FataMorgana). Map class with get(x,y), neighbours,
     > toJSON/fromJSON. Unit tests for coord math and
     > serialization.
-  - :black_circle: **TASK-018** — Procedural map generator  `high` `large` _(core)_  
+  - :white_check_mark: **TASK-018** — Procedural map generator  `high` `large` _(core)_ · [PR](https://github.com/g-chappell/colonize/pull/24)  
     _depends on: TASK-017_
     > Seedable generator: places a central Rayon Passage corridor
     > with 5–8 floating-city nodes, scatters 8–15 islands of
