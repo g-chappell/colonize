@@ -703,7 +703,7 @@ epics:
             attempt_count: 1
           - id: TASK-033
             title: "Rumour outcome table + UI reveal modal"
-            status: in-progress
+            status: done
             priority: high
             complexity: medium
             workspaces: [core, web, content]
@@ -714,8 +714,8 @@ epics:
               FataMorganaMirage (nothing / bonus / hazard). React modal
               shows flavour text + rewards. Text in packages/content.
             depends_on: [TASK-032]
-            pr: null
-            completed: null
+            pr: "https://github.com/g-chappell/colonize/pull/46"
+            completed: "2026-04-21"
             blocked_reason: null
             last_attempted: "2026-04-21T12:30:00Z"
             attempt_count: 1
