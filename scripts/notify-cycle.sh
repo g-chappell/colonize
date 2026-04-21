@@ -54,6 +54,24 @@ deploy="$(printf '%s' "$LAST_ENTRY" | grep -m1 '^- Deploy:'  | sed 's/^- Deploy:
 review="$(printf '%s' "$LAST_ENTRY" | grep -m1 '^- Review proposed:' | sed 's/^- Review proposed: *//')"
 reg="$(printf '%s' "$LAST_ENTRY" | grep -m1 '^- Regression alert:' | sed 's/^- Regression alert: *//')"
 
+# Plain-language description from the PR body's "## Summary" section.
+# Best-effort — a failed `gh` call silently drops the blurb.
+blurb=""
+pr_num="$(printf '%s' "$pr" | sed -nE 's|.*pull/([0-9]+).*|\1|p' | head -1)"
+if [[ -n "$pr_num" ]] && command -v gh >/dev/null 2>&1; then
+  blurb="$(gh pr view "$pr_num" --json body --jq '.body' 2>/dev/null \
+    | awk '
+        /^## Summary$/ { on=1; next }
+        /^## / && on   { exit }
+        on             { print }
+      ' \
+    | sed '/^[[:space:]]*$/d' \
+    | awk 'BEGIN{budget=500} { if (budget - length - 1 < 0) exit; print; budget -= length + 1 }')"
+fi
+
+# Short deploy verdict ("success" / "failure") — full line is a paragraph.
+deploy_short="$(printf '%s' "$deploy" | awk '{print $1}')"
+
 # Pick priority + emoji based on outcome.
 case "$outcome" in
   success)              prio="default"; tag="white_check_mark" ;;
@@ -66,12 +84,15 @@ esac
 # Compose body: one block per field. Title = a short summary line.
 title="Colonize ${task:-cycle}"
 
-body="Outcome: ${outcome:-unknown}
-Time: ${heading:-?}
-PR: ${pr:-n/a}
-Deploy: ${deploy:-n/a}"
+body=""
+[[ -n "$blurb" ]] && body="${blurb}
 
-if [[ -n "$review" && "$review" != "false" && "$review" != "null" ]]; then
+"
+body="${body}Outcome: ${outcome:-unknown} · Deploy: ${deploy_short:-n/a}
+Time: ${heading:-?}"
+
+review_first="$(printf '%s' "$review" | awk '{print $1}')"
+if [[ -n "$review_first" && "$review_first" != "false" && "$review_first" != "null" ]]; then
   body="$body
 Review: $review"
 fi
@@ -87,7 +108,6 @@ curl -fsSL --max-time 10 \
   -H "Title: $title" \
   -H "Priority: $prio" \
   -H "Tags: $tag" \
-  -H "Click: ${pr:-https://github.com/g-chappell/colonize}" \
   -d "$body" \
   "$NTFY_SERVER/$NTFY_TOPIC" >/dev/null || {
     echo "notify-cycle: ntfy POST failed (not fatal)" >&2
