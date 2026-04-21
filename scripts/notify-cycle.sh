@@ -4,18 +4,31 @@
 # (replaces the earlier PushNotification approach which hit the
 # Anthropic "user active" suppression guard).
 #
+# Path-agnostic: derives project root from its own location so the
+# same file can sit under any /opt/<slug>/scripts/ without edits.
+# Keeps this file identical to the autodev-template master copy.
+#
 # Requires: NTFY_TOPIC + NTFY_SERVER (in .env, sourced via EnvironmentFile)
 # Exits 0 always — a failed notify must not fail the cycle.
 
 set -u
-LOG="/opt/colonize/AGENT-LOG.md"
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+LOG="$ROOT/AGENT-LOG.md"
 
 # Source .env explicitly since systemd's EnvironmentFile= sets vars but
 # doesn't "source"; this script may be invoked outside systemd too.
-if [[ -f /opt/colonize/.env ]]; then
+if [[ -f "$ROOT/.env" ]]; then
   # shellcheck disable=SC1091
-  set -a; source /opt/colonize/.env; set +a
+  set -a; source "$ROOT/.env"; set +a
 fi
+
+# Project name for the notification title. Prefer project.json, fall
+# back to the directory basename if jq is missing or the file is stale.
+PROJECT_NAME=""
+if command -v jq >/dev/null 2>&1 && [[ -f "$ROOT/.claude/project.json" ]]; then
+  PROJECT_NAME="$(jq -r '.project.name // empty' "$ROOT/.claude/project.json" 2>/dev/null)"
+fi
+PROJECT_NAME="${PROJECT_NAME:-$(basename "$ROOT")}"
 
 NTFY_SERVER="${NTFY_SERVER:-https://ntfy.sh}"
 if [[ -z "${NTFY_TOPIC:-}" ]]; then
@@ -25,7 +38,7 @@ fi
 
 if [[ ! -f "$LOG" ]]; then
   curl -fsSL --max-time 10 \
-    -H "Title: Colonize — log missing" \
+    -H "Title: ${PROJECT_NAME} — log missing" \
     -H "Priority: urgent" \
     -H "Tags: warning" \
     -d "AGENT-LOG.md not found at $LOG. Cycle ran but log wasn't written." \
@@ -82,7 +95,7 @@ case "$outcome" in
 esac
 
 # Compose body: one block per field. Title = a short summary line.
-title="Colonize ${task:-cycle}"
+title="${PROJECT_NAME} ${task:-cycle}"
 
 body=""
 [[ -n "$blurb" ]] && body="${blurb}

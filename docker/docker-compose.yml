@@ -1,3 +1,10 @@
+# `name:` makes compose use the project slug as the container-name prefix
+# (e.g. `colonize-app-1`) rather than the parent directory name
+# (`docker-app-1`). Required for multi-project VPS hosting — without this,
+# every project's compose file collides on the same default container
+# names. See autodev-template PR #1 for the general pattern.
+name: colonize
+
 services:
   app:
     build:
