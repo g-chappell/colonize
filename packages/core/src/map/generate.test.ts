@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { generateMap, MIN_MAP_WIDTH, MIN_MAP_HEIGHT, MAX_FACTION_COUNT } from './generate.js';
 import { GameMap } from './map.js';
 import { TileType } from './tile.js';
+import { ALL_RUMOUR_KINDS, RumourTile } from '../rumour/rumour.js';
 
 function countTiles(map: GameMap, type: TileType): number {
   let n = 0;
@@ -190,5 +191,104 @@ describe('generateMap — JSON round-trip', () => {
     const g = generateMap({ seed: 99, width: 30, height: 20 });
     const revived = GameMap.fromJSON(g.map.toJSON());
     expect(revived.toJSON()).toEqual(g.map.toJSON());
+  });
+});
+
+describe('generateMap — rumours', () => {
+  const seeds = [1, 2, 3, 42, 777, 12345];
+
+  it.each(seeds)('places 4–8 rumours (seed=%i)', (seed) => {
+    const g = generateMap({ seed, width: 40, height: 25, factionCount: 4 });
+    expect(g.rumours.length).toBeGreaterThanOrEqual(4);
+    expect(g.rumours.length).toBeLessThanOrEqual(8);
+  });
+
+  it('every rumour lands on an Ocean tile', () => {
+    const g = generateMap({ seed: 42, width: 40, height: 25, factionCount: 4 });
+    for (const r of g.rumours) {
+      expect(g.map.get(r.position.x, r.position.y)).toBe(TileType.Ocean);
+    }
+  });
+
+  it('every rumour is within map bounds', () => {
+    const g = generateMap({ seed: 42, width: 40, height: 25, factionCount: 4 });
+    for (const r of g.rumours) {
+      expect(g.map.inBounds(r.position.x, r.position.y)).toBe(true);
+    }
+  });
+
+  it('no rumour shares a cell with a faction start', () => {
+    const g = generateMap({ seed: 42, width: 40, height: 25, factionCount: 4 });
+    const startKeys = new Set(g.factionStarts.map((s) => `${s.x},${s.y}`));
+    for (const r of g.rumours) {
+      expect(startKeys.has(`${r.position.x},${r.position.y}`)).toBe(false);
+    }
+  });
+
+  it('every rumour is at least 3 cells (Chebyshev) from any faction start', () => {
+    const g = generateMap({ seed: 42, width: 40, height: 25, factionCount: 4 });
+    for (const r of g.rumours) {
+      for (const s of g.factionStarts) {
+        const d = Math.max(Math.abs(s.x - r.position.x), Math.abs(s.y - r.position.y));
+        expect(d).toBeGreaterThan(3);
+      }
+    }
+  });
+
+  it('rumour positions are unique', () => {
+    const g = generateMap({ seed: 42, width: 40, height: 25, factionCount: 4 });
+    const keys = g.rumours.map((r) => `${r.position.x},${r.position.y}`);
+    expect(new Set(keys).size).toBe(keys.length);
+  });
+
+  it('rumour ids are unique', () => {
+    const g = generateMap({ seed: 42, width: 40, height: 25, factionCount: 4 });
+    const ids = g.rumours.map((r) => r.id);
+    expect(new Set(ids).size).toBe(ids.length);
+  });
+
+  it('every rumour kind is a known RumourKind', () => {
+    const g = generateMap({ seed: 42, width: 40, height: 25, factionCount: 4 });
+    const valid = new Set(ALL_RUMOUR_KINDS);
+    for (const r of g.rumours) {
+      expect(valid.has(r.kind)).toBe(true);
+    }
+  });
+
+  it('every rumour starts unresolved', () => {
+    const g = generateMap({ seed: 42, width: 40, height: 25, factionCount: 4 });
+    for (const r of g.rumours) {
+      expect(r.resolved).toBe(false);
+    }
+  });
+
+  it('produces identical rumour positions and kinds for the same seed', () => {
+    const a = generateMap({ seed: 42, width: 40, height: 25, factionCount: 4 });
+    const b = generateMap({ seed: 42, width: 40, height: 25, factionCount: 4 });
+    expect(a.rumours.map((r) => r.toJSON())).toEqual(b.rumours.map((r) => r.toJSON()));
+  });
+
+  it('produces different rumour placements for different seeds', () => {
+    const a = generateMap({ seed: 1, width: 40, height: 25, factionCount: 4 });
+    const b = generateMap({ seed: 2, width: 40, height: 25, factionCount: 4 });
+    const ka = a.rumours.map((r) => `${r.position.x},${r.position.y}`).join('|');
+    const kb = b.rumours.map((r) => `${r.position.x},${r.position.y}`).join('|');
+    expect(ka).not.toBe(kb);
+  });
+
+  it('still places rumours when factionCount is omitted', () => {
+    const g = generateMap({ seed: 7, width: 40, height: 25 });
+    expect(g.rumours.length).toBeGreaterThanOrEqual(4);
+    for (const r of g.rumours) {
+      expect(g.map.get(r.position.x, r.position.y)).toBe(TileType.Ocean);
+    }
+  });
+
+  it('rumours survive JSON round-trip', () => {
+    const g = generateMap({ seed: 99, width: 40, height: 25, factionCount: 4 });
+    for (const r of g.rumours) {
+      const revived = RumourTile.fromJSON(r.toJSON());
+      expect(revived.toJSON()).toEqual(r.toJSON());
+    }
   });
 });

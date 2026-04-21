@@ -1,5 +1,6 @@
 import { GameMap, type Coord } from './map.js';
 import { TileType } from './tile.js';
+import { ALL_RUMOUR_KINDS, RumourTile } from '../rumour/rumour.js';
 
 export interface GenerateMapOptions {
   readonly seed: number;
@@ -11,6 +12,7 @@ export interface GenerateMapOptions {
 export interface GeneratedMap {
   readonly map: GameMap;
   readonly factionStarts: readonly Coord[];
+  readonly rumours: readonly RumourTile[];
 }
 
 export const MIN_MAP_WIDTH = 20;
@@ -49,9 +51,14 @@ export function generateMap(options: GenerateMapOptions): GeneratedMap {
   placeRedTideZones(map, rng);
   scatterFataMorgana(map, rng);
   const factionStarts = pickFactionStarts(map, rng, factionCount);
+  const rumours = scatterRumours(map, rng, factionStarts);
 
-  return { map, factionStarts };
+  return { map, factionStarts, rumours };
 }
+
+const RUMOUR_MIN_COUNT = 4;
+const RUMOUR_MAX_COUNT = 8;
+const RUMOUR_START_KEEP_OUT = 3;
 
 // Mulberry32: small, fast, well-distributed 32-bit PRNG. Deterministic for a given seed.
 function mulberry32(seed: number): () => number {
@@ -197,6 +204,43 @@ function pickFactionStarts(map: GameMap, rng: () => number, count: number): Coor
     result.push(found);
   }
   return result;
+}
+
+function scatterRumours(
+  map: GameMap,
+  rng: () => number,
+  factionStarts: readonly Coord[],
+): RumourTile[] {
+  const target = randInt(rng, RUMOUR_MIN_COUNT, RUMOUR_MAX_COUNT);
+  const placed: RumourTile[] = [];
+  const used = new Set<string>();
+  for (const s of factionStarts) used.add(`${s.x},${s.y}`);
+  const maxAttempts = target * 50;
+  for (let attempt = 0; attempt < maxAttempts && placed.length < target; attempt++) {
+    const x = Math.floor(rng() * map.width);
+    const y = Math.floor(rng() * map.height);
+    const key = `${x},${y}`;
+    if (used.has(key)) continue;
+    if (map.get(x, y) !== TileType.Ocean) continue;
+    if (nearAnyStart(x, y, factionStarts, RUMOUR_START_KEEP_OUT)) continue;
+    used.add(key);
+    const kind = ALL_RUMOUR_KINDS[Math.floor(rng() * ALL_RUMOUR_KINDS.length)]!;
+    placed.push(
+      new RumourTile({
+        id: `rumour-${placed.length}`,
+        position: { x, y },
+        kind,
+      }),
+    );
+  }
+  return placed;
+}
+
+function nearAnyStart(x: number, y: number, starts: readonly Coord[], radius: number): boolean {
+  for (const s of starts) {
+    if (Math.max(Math.abs(s.x - x), Math.abs(s.y - y)) <= radius) return true;
+  }
+  return false;
 }
 
 function nearestOcean(
