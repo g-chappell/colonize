@@ -10,8 +10,8 @@ _Created: 2026-04-20_
 
 - **Total tasks:** 90
 - **Done:** 20 (22%)
-- **Ready:** 70
-- **In progress:** 0
+- **Ready:** 69
+- **In progress:** 1
 - **Blocked:** 0
 
 ---
@@ -241,7 +241,7 @@ rules including wind, currents, and Red Tide impassability.
   > Turn state machine: ActivePlayer → AIPlayers[] → WorldEvents
   > → Year+1. Yearly calendar matches NW dates (starting at NW
   > 2191). End-turn button advances.
-  - :black_circle: **TASK-024** — Turn state machine in packages/core  `high` `medium` _(core)_  
+  - :large_orange_diamond: **TASK-024** — Turn state machine in packages/core  `high` `medium` _(core)_  
     _depends on: TASK-017_
     > TurnManager with phases: Start → PlayerAction → AI →
     > WorldEvents → End. Hooks for phase-enter/exit. Deterministic
