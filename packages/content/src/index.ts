@@ -31,3 +31,10 @@ export {
   type AudioStemBus,
   type AudioStemEntry,
 } from './audio.js';
+
+export {
+  RUMOUR_OUTCOME_FLAVOURS,
+  getRumourOutcomeFlavour,
+  type RumourOutcomeCategoryId,
+  type RumourOutcomeFlavourEntry,
+} from './rumour-outcomes.js';

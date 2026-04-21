@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { Coord, GameVersion, TurnPhase, UnitJSON } from '@colonize/core';
+import type { Coord, GameVersion, RumourOutcome, TurnPhase, UnitJSON } from '@colonize/core';
 import { CORE_VERSION, TurnPhase as TurnPhaseEnum } from '@colonize/core';
 
 export type PlayableFaction = 'otk' | 'ironclad' | 'phantom' | 'bloodborne';
@@ -66,6 +66,11 @@ export interface GameState {
   units: readonly UnitJSON[];
   selectedUnitId: string | null;
   proposedMove: ProposedMove | null;
+  // Outcome of a rumour tile that has been resolved but not yet
+  // acknowledged by the player. Non-null while the reveal modal is
+  // showing; cleared on dismiss. The resolver (a future task) will
+  // call `showRumourReveal` when a unit enters a rumour tile.
+  rumourReveal: RumourOutcome | null;
   settings: SettingsState;
   setCurrentTurn: (turn: number) => void;
   advanceTurn: () => void;
@@ -81,6 +86,8 @@ export interface GameState {
   // spent movement cost. Emitted once the sprite tween finishes so the
   // store snapshot stays in sync with the on-screen visual.
   commitMove: (unitId: string, position: Coord, movementCost: number) => void;
+  showRumourReveal: (outcome: RumourOutcome) => void;
+  dismissRumourReveal: () => void;
   setAudioVolume: (bus: AudioBus, volume: number) => void;
   setAudioMuted: (muted: boolean) => void;
   reset: () => void;
@@ -112,6 +119,7 @@ const initialState = {
   units: [] as readonly UnitJSON[],
   selectedUnitId: null as string | null,
   proposedMove: null as ProposedMove | null,
+  rumourReveal: null as RumourOutcome | null,
   settings: DEFAULT_SETTINGS,
 } as const;
 
@@ -147,6 +155,8 @@ export const useGameStore = create<GameState>((set) => ({
       ),
       proposedMove: null,
     })),
+  showRumourReveal: (outcome) => set({ rumourReveal: outcome }),
+  dismissRumourReveal: () => set({ rumourReveal: null }),
   setAudioVolume: (bus, volume) =>
     set((state) => ({
       settings:
