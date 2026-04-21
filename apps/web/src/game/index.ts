@@ -1,6 +1,6 @@
 export { BootScene } from './boot-scene';
 export { MainMenuScene } from './main-menu-scene';
-export { GameScene, type GameSceneInitData } from './game-scene';
+export { GameScene, FOG_OVERLAY_DEPTH, type GameSceneInitData } from './game-scene';
 export { createGame, startGameScene, type CreateGameOptions } from './create-game';
 export { ATLAS_KEYS, ATLAS_PATHS, SCENE_KEYS } from './asset-keys';
 export {
@@ -18,3 +18,14 @@ export {
   CAMERA_KEY_PAN_SPEED,
   CAMERA_WHEEL_ZOOM_FACTOR,
 } from './camera-controls';
+export { FogOverlay } from './fog-overlay';
+export {
+  FOG_ALPHA_UNSEEN,
+  FOG_ALPHA_SEEN,
+  FOG_ALPHA_VISIBLE,
+  FOG_COLOR,
+  FOG_REVEAL_DURATION_MS,
+  FogOverlayState,
+  fogAlphaFor,
+  interpolateFogAlpha,
+} from './fog-overlay-state';

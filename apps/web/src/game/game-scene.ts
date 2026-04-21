@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { TileType } from '@colonize/core';
-import type { GameMap } from '@colonize/core';
+import type { FactionVisibility, GameMap } from '@colonize/core';
 
 import { useGameStore } from '../store/game';
 import { ATLAS_KEYS, SCENE_KEYS } from './asset-keys';
@@ -13,6 +13,7 @@ import {
   keyPanDelta,
   pointerDistance,
 } from './camera-controls';
+import { FogOverlay } from './fog-overlay';
 import {
   OCEAN_ANIMATION_FRAMERATE,
   OCEAN_ANIMATION_FRAMES,
@@ -23,15 +24,26 @@ import {
   tileCenterInWorld,
 } from './tile-atlas';
 
+// Depth of the fog overlay — above all terrain tiles but below any
+// future HUD-anchored in-world indicators (selection rings, damage
+// numbers) which will claim higher depths.
+export const FOG_OVERLAY_DEPTH = 100;
+
 export interface GameSceneInitData {
   readonly map: GameMap;
   // Optional camera focus (tile coords). Defaults to map centre — or
   // to the last remembered camera view from the store, if any.
   readonly cameraFocus?: { x: number; y: number };
+  // Per-faction visibility grid. When present, a fog overlay is
+  // rendered on top of the terrain; omitting it leaves the full map
+  // visible (useful for tests and the upcoming Rayon Passage preview).
+  readonly visibility?: FactionVisibility;
 }
 
 export class GameScene extends Phaser.Scene {
   private mapModel: GameMap | null = null;
+  private initialVisibility: FactionVisibility | null = null;
+  private fogOverlay: FogOverlay | null = null;
   // Follow target is a lightweight invisible sprite — Phaser cameras
   // follow GameObjects, not bare coords.
   private followTarget: Phaser.GameObjects.Sprite | null = null;
@@ -47,6 +59,7 @@ export class GameScene extends Phaser.Scene {
 
   init(data: Partial<GameSceneInitData>): void {
     this.mapModel = data.map ?? null;
+    this.initialVisibility = data.visibility ?? null;
   }
 
   create(data: Partial<GameSceneInitData> = {}): void {
@@ -63,6 +76,13 @@ export class GameScene extends Phaser.Scene {
     this.renderTiles(map);
     this.configureCamera(map, data.cameraFocus);
     this.setupCameraControls();
+
+    const visibility = this.initialVisibility ?? data.visibility;
+    if (visibility) {
+      this.fogOverlay = new FogOverlay(this, map.width, map.height, visibility).setDepth(
+        FOG_OVERLAY_DEPTH,
+      );
+    }
   }
 
   private ensureOceanAnimation(): void {
@@ -206,7 +226,9 @@ export class GameScene extends Phaser.Scene {
     this.persistCameraView();
   }
 
-  update(_time: number, delta: number): void {
+  update(time: number, delta: number): void {
+    this.fogOverlay?.update(time);
+
     if (!this.cursors) return;
     const keys = {
       up: !!this.cursors.up?.isDown,
@@ -223,6 +245,13 @@ export class GameScene extends Phaser.Scene {
     cam.stopFollow();
     cam.setScroll(cam.scrollX + dx, cam.scrollY + dy);
     this.persistCameraView();
+  }
+
+  // Public hook for callers that own the visibility model (e.g. the
+  // turn-advance flow, or tests) to push a fresh snapshot into the
+  // overlay. No-op when the scene has no fog overlay configured.
+  syncFogOverlay(visibility: FactionVisibility): void {
+    this.fogOverlay?.sync(visibility, this.time.now);
   }
 
   private persistCameraView(): void {
