@@ -9,9 +9,9 @@ _Created: 2026-04-20_
 ## Summary
 
 - **Total tasks:** 90
-- **Done:** 23 (26%)
+- **Done:** 24 (27%)
 - **Ready:** 66
-- **In progress:** 1
+- **In progress:** 0
 - **Blocked:** 0
 
 ---
@@ -262,7 +262,7 @@ rules including wind, currents, and Red Tide impassability.
     > Unit class: id, faction, pos, type, stats. Movement points
     > set at turn start per unit type. Deduct on move. Unit
     > tests.
-  - :large_orange_diamond: **TASK-027** — Ship classes (Sloop, Brig, Frigate, ShipOfTheLine, Privateer)  `high` `small` _(core, content)_  
+  - :white_check_mark: **TASK-027** — Ship classes (Sloop, Brig, Frigate, ShipOfTheLine, Privateer)  `high` `small` _(core, content)_ · [PR](https://github.com/g-chappell/colonize/pull/37)  
     _depends on: TASK-026_
     > UnitType definitions for base ship classes with distinct
     > stats (hull, guns, crew capacity, base move). Placeholder
