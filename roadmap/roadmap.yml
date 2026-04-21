@@ -727,7 +727,7 @@ epics:
         tasks:
           - id: TASK-034
             title: "Carried-cargo model on units + delivery flow"
-            status: in-progress
+            status: done
             priority: high
             complexity: medium
             workspaces: [core]
@@ -736,8 +736,8 @@ epics:
               artifacts). Transfer happens when entering a friendly
               colony. Unique artifacts produce permanent colony bonuses.
             depends_on: [TASK-026]
-            pr: null
-            completed: null
+            pr: "https://github.com/g-chappell/colonize/pull/48"
+            completed: "2026-04-21"
             blocked_reason: null
             last_attempted: "2026-04-21T00:00:00Z"
             attempt_count: 1
