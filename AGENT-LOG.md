@@ -353,3 +353,21 @@ gaps.
 - Notes: Seventeenth autonomous-run cycle. Streak=3 since PR #23 review checkpoint (TASK-018 → TASK-019 → TASK-020); two more consecutive successes to re-hit successThreshold=5.
 
 ---
+
+### Run [2026-04-21 09:43]
+- Task: N/A — skipped at precheck
+- Outcome: skipped
+- PR: N/A
+- Test counts: N/A — no validation run
+- Files changed: AGENT-LOG.md (this entry)
+- Regression alert: false
+- Review proposed: false
+- Deploy: n/a
+- Lessons learned:
+  - Step 2 precheck halted the run: `git status --porcelain` reported `?? .claude/settings.local.json` — an untracked per-machine Claude Code settings file (local Bash permission allow-list) that is not covered by `.gitignore`. Treating it as dirty per the skill's strict clean-tree contract.
+  - This is a recurring-class blocker: `.claude/settings.local.json` is created and mutated by Claude Code itself on every interactive session as the user approves new commands. Every autonomous-run will trip on it until the path is gitignored. The fix is a one-line addition to `.gitignore` (`.claude/settings.local.json`), mirroring how `.tsbuildinfo` was added after TASK-002 to stop leaking a similar tool-generated artefact.
+  - Also cleaned up post-merge: fast-forwarded local main over fef464f (two commits — ntfy-blurb merge #28 + the retroactive hardening commit 2e098dc). Step 3 branch-cleanup was skipped because this is a dirty-tree early-return.
+  - Action required: add `.claude/settings.local.json` to `.gitignore` on a dedicated branch (`chore/gitignore-claude-local-settings` or rolled into the next chore-bundle PR). Next scheduled fire is top-of-hour via `claude-colonize.timer`; until the gitignore lands, every cycle will repeat this skip.
+- Notes: Nineteenth autonomous-run cycle — **skipped**, not counted toward the 5-success streak. Prior streak still at 3 (TASK-018 → TASK-019 → TASK-020) since the PR #23 review checkpoint; the streak resumes on the next successful cycle without needing to restart.
+
+---
