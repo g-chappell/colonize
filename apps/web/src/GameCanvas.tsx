@@ -1,4 +1,6 @@
 import { useEffect, useRef } from 'react';
+import { bus } from './bus';
+import { SCENE_KEYS } from './game/asset-keys';
 
 // Phaser's module init touches the canvas 2D context, which jsdom
 // (used by vitest) does not implement. We import Phaser dynamically
@@ -15,6 +17,14 @@ function canMountPhaser(): boolean {
   }
 }
 
+type PhaserGame = {
+  destroy: (removeCanvas: boolean) => void;
+  scene: {
+    pause: (key: string) => void;
+    resume: (key: string) => void;
+  };
+};
+
 export function GameCanvas(): JSX.Element {
   const parentRef = useRef<HTMLDivElement | null>(null);
 
@@ -22,15 +32,21 @@ export function GameCanvas(): JSX.Element {
     if (!parentRef.current || !canMountPhaser()) return;
 
     let destroyed = false;
-    let gameInstance: { destroy: (removeCanvas: boolean) => void } | null = null;
+    let gameInstance: PhaserGame | null = null;
+    const busUnsubscribes: Array<() => void> = [];
 
     void import('./game').then(({ createGame }) => {
       if (destroyed || !parentRef.current) return;
-      gameInstance = createGame({ parent: parentRef.current });
+      gameInstance = createGame({ parent: parentRef.current }) as PhaserGame;
+      busUnsubscribes.push(
+        bus.on('game:pause', () => gameInstance?.scene.pause(SCENE_KEYS.game)),
+        bus.on('game:resume', () => gameInstance?.scene.resume(SCENE_KEYS.game)),
+      );
     });
 
     return () => {
       destroyed = true;
+      for (const unsub of busUnsubscribes) unsub();
       gameInstance?.destroy(true);
     };
   }, []);

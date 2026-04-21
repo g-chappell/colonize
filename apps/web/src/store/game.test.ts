@@ -227,4 +227,55 @@ describe('useGameStore', () => {
     useGameStore.getState().reset();
     expect(useGameStore.getState().proposedMove).toBeNull();
   });
+
+  describe('settings', () => {
+    it('seeds default audio volumes matching audio-state.ts', () => {
+      const { settings } = useGameStore.getState();
+      expect(settings.sfxVolume).toBe(0.8);
+      expect(settings.bgmVolume).toBe(0.5);
+      expect(settings.muted).toBe(false);
+    });
+
+    it('writes the sfx bus volume', () => {
+      useGameStore.getState().setAudioVolume('sfx', 0.3);
+      expect(useGameStore.getState().settings.sfxVolume).toBeCloseTo(0.3, 5);
+      expect(useGameStore.getState().settings.bgmVolume).toBe(0.5);
+    });
+
+    it('writes the bgm bus volume independently', () => {
+      useGameStore.getState().setAudioVolume('bgm', 0.1);
+      expect(useGameStore.getState().settings.bgmVolume).toBeCloseTo(0.1, 5);
+      expect(useGameStore.getState().settings.sfxVolume).toBe(0.8);
+    });
+
+    it('clamps volume into [0, 1]', () => {
+      useGameStore.getState().setAudioVolume('sfx', -0.5);
+      expect(useGameStore.getState().settings.sfxVolume).toBe(0);
+      useGameStore.getState().setAudioVolume('bgm', 42);
+      expect(useGameStore.getState().settings.bgmVolume).toBe(1);
+    });
+
+    it('rejects non-finite volume inputs as zero', () => {
+      useGameStore.getState().setAudioVolume('sfx', Number.NaN);
+      expect(useGameStore.getState().settings.sfxVolume).toBe(0);
+    });
+
+    it('toggles the muted flag', () => {
+      useGameStore.getState().setAudioMuted(true);
+      expect(useGameStore.getState().settings.muted).toBe(true);
+      useGameStore.getState().setAudioMuted(false);
+      expect(useGameStore.getState().settings.muted).toBe(false);
+    });
+
+    it('restores default settings on reset', () => {
+      useGameStore.getState().setAudioVolume('sfx', 0.1);
+      useGameStore.getState().setAudioMuted(true);
+      useGameStore.getState().reset();
+      expect(useGameStore.getState().settings).toEqual({
+        sfxVolume: 0.8,
+        bgmVolume: 0.5,
+        muted: false,
+      });
+    });
+  });
 });

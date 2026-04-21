@@ -18,4 +18,10 @@ export interface GameEvents {
   // selection by clicking empty water). `unitId` is null when nothing
   // is selected.
   'unit:selected': { unitId: string | null };
+  // Emitted by the React pause overlay so the GameCanvas host can call
+  // phaser.scene.pause() / .resume() on the running GameScene. Keeps
+  // React ignorant of the Phaser instance and leaves the scene-lifecycle
+  // wiring in one place (GameCanvas).
+  'game:pause': Record<string, never>;
+  'game:resume': Record<string, never>;
 }

@@ -47,6 +47,16 @@ describe('Hud', () => {
     expect(screen.getByTestId('hud-faction')).toBeInTheDocument();
     expect(screen.getByTestId('hud-resources')).toBeInTheDocument();
     expect(screen.getByTestId('hud-end-turn')).toBeInTheDocument();
+    expect(screen.getByTestId('hud-menu-button')).toBeInTheDocument();
+  });
+
+  describe('MenuButton', () => {
+    it('transitions to the pause screen when clicked', () => {
+      useGameStore.getState().setScreen('game');
+      render(<Hud />);
+      fireEvent.click(screen.getByTestId('hud-menu-button'));
+      expect(useGameStore.getState().screen).toBe('pause');
+    });
   });
 
   describe('YearDisplay', () => {
