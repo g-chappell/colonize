@@ -39,3 +39,13 @@ for (const atlas of ATLASES) {
   cpSync(packedDir, publicDir, { recursive: true });
   console.info(`prepare-assets: copied ${packedDir} → ${publicDir}`);
 }
+
+// Audio stems — packed silent WAVs generated from @colonize/content's
+// AUDIO_STEMS manifest, then copied into apps/web/public/audio/.
+run('node', ['scripts/generate-placeholder-audio.mjs'], contentRoot);
+const audioPackedDir = resolve(contentRoot, 'audio-out');
+const audioPublicDir = resolve(webRoot, 'public/audio');
+if (existsSync(audioPublicDir)) rmSync(audioPublicDir, { recursive: true, force: true });
+mkdirSync(dirname(audioPublicDir), { recursive: true });
+cpSync(audioPackedDir, audioPublicDir, { recursive: true });
+console.info(`prepare-assets: copied ${audioPackedDir} → ${audioPublicDir}`);

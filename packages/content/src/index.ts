@@ -21,3 +21,13 @@ export {
   type ShipClassId,
   type LegendaryShipSlot,
 } from './units.js';
+
+export {
+  AUDIO_STEMS,
+  AUDIO_PUBLIC_BASE,
+  audioStemUrl,
+  getAudioStem,
+  isAudioStemKey,
+  type AudioStemBus,
+  type AudioStemEntry,
+} from './audio.js';

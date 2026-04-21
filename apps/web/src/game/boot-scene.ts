@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 
 import { ATLAS_KEYS, ATLAS_PATHS, SCENE_KEYS } from './asset-keys';
+import { loadAudioStems } from './audio-manager';
 
 // BootScene — preloads the placeholder atlas and shows a progress bar.
 // On load complete, transitions to MainMenuScene.
@@ -12,6 +13,7 @@ export class BootScene extends Phaser.Scene {
   preload(): void {
     this.drawLoadingBar();
     this.load.atlas(ATLAS_KEYS.core, ATLAS_PATHS.core.png, ATLAS_PATHS.core.json);
+    loadAudioStems(this.load);
   }
 
   create(): void {

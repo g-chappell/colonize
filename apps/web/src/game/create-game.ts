@@ -2,9 +2,12 @@ import Phaser from 'phaser';
 import type { GameMap } from '@colonize/core';
 
 import { SCENE_KEYS } from './asset-keys';
+import { AudioManager } from './audio-manager';
 import { BootScene } from './boot-scene';
 import { MainMenuScene } from './main-menu-scene';
 import { GameScene, type GameSceneInitData } from './game-scene';
+
+export const AUDIO_REGISTRY_KEY = 'audioManager';
 
 export interface CreateGameOptions {
   parent: HTMLElement;
@@ -13,7 +16,7 @@ export interface CreateGameOptions {
 }
 
 export function createGame({ parent, width = 960, height = 540 }: CreateGameOptions): Phaser.Game {
-  return new Phaser.Game({
+  const game = new Phaser.Game({
     type: Phaser.AUTO,
     parent,
     width,
@@ -26,6 +29,14 @@ export function createGame({ parent, width = 960, height = 540 }: CreateGameOpti
     },
     scene: [BootScene, MainMenuScene, GameScene],
   });
+  // AudioManager is owned by the Phaser.Game — constructed once the
+  // sound manager exists, stored on the registry so any scene can
+  // reach it via `this.registry.get(AUDIO_REGISTRY_KEY)`. Destroyed in
+  // a `destroy` hook so the queued BGM handle is released.
+  const audio = new AudioManager(game.sound);
+  game.registry.set(AUDIO_REGISTRY_KEY, audio);
+  game.events.once(Phaser.Core.Events.DESTROY, () => audio.destroy());
+  return game;
 }
 
 // Transitions the running game into GameScene with a concrete map.
