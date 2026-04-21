@@ -640,7 +640,7 @@ epics:
         tasks:
           - id: TASK-030
             title: "Unit sprite rendering + click-to-select"
-            status: ready
+            status: in-progress
             priority: high
             complexity: medium
             workspaces: [web, core]
@@ -652,8 +652,8 @@ epics:
             pr: null
             completed: null
             blocked_reason: null
-            last_attempted: null
-            attempt_count: 0
+            last_attempted: "2026-04-21T00:00:00.000Z"
+            attempt_count: 1
           - id: TASK-031
             title: "Click-to-move with path preview + animation"
             status: ready
