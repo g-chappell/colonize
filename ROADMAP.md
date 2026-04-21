@@ -10,8 +10,8 @@ _Created: 2026-04-20_
 
 - **Total tasks:** 90
 - **Done:** 31 (34%)
-- **Ready:** 59
-- **In progress:** 0
+- **Ready:** 58
+- **In progress:** 1
 - **Blocked:** 0
 
 ---
@@ -224,7 +224,7 @@ touch. All tiles fixed at map-gen; no island-emergence.
   > Always-revealed known-sea corridor at game start, representing
   > the existing spine of civilisation. Player starts with Rayon
   > Passage visible; frontier + islands are fog-of-war.
-  - :black_circle: **TASK-023** — Mark Rayon Passage tiles as 'seen' at game start  `med` `small` _(core)_  
+  - :large_orange_diamond: **TASK-023** — Mark Rayon Passage tiles as 'seen' at game start  `med` `small` _(core)_  
     _depends on: TASK-021_
     > Initial visibility state: every Rayon Passage tile +
     > floating-city node is at least 'seen' at turn 0 for all
