@@ -10,8 +10,8 @@ _Created: 2026-04-20_
 
 - **Total tasks:** 90
 - **Done:** 18 (20%)
-- **Ready:** 72
-- **In progress:** 0
+- **Ready:** 71
+- **In progress:** 1
 - **Blocked:** 0
 
 ---
@@ -208,7 +208,7 @@ touch. All tiles fixed at map-gen; no island-emergence.
   > Per-faction visibility: unexplored tiles are hidden; previously
   > explored tiles are dimmed ("last seen" snapshot). Line of
   > sight from units + colonies.
-  - :black_circle: **TASK-021** — Visibility model in core (unseen / seen / visible)  `high` `medium` _(core)_  
+  - :large_orange_diamond: **TASK-021** — Visibility model in core (unseen / seen / visible)  `high` `medium` _(core)_  
     _depends on: TASK-017_
     > Per-faction 2D grid with state: unseen (hidden), seen (last
     > observed snapshot, dimmed), visible (currently in LoS).

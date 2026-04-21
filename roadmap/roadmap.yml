@@ -450,7 +450,7 @@ epics:
         tasks:
           - id: TASK-021
             title: "Visibility model in core (unseen / seen / visible)"
-            status: ready
+            status: in-progress
             priority: high
             complexity: medium
             workspaces: [core]
@@ -462,8 +462,8 @@ epics:
             pr: null
             completed: null
             blocked_reason: null
-            last_attempted: null
-            attempt_count: 0
+            last_attempted: "2026-04-21T00:00:00Z"
+            attempt_count: 1
           - id: TASK-022
             title: "Fog overlay in GameScene renderer"
             status: ready
