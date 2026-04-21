@@ -490,7 +490,7 @@ epics:
         tasks:
           - id: TASK-023
             title: "Mark Rayon Passage tiles as 'seen' at game start"
-            status: in-progress
+            status: done
             priority: med
             complexity: small
             workspaces: [core]
@@ -500,8 +500,8 @@ epics:
               factions. Everything else starts 'unseen'. Covered by
               visibility unit tests.
             depends_on: [TASK-021]
-            pr: null
-            completed: null
+            pr: "https://github.com/g-chappell/colonize/pull/47"
+            completed: "2026-04-21"
             blocked_reason: null
             last_attempted: "2026-04-21T00:00:00Z"
             attempt_count: 1
