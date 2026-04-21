@@ -20,6 +20,7 @@ export {
   ALL_VISIBILITY_STATES,
   isVisibility,
   FactionVisibility,
+  seedStartingCorridorKnowledge,
 } from './visibility/index.js';
 export type { VisibilityJSON } from './visibility/index.js';
 export { TurnPhase, ALL_TURN_PHASES, isTurnPhase, TurnManager } from './turn/index.js';
