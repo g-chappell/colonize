@@ -1,9 +1,9 @@
 import Phaser from 'phaser';
-import { TileType, type UnitJSON } from '@colonize/core';
+import { TileType, findPath, type Coord, type UnitJSON } from '@colonize/core';
 import type { FactionVisibility, GameMap } from '@colonize/core';
 
 import { bus } from '../bus';
-import { useGameStore } from '../store/game';
+import { useGameStore, type ProposedMove } from '../store/game';
 import { ATLAS_KEYS, SCENE_KEYS } from './asset-keys';
 import {
   CAMERA_MAX_ZOOM,
@@ -15,6 +15,8 @@ import {
   pointerDistance,
 } from './camera-controls';
 import { FogOverlay } from './fog-overlay';
+import { decideMoveClick } from './move-intent';
+import { truncatePathResult } from './path-preview';
 import {
   OCEAN_ANIMATION_FRAMERATE,
   OCEAN_ANIMATION_FRAMES,
@@ -25,7 +27,7 @@ import {
   renderedTileSize,
   tileCenterInWorld,
 } from './tile-atlas';
-import { findUnitById, isTileInBounds, pickUnitIdAtTile, worldToTile } from './unit-input';
+import { findUnitById, isTileInBounds, worldToTile } from './unit-input';
 import {
   SELECTION_RING_COLOR,
   SELECTION_RING_SCALE,
@@ -35,12 +37,30 @@ import {
 } from './unit-visuals';
 
 // Depth ordering: terrain tiles draw at the default depth (0),
-// units sit above tiles, the selection ring sits above units, and
-// the fog overlay sits above everything so unseen units stay
-// hidden behind the fog.
+// the path preview sits between terrain and units (so the unit sprite
+// covers the preview dot under its own tile), units sit above the
+// preview, the selection ring sits above units, and the fog overlay
+// sits above everything so unseen units stay hidden behind the fog.
+export const PATH_PREVIEW_DEPTH = 30;
 export const UNIT_LAYER_DEPTH = 50;
 export const SELECTION_RING_DEPTH = 60;
 export const FOG_OVERLAY_DEPTH = 100;
+
+// Path preview visual tuning. Reachable tiles draw as solid gold dots,
+// beyond-reach tiles as dim dots at the same radius so the player can
+// see the whole route but understands where the unit will actually
+// stop this turn. Colour matches the selection ring's amber so the
+// preview reads as "this selection's plan".
+export const PATH_PREVIEW_DOT_SCALE = 0.18;
+export const PATH_PREVIEW_REACHABLE_COLOR = 0xf5c158;
+export const PATH_PREVIEW_BEYOND_COLOR = 0x7a5b1f;
+export const PATH_PREVIEW_BEYOND_ALPHA = 0.45;
+
+// Per-tile step duration for the move-commit tween. Chosen so a
+// 4-tile move (one full Sloop turn) lands in ~720ms — fast enough to
+// keep the pace snappy, slow enough to read as motion rather than
+// teleport.
+export const MOVE_STEP_MS = 180;
 
 // Pointer displacement (in screen pixels) above which a pointerup is
 // treated as the end of a drag rather than a click. Keeps trembly
@@ -80,8 +100,14 @@ export class GameScene extends Phaser.Scene {
   // destroyed on removal.
   private unitContainers = new Map<string, Phaser.GameObjects.Container>();
   private selectionRing: Phaser.GameObjects.Graphics | null = null;
+  private pathPreview: Phaser.GameObjects.Graphics | null = null;
   private unsubscribeUnits: (() => void) | null = null;
   private unsubscribeSelection: (() => void) | null = null;
+  private unsubscribeProposedMove: (() => void) | null = null;
+  // True while a commit tween is playing. Blocks further input so the
+  // player can't stack moves on a mid-flight sprite (which would race
+  // the store commit that lands at tween end).
+  private isMoving = false;
 
   constructor() {
     super({ key: SCENE_KEYS.game });
@@ -249,17 +275,111 @@ export class GameScene extends Phaser.Scene {
   }
 
   private handleMapClick(pointer: Phaser.Input.Pointer): void {
+    if (this.isMoving) return;
     if (!this.mapModel) return;
     const tile = worldToTile(pointer.worldX, pointer.worldY);
     if (!isTileInBounds(tile, this.mapModel.width, this.mapModel.height)) return;
 
-    const units = useGameStore.getState().units;
-    const unitId = pickUnitIdAtTile(tile, units);
-    const previous = useGameStore.getState().selectedUnitId;
-    if (previous === unitId) return;
+    const state = useGameStore.getState();
+    const intent = decideMoveClick({
+      tile,
+      units: state.units,
+      selectedUnitId: state.selectedUnitId,
+      proposedMove: state.proposedMove,
+    });
 
-    useGameStore.getState().setSelectedUnit(unitId);
-    bus.emit('unit:selected', { unitId });
+    switch (intent.kind) {
+      case 'select': {
+        state.setSelectedUnit(intent.unitId);
+        bus.emit('unit:selected', { unitId: intent.unitId });
+        return;
+      }
+      case 'cancel-proposal': {
+        if (state.proposedMove) state.setProposedMove(null);
+        return;
+      }
+      case 'propose': {
+        const unit = findUnitById(state.selectedUnitId, state.units);
+        if (!unit) return;
+        this.proposeMove(unit, intent.destination);
+        return;
+      }
+      case 'commit': {
+        const unit = findUnitById(state.selectedUnitId, state.units);
+        if (!unit) return;
+        this.commitProposedMove(unit, intent.proposal);
+        return;
+      }
+      case 'none':
+        return;
+    }
+  }
+
+  private proposeMove(unit: UnitJSON, destination: Coord): void {
+    const map = this.mapModel;
+    if (!map) return;
+    // Units with no remaining movement can still "propose" — the
+    // preview shows the route and the reachable prefix is empty, so
+    // a confirmation click will no-op rather than silently spend 0.
+    const result = findPath(map, unit.position, destination, {});
+    if (!result || result.path.length < 2) {
+      useGameStore.getState().setProposedMove(null);
+      return;
+    }
+    const truncated = truncatePathResult(result, map, {}, unit.movement);
+    useGameStore.getState().setProposedMove({
+      unitId: unit.id,
+      path: result.path,
+      cost: truncated.cost,
+      reachable: truncated.reachable,
+    });
+  }
+
+  private commitProposedMove(unit: UnitJSON, proposal: ProposedMove): void {
+    // reachable === 0 means the unit can't afford even the first step.
+    // Clear the proposal and stay put rather than burning a click.
+    if (proposal.reachable <= 0) {
+      useGameStore.getState().setProposedMove(null);
+      return;
+    }
+    const waypoints = proposal.path.slice(0, proposal.reachable + 1);
+    const finalTile = waypoints[waypoints.length - 1]!;
+    this.animateMove(unit.id, waypoints, () => {
+      useGameStore.getState().commitMove(unit.id, finalTile, proposal.cost);
+      this.setCameraFocus(finalTile.x, finalTile.y);
+    });
+  }
+
+  private animateMove(unitId: string, waypoints: readonly Coord[], onComplete: () => void): void {
+    const container = this.unitContainers.get(unitId);
+    if (!container || waypoints.length < 2) {
+      onComplete();
+      return;
+    }
+    // Hide the selection ring during the tween — it's drawn at the
+    // unit's pre-move tile centre and can't gracefully follow a moving
+    // container. syncSelectionRing redraws it at the new position once
+    // commitMove fires.
+    this.selectionRing?.setVisible(false);
+    this.isMoving = true;
+
+    const tweenNext = (i: number): void => {
+      if (i >= waypoints.length) {
+        this.isMoving = false;
+        onComplete();
+        return;
+      }
+      const wp = waypoints[i]!;
+      const { x, y } = tileCenterInWorld(wp.x, wp.y);
+      this.tweens.add({
+        targets: container,
+        x,
+        y,
+        duration: MOVE_STEP_MS,
+        onComplete: () => tweenNext(i + 1),
+      });
+    };
+    tweenNext(1);
   }
 
   private handlePinch(p1: Phaser.Input.Pointer, p2: Phaser.Input.Pointer): void {
@@ -328,6 +448,10 @@ export class GameScene extends Phaser.Scene {
   }
 
   private setupUnitLayer(): void {
+    this.pathPreview = this.add.graphics();
+    this.pathPreview.setDepth(PATH_PREVIEW_DEPTH);
+    this.pathPreview.setVisible(false);
+
     this.selectionRing = this.add.graphics();
     this.selectionRing.setDepth(SELECTION_RING_DEPTH);
     this.selectionRing.setVisible(false);
@@ -335,6 +459,7 @@ export class GameScene extends Phaser.Scene {
     const initial = useGameStore.getState();
     this.syncUnitContainers(initial.units);
     this.syncSelectionRing(initial.selectedUnitId, initial.units);
+    this.renderPathPreview(initial.proposedMove);
 
     this.unsubscribeUnits = useGameStore.subscribe((state, prev) => {
       if (state.units === prev.units) return;
@@ -345,6 +470,10 @@ export class GameScene extends Phaser.Scene {
       if (state.selectedUnitId === prev.selectedUnitId) return;
       this.syncSelectionRing(state.selectedUnitId, state.units);
     });
+    this.unsubscribeProposedMove = useGameStore.subscribe((state, prev) => {
+      if (state.proposedMove === prev.proposedMove) return;
+      this.renderPathPreview(state.proposedMove);
+    });
   }
 
   private teardownUnitLayer(): void {
@@ -352,12 +481,16 @@ export class GameScene extends Phaser.Scene {
     this.unsubscribeUnits = null;
     this.unsubscribeSelection?.();
     this.unsubscribeSelection = null;
+    this.unsubscribeProposedMove?.();
+    this.unsubscribeProposedMove = null;
     for (const container of this.unitContainers.values()) {
       container.destroy();
     }
     this.unitContainers.clear();
     this.selectionRing?.destroy();
     this.selectionRing = null;
+    this.pathPreview?.destroy();
+    this.pathPreview = null;
   }
 
   private syncUnitContainers(units: readonly UnitJSON[]): void {
@@ -439,6 +572,30 @@ export class GameScene extends Phaser.Scene {
     ring.lineStyle(2, SELECTION_RING_COLOR, 1);
     ring.strokeCircle(x, y, radius);
     ring.setVisible(true);
+  }
+
+  private renderPathPreview(proposedMove: ProposedMove | null): void {
+    const g = this.pathPreview;
+    if (!g) return;
+    g.clear();
+    if (!proposedMove || proposedMove.path.length < 2) {
+      g.setVisible(false);
+      return;
+    }
+    const { path, reachable } = proposedMove;
+    const dotRadius = renderedTileSize() * PATH_PREVIEW_DOT_SCALE;
+    // Skip path[0] (origin tile) — the unit sprite already sits there.
+    for (let i = 1; i < path.length; i++) {
+      const tile = path[i]!;
+      const { x, y } = tileCenterInWorld(tile.x, tile.y);
+      if (i <= reachable) {
+        g.fillStyle(PATH_PREVIEW_REACHABLE_COLOR, 1);
+      } else {
+        g.fillStyle(PATH_PREVIEW_BEYOND_COLOR, PATH_PREVIEW_BEYOND_ALPHA);
+      }
+      g.fillCircle(x, y, dotRadius);
+    }
+    g.setVisible(true);
   }
 
   private persistCameraView(): void {
