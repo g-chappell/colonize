@@ -265,3 +265,21 @@ gaps.
   - Per-faction mechanical-identity copy lives on the faction record itself (a `bonus` string) rather than deferring to TASK-063 for hook-wiring. The select screen surfaces the intent now as player-visible flavour; TASK-063 will later wire the runtime hooks, and the strings can evolve independently without touching the UI.
   - Inline SVG crests follow the same playbook as TASK-013's Heraldry: one `<defs>` shield path per faction, one per-faction sigil group, all scoped by `data-testid="faction-crest-<id>"` so tests pin structure-not-style. Keeps the MVP asset-pipeline-free while leaving a clean swap-point for pixel-art crests when the art epic lands.
 - Notes: Fourteenth autonomous-run cycle. Streak=4 toward successThreshold=5 (TASK-011 → TASK-012 → TASK-013 → TASK-014 since PR #17 review checkpoint). Next success will trigger a review pass.
+
+---
+
+### Run [2026-04-21 05:10]
+- Task: TASK-017 — Tile type enum + Map model in packages/core
+- Outcome: success
+- PR: https://github.com/g-chappell/colonize/pull/22 (merged)
+- Test counts: server=8, web=42, content=15, core=27 (was 1 — +22 GameMap, +4 TileType), shared=2
+- Files changed: packages/core/src/index.ts, packages/core/src/map/index.ts (new), packages/core/src/map/tile.ts (new), packages/core/src/map/tile.test.ts (new), packages/core/src/map/map.ts (new), packages/core/src/map/map.test.ts (new), roadmap/roadmap.yml, ROADMAP.md
+- Regression alert: false (core 1 → 27; all other counts steady)
+- Review proposed: <pending — Step 15 will fire /autonomous-review (5 consecutive successes since PR #17 checkpoint)>
+- Deploy: <pending>
+- Lessons learned:
+  - Used a const-object + derived `type` for `TileType` instead of a TypeScript `enum`. `isolatedModules: true` (tsconfig.base.json) makes `const enum` unsafe across project boundaries, and a regular `enum` would inflate the @colonize/core surface with a runtime object that's mostly redundant with the typed string-literal union. Const-object pairs cleanly with the JSON serialise/revive path: `tiles` are plain strings on the wire and survive `JSON.parse` without an enum-rebuild step.
+  - Picked 8-connected neighbours (Moore neighbourhood) over 4-connected for parity with Sid Meier Colonization 1994. EPIC-04 pathfinding (TASK-028 A*) and EPIC-03 fog-of-war (TASK-022) will both consume `neighbours()`; if either later wants 4-connected (e.g. for sailing-only constraints), the call site can filter `dx === 0 || dy === 0` rather than us splitting the API.
+  - `noUnusedLocals` + `exactOptionalPropertyTypes` made `tiles[i]!` non-null assertion necessary at the post-validation copy site in `fromJSON` even though the loop has just guarded each entry — this is the strict-mode tradeoff. Keeping the validation loop and the copy loop separate (rather than fusing them) keeps the error message specific to the offending index, which matters more for save-format debugging than the micro-cost of a second pass.
+
+---
