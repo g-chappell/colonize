@@ -238,7 +238,7 @@ epics:
         tasks:
           - id: TASK-011
             title: "Create event bus in apps/web/src/bus.ts"
-            status: in-progress
+            status: done
             priority: high
             complexity: small
             workspaces: [web]
@@ -247,8 +247,8 @@ epics:
               packages/shared. Used by React HUD and Phaser scenes to
               communicate without tight coupling.
             depends_on: [TASK-010]
-            pr: null
-            completed: null
+            pr: "https://github.com/g-chappell/colonize/pull/18"
+            completed: "2026-04-21"
             blocked_reason: null
             last_attempted: "2026-04-21T00:00:00Z"
             attempt_count: 1
