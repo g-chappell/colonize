@@ -426,7 +426,7 @@ epics:
             attempt_count: 1
           - id: TASK-020
             title: "Camera controls: pan / zoom / mobile touch"
-            status: in-progress
+            status: done
             priority: high
             complexity: medium
             workspaces: [web]
@@ -436,8 +436,8 @@ epics:
               Clamp zoom to sensible min/max. Remember last camera
               position per game.
             depends_on: [TASK-019]
-            pr: null
-            completed: null
+            pr: "https://github.com/g-chappell/colonize/pull/26"
+            completed: "2026-04-21T00:00:00Z"
             blocked_reason: null
             last_attempted: "2026-04-21T00:00:00Z"
             attempt_count: 1
