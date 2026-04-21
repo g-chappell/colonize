@@ -562,7 +562,7 @@ epics:
         tasks:
           - id: TASK-026
             title: "Unit model + movement points"
-            status: in-progress
+            status: done
             priority: high
             complexity: medium
             workspaces: [core]
@@ -571,8 +571,8 @@ epics:
               set at turn start per unit type. Deduct on move. Unit
               tests.
             depends_on: [TASK-017]
-            pr: null
-            completed: null
+            pr: "https://github.com/g-chappell/colonize/pull/36"
+            completed: "2026-04-21"
             blocked_reason: null
             last_attempted: "2026-04-21T00:00:00Z"
             attempt_count: 1
