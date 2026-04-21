@@ -450,7 +450,7 @@ epics:
         tasks:
           - id: TASK-021
             title: "Visibility model in core (unseen / seen / visible)"
-            status: in-progress
+            status: done
             priority: high
             complexity: medium
             workspaces: [core]
@@ -459,8 +459,8 @@ epics:
               observed snapshot, dimmed), visible (currently in LoS).
               Update on unit move / colony placement. Serializable.
             depends_on: [TASK-017]
-            pr: null
-            completed: null
+            pr: "https://github.com/g-chappell/colonize/pull/31"
+            completed: "2026-04-21T00:00:00Z"
             blocked_reason: null
             last_attempted: "2026-04-21T00:00:00Z"
             attempt_count: 1
