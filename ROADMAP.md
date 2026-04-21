@@ -10,8 +10,8 @@ _Created: 2026-04-20_
 
 - **Total tasks:** 90
 - **Done:** 11 (12%)
-- **Ready:** 79
-- **In progress:** 0
+- **Ready:** 78
+- **In progress:** 1
 - **Blocked:** 0
 
 ---
@@ -123,7 +123,7 @@ Phaser canvas with a shared event bus.
     > Simple typed pub/sub (mitt or hand-rolled). Events typed via
     > packages/shared. Used by React HUD and Phaser scenes to
     > communicate without tight coupling.
-  - :black_circle: **TASK-012** — Build HUD components (resource bar, year, end-turn)  `high` `medium` _(web)_  
+  - :large_orange_diamond: **TASK-012** — Build HUD components (resource bar, year, end-turn)  `high` `medium` _(web)_  
     _depends on: TASK-011_
     > React components rendering on top of the Phaser canvas via
     > CSS absolute positioning. Read from game store

@@ -254,7 +254,7 @@ epics:
             attempt_count: 1
           - id: TASK-012
             title: "Build HUD components (resource bar, year, end-turn)"
-            status: ready
+            status: in-progress
             priority: high
             complexity: medium
             workspaces: [web]
@@ -268,8 +268,8 @@ epics:
             pr: null
             completed: null
             blocked_reason: null
-            last_attempted: null
-            attempt_count: 0
+            last_attempted: "2026-04-21T00:00:00Z"
+            attempt_count: 1
       - id: STORY-07
         title: "Screen navigation"
         description: |
