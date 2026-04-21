@@ -9,9 +9,9 @@ _Created: 2026-04-20_
 ## Summary
 
 - **Total tasks:** 90
-- **Done:** 24 (27%)
+- **Done:** 25 (28%)
 - **Ready:** 65
-- **In progress:** 1
+- **In progress:** 0
 - **Blocked:** 0
 
 ---
@@ -272,7 +272,7 @@ rules including wind, currents, and Red Tide impassability.
 - **STORY-15** — Pathfinding + sailing rules
   > A* pathfinding on the ocean map. Wind zones give +/- move-cost
   > modifiers. Red Tide tiles impassable without Kraken Talisman.
-  - :large_orange_diamond: **TASK-028** — A* pathfinding with tile cost modifiers  `high` `medium` _(core)_  
+  - :white_check_mark: **TASK-028** — A* pathfinding with tile cost modifiers  `high` `medium` _(core)_ · [PR](https://github.com/g-chappell/colonize/pull/38)  
     _depends on: TASK-017, TASK-026_
     > Pathfinder returning tile-by-tile path + total cost. Per-
     > tile cost from map (ocean = 1, Red Tide = ∞ unless unit

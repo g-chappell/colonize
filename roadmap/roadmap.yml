@@ -601,7 +601,7 @@ epics:
         tasks:
           - id: TASK-028
             title: "A* pathfinding with tile cost modifiers"
-            status: in-progress
+            status: done
             priority: high
             complexity: medium
             workspaces: [core]
@@ -610,8 +610,8 @@ epics:
               tile cost from map (ocean = 1, Red Tide = ∞ unless unit
               has RedTideImmunity flag). Unit tests with a small map.
             depends_on: [TASK-017, TASK-026]
-            pr: null
-            completed: null
+            pr: "https://github.com/g-chappell/colonize/pull/38"
+            completed: "2026-04-21"
             blocked_reason: null
             last_attempted: "2026-04-21T00:00:00Z"
             attempt_count: 1
