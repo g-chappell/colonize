@@ -215,7 +215,7 @@ epics:
             attempt_count: 1
           - id: TASK-010
             title: "Load placeholder atlas in Phaser boot scene"
-            status: ready
+            status: done
             priority: high
             complexity: small
             workspaces: [web, content]
@@ -224,11 +224,11 @@ epics:
               packaged atlas + shows a loading bar. On load complete,
               transition to a MainMenuScene placeholder.
             depends_on: [TASK-002, TASK-009]
-            pr: null
-            completed: null
+            pr: "https://github.com/g-chappell/colonize/pull/16"
+            completed: "2026-04-21"
             blocked_reason: null
-            last_attempted: null
-            attempt_count: 0
+            last_attempted: "2026-04-21T00:00:00Z"
+            attempt_count: 1
       - id: STORY-06
         title: "HUD chrome"
         description: |
