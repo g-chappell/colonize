@@ -10,8 +10,8 @@ _Created: 2026-04-20_
 
 - **Total tasks:** 90
 - **Done:** 16 (18%)
-- **Ready:** 74
-- **In progress:** 0
+- **Ready:** 73
+- **In progress:** 1
 - **Blocked:** 0
 
 ---
@@ -191,7 +191,7 @@ touch. All tiles fixed at map-gen; no island-emergence.
   > Phaser tilemap renderer fed by the core Map model. Tiles use
   > the art-pipeline atlas. Smooth performance on low-end mobile
   > targets.
-  - :black_circle: **TASK-019** — Phaser GameScene + tile renderer  `high` `large` _(web, core, content)_  
+  - :large_orange_diamond: **TASK-019** — Phaser GameScene + tile renderer  `high` `large` _(web, core, content)_  
     _depends on: TASK-010, TASK-018_
     > GameScene loads a Map from core, renders each tile via the
     > atlas. Supports variable tile sizes (animated water

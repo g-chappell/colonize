@@ -409,7 +409,7 @@ epics:
         tasks:
           - id: TASK-019
             title: "Phaser GameScene + tile renderer"
-            status: ready
+            status: in-progress
             priority: high
             complexity: large
             workspaces: [web, core, content]
@@ -422,8 +422,8 @@ epics:
             pr: null
             completed: null
             blocked_reason: null
-            last_attempted: null
-            attempt_count: 0
+            last_attempted: "2026-04-21T13:00:00Z"
+            attempt_count: 1
           - id: TASK-020
             title: "Camera controls: pan / zoom / mobile touch"
             status: ready
