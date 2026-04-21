@@ -7,6 +7,7 @@ describe('game asset keys', () => {
     expect(ATLAS_KEYS.core).toBe('atlas-core');
     expect(SCENE_KEYS.boot).toBe('BootScene');
     expect(SCENE_KEYS.mainMenu).toBe('MainMenuScene');
+    expect(SCENE_KEYS.game).toBe('GameScene');
   });
 
   it('points the core atlas at the public paths prepare-assets copies into place', () => {
