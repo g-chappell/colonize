@@ -687,7 +687,7 @@ epics:
         tasks:
           - id: TASK-032
             title: "Rumour-tile entity in core + generator integration"
-            status: in-progress
+            status: done
             priority: high
             complexity: medium
             workspaces: [core]
@@ -696,8 +696,8 @@ epics:
               sprinkles them in unexplored regions. On entry, resolve()
               returns a typed RumourOutcome.
             depends_on: [TASK-018, TASK-026]
-            pr: null
-            completed: null
+            pr: "https://github.com/g-chappell/colonize/pull/43"
+            completed: "2026-04-21T00:00:00Z"
             blocked_reason: null
             last_attempted: "2026-04-21T00:00:00Z"
             attempt_count: 1
