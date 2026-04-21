@@ -1,8 +1,13 @@
 import { describe, it, expect } from 'vitest';
 import {
   ALL_RUMOUR_KINDS,
+  ALL_RUMOUR_OUTCOME_CATEGORIES,
   isRumourKind,
+  isRumourOutcomeCategory,
+  LEGENDARY_WRECK_BLUEPRINT_FACTION,
+  outcomeCategoryForKind,
   RumourKind,
+  RumourOutcomeCategory,
   RumourTile,
   type RumourOutcome,
   type RumourTileJSON,
@@ -33,6 +38,33 @@ describe('RumourKind', () => {
   });
 });
 
+describe('RumourOutcomeCategory', () => {
+  it('exposes the four outcome categories from the design spec', () => {
+    expect(ALL_RUMOUR_OUTCOME_CATEGORIES).toHaveLength(4);
+    expect(new Set(ALL_RUMOUR_OUTCOME_CATEGORIES)).toEqual(
+      new Set(['ArchiveCache', 'LegendaryWreck', 'KrakenShrine', 'FataMorganaMirage']),
+    );
+  });
+
+  it.each(ALL_RUMOUR_OUTCOME_CATEGORIES)('isRumourOutcomeCategory accepts %s', (c) => {
+    expect(isRumourOutcomeCategory(c)).toBe(true);
+  });
+
+  it.each(['', 'treasure', 42, null, undefined, {}])(
+    'isRumourOutcomeCategory rejects %s',
+    (bad) => {
+      expect(isRumourOutcomeCategory(bad)).toBe(false);
+    },
+  );
+
+  it('maps each RumourKind to exactly one category', () => {
+    expect(outcomeCategoryForKind(RumourKind.Treasure)).toBe(RumourOutcomeCategory.ArchiveCache);
+    expect(outcomeCategoryForKind(RumourKind.Derelict)).toBe(RumourOutcomeCategory.LegendaryWreck);
+    expect(outcomeCategoryForKind(RumourKind.Encounter)).toBe(RumourOutcomeCategory.KrakenShrine);
+    expect(outcomeCategoryForKind(RumourKind.Mirage)).toBe(RumourOutcomeCategory.FataMorganaMirage);
+  });
+});
+
 describe('RumourTile construction', () => {
   it('stores id, position, kind, and defaults resolved to false', () => {
     const t = makeTile({ id: 'r-7', x: 10, y: 11, kind: RumourKind.Derelict });
@@ -40,6 +72,15 @@ describe('RumourTile construction', () => {
     expect(t.position).toEqual({ x: 10, y: 11 });
     expect(t.kind).toBe(RumourKind.Derelict);
     expect(t.resolved).toBe(false);
+  });
+
+  it('exposes the outcome category derived from kind', () => {
+    expect(makeTile({ kind: RumourKind.Treasure }).outcomeCategory).toBe(
+      RumourOutcomeCategory.ArchiveCache,
+    );
+    expect(makeTile({ kind: RumourKind.Derelict }).outcomeCategory).toBe(
+      RumourOutcomeCategory.LegendaryWreck,
+    );
   });
 
   it('returns a defensive copy of position', () => {
@@ -81,32 +122,71 @@ describe('RumourTile construction', () => {
 describe('RumourTile.resolve', () => {
   const rng = () => 0.5;
 
-  it('Treasure resolves to a gold outcome with amount in [20,100]', () => {
+  it('Treasure resolves to an ArchiveCache with libertyChimes in [5,15]', () => {
     const out: RumourOutcome = makeTile({ kind: RumourKind.Treasure }).resolve(rng);
-    expect(out.type).toBe('gold');
-    if (out.type === 'gold') {
-      expect(out.amount).toBeGreaterThanOrEqual(20);
-      expect(out.amount).toBeLessThanOrEqual(100);
-      expect(Number.isInteger(out.amount)).toBe(true);
+    expect(out.category).toBe(RumourOutcomeCategory.ArchiveCache);
+    if (out.category === 'ArchiveCache') {
+      expect(out.libertyChimes).toBeGreaterThanOrEqual(5);
+      expect(out.libertyChimes).toBeLessThanOrEqual(15);
+      expect(Number.isInteger(out.libertyChimes)).toBe(true);
     }
   });
 
-  it('Derelict resolves to a salvage outcome with amount in [1,5]', () => {
+  it('Derelict for OTK resolves to a Legendary blueprint reward', () => {
+    const out = makeTile({ kind: RumourKind.Derelict }).resolve(rng, {
+      faction: LEGENDARY_WRECK_BLUEPRINT_FACTION,
+    });
+    expect(out.category).toBe(RumourOutcomeCategory.LegendaryWreck);
+    if (out.category === 'LegendaryWreck') {
+      expect(out.reward.kind).toBe('legendary-blueprint');
+    }
+  });
+
+  it('Derelict for a non-OTK faction resolves to a salvage reward in [2,5]', () => {
+    const out = makeTile({ kind: RumourKind.Derelict }).resolve(rng, { faction: 'phantom' });
+    expect(out.category).toBe(RumourOutcomeCategory.LegendaryWreck);
+    if (out.category === 'LegendaryWreck' && out.reward.kind === 'salvage') {
+      expect(out.reward.amount).toBeGreaterThanOrEqual(2);
+      expect(out.reward.amount).toBeLessThanOrEqual(5);
+      expect(Number.isInteger(out.reward.amount)).toBe(true);
+    } else {
+      throw new Error('expected salvage reward for non-OTK faction');
+    }
+  });
+
+  it('Derelict without a faction also resolves to salvage (non-blueprint default)', () => {
     const out = makeTile({ kind: RumourKind.Derelict }).resolve(rng);
-    expect(out.type).toBe('salvage');
-    if (out.type === 'salvage') {
-      expect(out.amount).toBeGreaterThanOrEqual(1);
-      expect(out.amount).toBeLessThanOrEqual(5);
-      expect(Number.isInteger(out.amount)).toBe(true);
+    expect(out.category).toBe(RumourOutcomeCategory.LegendaryWreck);
+    if (out.category === 'LegendaryWreck') {
+      expect(out.reward.kind).toBe('salvage');
     }
   });
 
-  it('Mirage resolves to nothing', () => {
-    expect(makeTile({ kind: RumourKind.Mirage }).resolve(rng)).toEqual({ type: 'nothing' });
+  it('Encounter resolves to a KrakenShrine with a positive reputation delta in [1,3]', () => {
+    const out = makeTile({ kind: RumourKind.Encounter }).resolve(rng);
+    expect(out.category).toBe(RumourOutcomeCategory.KrakenShrine);
+    if (out.category === 'KrakenShrine') {
+      expect(out.reputationDelta).toBeGreaterThanOrEqual(1);
+      expect(out.reputationDelta).toBeLessThanOrEqual(3);
+      expect(Number.isInteger(out.reputationDelta)).toBe(true);
+    }
   });
 
-  it('Encounter resolves to encounter', () => {
-    expect(makeTile({ kind: RumourKind.Encounter }).resolve(rng)).toEqual({ type: 'encounter' });
+  it('Mirage resolves to a FataMorganaMirage with a nothing/bonus/hazard variant', () => {
+    const out = makeTile({ kind: RumourKind.Mirage }).resolve(rng);
+    expect(out.category).toBe(RumourOutcomeCategory.FataMorganaMirage);
+    if (out.category === 'FataMorganaMirage') {
+      expect(['nothing', 'bonus', 'hazard']).toContain(out.variant);
+    }
+  });
+
+  it('Mirage variant partitions the [0,1) RNG range into three roughly equal thirds', () => {
+    const nothing = makeTile({ kind: RumourKind.Mirage, id: 'a' }).resolve(() => 0.0);
+    const bonus = makeTile({ kind: RumourKind.Mirage, id: 'b' }).resolve(() => 0.5);
+    const hazard = makeTile({ kind: RumourKind.Mirage, id: 'c' }).resolve(() => 0.9);
+    expect(nothing.category === 'FataMorganaMirage' && nothing.variant).toBe('nothing');
+    expect(bonus.category === 'FataMorganaMirage' && bonus.variant).toBe('bonus');
+    expect(hazard.category === 'FataMorganaMirage' && hazard.variant).toBe('hazard');
   });
 
   it('flips resolved to true after resolve', () => {
@@ -122,14 +202,14 @@ describe('RumourTile.resolve', () => {
     expect(() => t.resolve(rng)).toThrow(/already been resolved/);
   });
 
-  it('is deterministic for a given rng sequence', () => {
+  it('is deterministic for a given rng sequence and faction', () => {
     const seq = [0.1, 0.9, 0.42];
     const mk = () => {
       let i = 0;
       return () => seq[i++ % seq.length]!;
     };
-    const a = makeTile({ kind: RumourKind.Treasure }).resolve(mk());
-    const b = makeTile({ kind: RumourKind.Treasure }).resolve(mk());
+    const a = makeTile({ kind: RumourKind.Treasure }).resolve(mk(), { faction: 'phantom' });
+    const b = makeTile({ kind: RumourKind.Treasure }).resolve(mk(), { faction: 'phantom' });
     expect(a).toEqual(b);
   });
 

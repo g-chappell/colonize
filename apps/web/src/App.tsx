@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import './App.css';
 import { GameCanvas } from './GameCanvas';
 import { Hud } from './hud/Hud';
+import { RumourRevealModal } from './hud/RumourRevealModal';
 import { MainMenu } from './menu/MainMenu';
 import { FactionSelect } from './menu/FactionSelect';
 import { PauseOverlay } from './pause/PauseOverlay';
@@ -46,6 +47,7 @@ export function App() {
       <div className="game-stage">
         <GameCanvas />
         <Hud />
+        <RumourRevealModal />
         {screen === 'pause' && <PauseOverlay />}
       </div>
     </main>

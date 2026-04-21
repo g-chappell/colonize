@@ -1,4 +1,5 @@
 import type { Coord } from '../map/map.js';
+import type { FactionId } from '../unit/unit.js';
 
 export const RumourKind = {
   Treasure: 'treasure',
@@ -15,11 +16,57 @@ export function isRumourKind(value: unknown): value is RumourKind {
   return typeof value === 'string' && (ALL_RUMOUR_KINDS as readonly string[]).includes(value);
 }
 
+export const RumourOutcomeCategory = {
+  ArchiveCache: 'ArchiveCache',
+  LegendaryWreck: 'LegendaryWreck',
+  KrakenShrine: 'KrakenShrine',
+  FataMorganaMirage: 'FataMorganaMirage',
+} as const;
+
+export type RumourOutcomeCategory =
+  (typeof RumourOutcomeCategory)[keyof typeof RumourOutcomeCategory];
+
+export const ALL_RUMOUR_OUTCOME_CATEGORIES: readonly RumourOutcomeCategory[] =
+  Object.values(RumourOutcomeCategory);
+
+export function isRumourOutcomeCategory(value: unknown): value is RumourOutcomeCategory {
+  return (
+    typeof value === 'string' &&
+    (ALL_RUMOUR_OUTCOME_CATEGORIES as readonly string[]).includes(value)
+  );
+}
+
+export type MirageVariant = 'nothing' | 'bonus' | 'hazard';
+
+// Faction id that unlocks the Legendary blueprint branch of LegendaryWreck.
+// Other factions get a salvage reward instead. Hard-coded here (rather than
+// read from content) because core cannot import from packages/content — the
+// dependency direction forbids it.
+export const LEGENDARY_WRECK_BLUEPRINT_FACTION: FactionId = 'otk';
+
 export type RumourOutcome =
-  | { readonly type: 'gold'; readonly amount: number }
-  | { readonly type: 'salvage'; readonly amount: number }
-  | { readonly type: 'nothing' }
-  | { readonly type: 'encounter' };
+  | { readonly category: 'ArchiveCache'; readonly libertyChimes: number }
+  | {
+      readonly category: 'LegendaryWreck';
+      readonly reward:
+        | { readonly kind: 'legendary-blueprint' }
+        | { readonly kind: 'salvage'; readonly amount: number };
+    }
+  | { readonly category: 'KrakenShrine'; readonly reputationDelta: number }
+  | { readonly category: 'FataMorganaMirage'; readonly variant: MirageVariant };
+
+export function outcomeCategoryForKind(kind: RumourKind): RumourOutcomeCategory {
+  switch (kind) {
+    case RumourKind.Treasure:
+      return RumourOutcomeCategory.ArchiveCache;
+    case RumourKind.Derelict:
+      return RumourOutcomeCategory.LegendaryWreck;
+    case RumourKind.Encounter:
+      return RumourOutcomeCategory.KrakenShrine;
+    case RumourKind.Mirage:
+      return RumourOutcomeCategory.FataMorganaMirage;
+  }
+}
 
 export interface RumourTileJSON {
   readonly id: string;
@@ -33,6 +80,10 @@ export interface RumourTileInit {
   readonly position: Coord;
   readonly kind: RumourKind;
   readonly resolved?: boolean;
+}
+
+export interface ResolveOptions {
+  readonly faction?: FactionId;
 }
 
 export class RumourTile {
@@ -68,14 +119,18 @@ export class RumourTile {
     return this._resolved;
   }
 
-  resolve(rng: () => number): RumourOutcome {
+  get outcomeCategory(): RumourOutcomeCategory {
+    return outcomeCategoryForKind(this.kind);
+  }
+
+  resolve(rng: () => number, options: ResolveOptions = {}): RumourOutcome {
     if (this._resolved) {
       throw new Error(`RumourTile ${this.id} has already been resolved`);
     }
     if (typeof rng !== 'function') {
       throw new TypeError('RumourTile.resolve requires an rng function () => number');
     }
-    const outcome = rollOutcome(this.kind, rng);
+    const outcome = rollOutcome(this.kind, rng, options.faction);
     this._resolved = true;
     return outcome;
   }
@@ -102,17 +157,46 @@ export class RumourTile {
   }
 }
 
-function rollOutcome(kind: RumourKind, rng: () => number): RumourOutcome {
+function rollOutcome(
+  kind: RumourKind,
+  rng: () => number,
+  faction: FactionId | undefined,
+): RumourOutcome {
   switch (kind) {
     case RumourKind.Treasure:
-      return { type: 'gold', amount: randInt(rng, 20, 100) };
+      return {
+        category: RumourOutcomeCategory.ArchiveCache,
+        libertyChimes: randInt(rng, 5, 15),
+      };
     case RumourKind.Derelict:
-      return { type: 'salvage', amount: randInt(rng, 1, 5) };
-    case RumourKind.Mirage:
-      return { type: 'nothing' };
+      if (faction === LEGENDARY_WRECK_BLUEPRINT_FACTION) {
+        return {
+          category: RumourOutcomeCategory.LegendaryWreck,
+          reward: { kind: 'legendary-blueprint' },
+        };
+      }
+      return {
+        category: RumourOutcomeCategory.LegendaryWreck,
+        reward: { kind: 'salvage', amount: randInt(rng, 2, 5) },
+      };
     case RumourKind.Encounter:
-      return { type: 'encounter' };
+      return {
+        category: RumourOutcomeCategory.KrakenShrine,
+        reputationDelta: randInt(rng, 1, 3),
+      };
+    case RumourKind.Mirage:
+      return {
+        category: RumourOutcomeCategory.FataMorganaMirage,
+        variant: rollMirageVariant(rng),
+      };
   }
+}
+
+function rollMirageVariant(rng: () => number): MirageVariant {
+  const r = rng();
+  if (r < 1 / 3) return 'nothing';
+  if (r < 2 / 3) return 'bonus';
+  return 'hazard';
 }
 
 function randInt(rng: () => number, min: number, max: number): number {

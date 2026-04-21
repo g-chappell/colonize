@@ -26,5 +26,21 @@ export { TurnPhase, ALL_TURN_PHASES, isTurnPhase, TurnManager } from './turn/ind
 export type { TurnHook, TurnHookContext, TurnHookEvent, TurnStateJSON } from './turn/index.js';
 export { UnitType, ALL_UNIT_TYPES, isUnitType, getUnitTypeDefinition, Unit } from './unit/index.js';
 export type { UnitTypeDefinition, UnitJSON, UnitInit, FactionId } from './unit/index.js';
-export { RumourKind, ALL_RUMOUR_KINDS, isRumourKind, RumourTile } from './rumour/index.js';
-export type { RumourOutcome, RumourTileJSON, RumourTileInit } from './rumour/index.js';
+export {
+  RumourKind,
+  ALL_RUMOUR_KINDS,
+  isRumourKind,
+  RumourOutcomeCategory,
+  ALL_RUMOUR_OUTCOME_CATEGORIES,
+  isRumourOutcomeCategory,
+  outcomeCategoryForKind,
+  LEGENDARY_WRECK_BLUEPRINT_FACTION,
+  RumourTile,
+} from './rumour/index.js';
+export type {
+  RumourOutcome,
+  RumourTileJSON,
+  RumourTileInit,
+  ResolveOptions,
+  MirageVariant,
+} from './rumour/index.js';
