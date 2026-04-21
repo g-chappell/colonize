@@ -231,3 +231,20 @@ gaps.
   - Under vitest `css: false` (default), CSS Module imports return a Proxy that resolves any accessed key to a stub — tests see `styles.hud` as undefined/ignored className. Identifying HUD elements via `data-testid` rather than class names makes tests robust to that and to future CSS-Module hashing in production.
   - Layering React chrome over the Phaser canvas works cleanly with a `.game-stage` wrapper (`position: relative`) + `.hud { position: absolute; inset: 0; pointer-events: none }` + `.hud > * { pointer-events: auto }`. The inherited-none + child-auto pattern lets overlay regions (top-left, top-right, bottom-right) stay click-through where empty, so Phaser receives map clicks unimpeded. Future HUD additions should keep to this container pattern.
 - Notes: Twelfth autonomous-run cycle. Streak=2 toward successThreshold=5. Faction chip reads from store so TASK-014 (faction-select screen) already has its data slot wired — only a `setFaction` call needed from the select UI.
+
+---
+
+### Run [2026-04-21 03:15]
+- Task: TASK-013 — Main menu screen (React)
+- Outcome: success
+- PR: https://github.com/g-chappell/colonize/pull/20 (auto-merge enabled)
+- Test counts: server=8, web=39 (was 32 — +5 MainMenu, +3 store screen state, –1 App HUD smoke replaced by 3 screen-routing tests net +2 but App itself went 4 → 3), core=1, shared=2, content=9
+- Files changed: apps/web/src/menu/MainMenu.tsx (new), apps/web/src/menu/MainMenu.module.css (new), apps/web/src/menu/MainMenu.test.tsx (new), apps/web/src/store/game.ts, apps/web/src/store/game.test.ts, apps/web/src/App.tsx, apps/web/src/App.test.tsx, roadmap/roadmap.yml, ROADMAP.md
+- Regression alert: false (web 32 → 39; all other counts steady)
+- Review proposed: false (3 consecutive successes since PR #17 review checkpoint; threshold = 5)
+- Deploy: pending
+- Lessons learned:
+  - Screen routing for single-page flows lives cleanly in the zustand store as a `screen` literal-union (`'menu' | 'faction-select' | 'game'`) rather than a router — no extra dep, faction-select stub is trivially ownable by TASK-014, and tests can set the screen state directly in `beforeEach` without spelunking through navigation events.
+  - Menu-screen-as-default broke the previous App tests that assumed the game stage mounts on load (HUD test was looking for `hud-end-turn` at root). Refactor was to split the App suite into default-screen (menu) vs explicit-`setScreen('game')` tests — cheaper than keeping the game-stage at root and gating menu as a modal, and it mirrors the actual production UX.
+  - Inline SVG heraldry is a reasonable MVP choice: two mirrored `<g>` groups with `transform="scale(-1 1)"` give us paired-dragon silhouettes without any new asset pipeline. Dedicated pixel-art heraldry lands with content epics, but the test just pins the role + aria-label so swapping the SVG for a raster later won't churn tests.
+- Notes: Thirteenth autonomous-run cycle. Streak=3 toward successThreshold=5 (TASK-011 → TASK-012 → TASK-013 since PR #17 review checkpoint).
