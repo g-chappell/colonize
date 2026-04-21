@@ -10,8 +10,8 @@ _Created: 2026-04-20_
 
 - **Total tasks:** 90
 - **Done:** 30 (33%)
-- **Ready:** 60
-- **In progress:** 0
+- **Ready:** 59
+- **In progress:** 1
 - **Blocked:** 0
 
 ---
@@ -313,7 +313,7 @@ Ship blueprints (OTK-only).
     > RumourTile associated with a map position. Map generator
     > sprinkles them in unexplored regions. On entry, resolve()
     > returns a typed RumourOutcome.
-  - :black_circle: **TASK-033** — Rumour outcome table + UI reveal modal  `high` `medium` _(core, web, content)_  
+  - :large_orange_diamond: **TASK-033** — Rumour outcome table + UI reveal modal  `high` `medium` _(core, web, content)_  
     _depends on: TASK-032_
     > Outcome types: ArchiveCache (Liberty Chimes), LegendaryWreck
     > (Legendary blueprint for OTK, salvage for others),

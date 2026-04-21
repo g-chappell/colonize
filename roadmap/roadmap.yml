@@ -703,7 +703,7 @@ epics:
             attempt_count: 1
           - id: TASK-033
             title: "Rumour outcome table + UI reveal modal"
-            status: ready
+            status: in-progress
             priority: high
             complexity: medium
             workspaces: [core, web, content]
@@ -717,8 +717,8 @@ epics:
             pr: null
             completed: null
             blocked_reason: null
-            last_attempted: null
-            attempt_count: 0
+            last_attempted: "2026-04-21T12:30:00Z"
+            attempt_count: 1
       - id: STORY-18
         title: "Treasures as carried items"
         description: |
