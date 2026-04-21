@@ -52,3 +52,21 @@ gap-free.
   2. 1caef8a — codify asset-pipeline source/packed/served triad
   3. 5827d01 — defer AGENT-LOG push to main until feature PR merges (fixes feature-PR BEHIND race — PR #9 covered only the review-PR variant)
   4. 849db43 — prettier --write edited files before local validation (TASK-006/007/010 recurrence)
+
+
+---
+
+## Review [2026-04-21T05:18Z] — after TASK-011 through TASK-017
+- Success streak: 5 (TASK-011 → TASK-012 → TASK-013 → TASK-014 → TASK-017 since PR #17 review checkpoint)
+- Patterns identified: 4
+- Proposals drafted: 4
+- Proposals de-duplicated: 4 (all novel vs CLAUDE.md + approvals/history.md + last 2 review PRs; the workspace-dep triad lesson was already covered by the existing "Cross-workspace TS imports" rule, so no fifth proposal landed)
+- Refinements committed: 4
+- PR: https://github.com/g-chappell/colonize/pull/23
+- Outcome: opened
+- Files touched: CLAUDE.md (Tier 3 — Architecture notes; single hunk starting line 111, Tier 1 untouched)
+- Refinements:
+  1. c0dfc99 — codify HUD overlay click-through pattern (`pointer-events: none` container + `> *` auto)
+  2. 248b4a3 — codify inline-SVG-for-heraldry pattern for pre-art-epic chrome (data-testid pinned for raster swap-point)
+  3. 08a217b — codify string-literal const-object pattern for save-format-bound kinds (over `enum` / `const enum`)
+  4. 8fdb26e — codify zustand-store screen-routing literal-union (no react-router; `setState` in beforeEach for tests)
