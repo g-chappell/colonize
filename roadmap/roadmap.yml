@@ -319,7 +319,7 @@ epics:
         tasks:
           - id: TASK-015
             title: "Audio manager with SFX + BGM buses"
-            status: ready
+            status: in-progress
             priority: med
             complexity: medium
             workspaces: [web, content]
@@ -332,8 +332,8 @@ epics:
             pr: null
             completed: null
             blocked_reason: null
-            last_attempted: null
-            attempt_count: 0
+            last_attempted: "2026-04-21T17:03:01.270Z"
+            attempt_count: 1
           - id: TASK-016
             title: "Pause overlay (React) + resume"
             status: ready
