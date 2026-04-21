@@ -214,3 +214,20 @@ gaps.
   - ESLint `@typescript-eslint/no-empty-object-type` is on via `recommended`, so `interface GameEvents {}` would fail lint. Seeded the contract with one real starter event (`turn:advanced` — naturally needed by TASK-012 HUD + TASK-025 end-turn wiring) rather than disabling the rule; keeps the shared-package API tested end-to-end from day one.
   - `apps/web` wiring a new workspace dep (`@colonize/shared`) requires three co-ordinated touches: dependency in `package.json`, TS project reference in `tsconfig.json`, and running `npm install` at repo root to materialise the `node_modules/@colonize/shared` symlink. All three were needed this run — future workspace-linking tasks should expect the same triad.
 - Notes: Eleventh autonomous-run cycle. First success since PR #17 merged the prior review batch (streak reset). Four more consecutive successes to re-hit successThreshold=5.
+
+---
+
+### Run [2026-04-21 02:10]
+- Task: TASK-012 — Build HUD components (resource bar, year, end-turn)
+- Outcome: success
+- PR: https://github.com/g-chappell/colonize/pull/19 (auto-merge enabled)
+- Test counts: server=8, web=32 (was 20 — +8 HUD, +3 store faction, +1 App HUD smoke), core=1, shared=2, content=9
+- Files changed: apps/web/src/hud/Hud.tsx (new), apps/web/src/hud/Hud.module.css (new), apps/web/src/hud/Hud.test.tsx (new), apps/web/src/store/game.ts, apps/web/src/store/game.test.ts, apps/web/src/App.tsx, apps/web/src/App.test.tsx, apps/web/src/App.css, CLAUDE.md, roadmap/roadmap.yml, ROADMAP.md
+- Regression alert: false (web 20 → 32; all other counts steady)
+- Review proposed: false (2 consecutive successes since PR #17 review checkpoint; threshold = 5)
+- Deploy: pending
+- Lessons learned:
+  - Vite supports `*.module.css` out of the box and `vite/client` (already in `apps/web/tsconfig.json` types) declares the ambient import — no extra tooling, no `.d.ts` shim, no devDep bump. Picking CSS Modules over Tailwind for the HUD kept the PR surface-area at just source files.
+  - Under vitest `css: false` (default), CSS Module imports return a Proxy that resolves any accessed key to a stub — tests see `styles.hud` as undefined/ignored className. Identifying HUD elements via `data-testid` rather than class names makes tests robust to that and to future CSS-Module hashing in production.
+  - Layering React chrome over the Phaser canvas works cleanly with a `.game-stage` wrapper (`position: relative`) + `.hud { position: absolute; inset: 0; pointer-events: none }` + `.hud > * { pointer-events: auto }`. The inherited-none + child-auto pattern lets overlay regions (top-left, top-right, bottom-right) stay click-through where empty, so Phaser receives map clicks unimpeded. Future HUD additions should keep to this container pattern.
+- Notes: Twelfth autonomous-run cycle. Streak=2 toward successThreshold=5. Faction chip reads from store so TASK-014 (faction-select screen) already has its data slot wired — only a `setFaction` call needed from the select UI.
