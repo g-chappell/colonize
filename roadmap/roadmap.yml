@@ -254,7 +254,7 @@ epics:
             attempt_count: 1
           - id: TASK-012
             title: "Build HUD components (resource bar, year, end-turn)"
-            status: ready
+            status: done
             priority: high
             complexity: medium
             workspaces: [web]
@@ -265,11 +265,11 @@ epics:
               resource-bar placeholders, end-turn button. Tailwind or CSS
               modules — pick and document.
             depends_on: [TASK-011]
-            pr: null
-            completed: null
+            pr: "https://github.com/g-chappell/colonize/pull/19"
+            completed: "2026-04-21T02:10:00Z"
             blocked_reason: null
-            last_attempted: null
-            attempt_count: 0
+            last_attempted: "2026-04-21T00:00:00Z"
+            attempt_count: 1
       - id: STORY-07
         title: "Screen navigation"
         description: |

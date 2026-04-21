@@ -18,4 +18,10 @@ describe('App', () => {
     render(<App />);
     expect(screen.getByText(/Hic sunt dracones/i)).toBeInTheDocument();
   });
+
+  it('mounts the HUD over the game stage', () => {
+    render(<App />);
+    expect(screen.getByTestId('hud')).toBeInTheDocument();
+    expect(screen.getByTestId('hud-end-turn')).toBeInTheDocument();
+  });
 });
