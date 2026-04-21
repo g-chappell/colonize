@@ -5,3 +5,4 @@ export {
   FactionVisibility,
 } from './visibility.js';
 export type { VisibilityJSON } from './visibility.js';
+export { seedStartingCorridorKnowledge } from './seed.js';
