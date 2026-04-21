@@ -9,9 +9,9 @@ _Created: 2026-04-20_
 ## Summary
 
 - **Total tasks:** 90
-- **Done:** 19 (21%)
+- **Done:** 20 (22%)
 - **Ready:** 70
-- **In progress:** 1
+- **In progress:** 0
 - **Blocked:** 0
 
 ---
@@ -213,7 +213,7 @@ touch. All tiles fixed at map-gen; no island-emergence.
     > Per-faction 2D grid with state: unseen (hidden), seen (last
     > observed snapshot, dimmed), visible (currently in LoS).
     > Update on unit move / colony placement. Serializable.
-  - :large_orange_diamond: **TASK-022** — Fog overlay in GameScene renderer  `high` `medium` _(web)_  
+  - :white_check_mark: **TASK-022** — Fog overlay in GameScene renderer  `high` `medium` _(web)_ · [PR](https://github.com/g-chappell/colonize/pull/32)  
     _depends on: TASK-019, TASK-021_
     > Phaser overlay layer darkens seen tiles and hides unseen.
     > Animated reveal when a tile transitions unseen→seen.

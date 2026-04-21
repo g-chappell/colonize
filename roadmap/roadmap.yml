@@ -466,7 +466,7 @@ epics:
             attempt_count: 1
           - id: TASK-022
             title: "Fog overlay in GameScene renderer"
-            status: in-progress
+            status: done
             priority: high
             complexity: medium
             workspaces: [web]
@@ -476,8 +476,8 @@ epics:
               Performance-conscious: use a single render-texture mask
               rather than per-tile sprites.
             depends_on: [TASK-019, TASK-021]
-            pr: null
-            completed: null
+            pr: "https://github.com/g-chappell/colonize/pull/32"
+            completed: "2026-04-21T00:00:00Z"
             blocked_reason: null
             last_attempted: "2026-04-21T00:00:00Z"
             attempt_count: 1
