@@ -179,3 +179,21 @@ gaps.
   - `free-tex-packer-core` 0.3.5 is CommonJS but imports cleanly via ESM default-import. Brings transitive deps (jimp 0.2.x, tinify 1.x, mustache, maxrects-packer) — install adds ~79 packages but no native build steps and no audit failures. Acceptable given the task explicitly named the wrapper.
   - PR #15 auto-merged faster than the AGENT-LOG push; rebase-pull on main resolved cleanly. If this becomes routine, the skill could push the log entry from the feature branch instead and let the merge carry it.
 - Notes: Ninth autonomous-run cycle. Streak: 4 consecutive successes since the TASK-005 review checkpoint (TASK-006 → TASK-007 → TASK-008 → TASK-009); the next successful run will hit successThreshold=5 and fire /autonomous-review.
+
+---
+
+### Run [2026-04-21 00:17]
+- Task: TASK-010 — Load placeholder atlas in Phaser boot scene
+- Outcome: success
+- PR: https://github.com/g-chappell/colonize/pull/16 (auto-merge enabled)
+- Test counts: server=8, web=11 (was 8 — added asset-keys invariants + GameCanvas mount smoke), content=9, core=1, shared=2
+- Files changed: apps/web/package.json, apps/web/src/App.{tsx,css}, apps/web/src/GameCanvas.{tsx,test.tsx}, apps/web/src/game/{asset-keys,boot-scene,main-menu-scene,create-game,index}.ts, apps/web/src/game/boot-scene.test.ts, apps/web/src/test-setup.ts, apps/web/scripts/prepare-assets.mjs, packages/content/package.json, packages/content/scripts/generate-placeholder-sources.mjs, packages/content/atlas-src/core/{tile_deck,tile_hull,tile_ocean}.png, .gitignore, package-lock.json, roadmap/roadmap.yml, ROADMAP.md
+- Regression alert: false (web 8 → 11; all other counts steady)
+- Review proposed: <filled in Step 15 if applicable>
+- Deploy: <filled in Step 14 if applicable>
+- Lessons learned:
+  - Phaser 3 top-level module init calls `canvas.getContext('2d')` in CanvasFeatures.js, which throws under jsdom. Dynamic-importing the Phaser bundle inside `GameCanvas`'s `useEffect` keeps it out of the test module graph entirely; pair with a `HTMLCanvasElement.getContext = () => null` stub in test-setup so our own mount-guard probe stops triggering jsdom's "not implemented" virtualConsole warning.
+  - Atlas pipeline shape: commit raw sprite PNGs under `packages/content/atlas-src/<atlas>/` (source), gitignore `atlas-out/` (pack-atlas output) and `apps/web/public/atlas/` (web-served copy). `apps/web` `predev`/`prebuild` runs pack-atlas then copies the packed folder in. One command path for dev + CI.
+  - Placeholder sprite generator uses `pngjs` directly (added to content devDeps — was transitively available via free-tex-packer-core, but making it explicit keeps the script's deps honest) and pulls colours from the OTK palette so the placeholder atlas already respects tonal registers.
+  - Vite build warns on the Phaser chunk (~1.48 MB uncompressed / 340 kB gzip). Acceptable for MVP — code-splitting is a later concern and not in task scope.
+- Notes: Tenth autonomous-run cycle. Fifth consecutive success since the TASK-005 review checkpoint (TASK-006 → TASK-007 → TASK-008 → TASK-009 → TASK-010). Streak hits successThreshold=5 — /autonomous-review should fire in Step 15 against this log + main.
