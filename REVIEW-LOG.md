@@ -85,3 +85,19 @@ gap-free.
 - Refinements:
   1. 13adafe — codify the pure-sibling module pattern for Phaser game code (camera-controls.ts, tile-atlas.ts, fog-overlay-state.ts as the three independent converges on the same split)
   2. e29ba6d — codify `exactOptionalPropertyTypes: true` gotcha + conditional-spread fix (TASK-017 + TASK-022 both tripped on optional-property-with-undefined; bundled the `array[i]!`-after-validation corollary in the same bullet)
+
+---
+
+## Review [2026-04-21T15:20Z] — after TASK-023 through TASK-028
+- Success streak: 5 (TASK-023 → TASK-024 → TASK-025 → TASK-026 → TASK-027 → TASK-028 since PR #33 review checkpoint; crossed threshold on TASK-028)
+- Patterns identified: 3
+- Proposals drafted: 3
+- Proposals de-duplicated: 3 (all novel vs CLAUDE.md + approvals/history.md + PRs #17, #23, #33; Jaro-Winkler threshold 0.85 via `alreadyCovered`)
+- Refinements committed: 3
+- PR: https://github.com/g-chappell/colonize/pull/39
+- Outcome: opened
+- Files touched: CLAUDE.md (Tier 3 Architecture notes, three new bullets appended after line 123; Tier 1 [lines 57–73] untouched)
+- Refinements:
+  1. bcf84cf — codify rules-vs-flavor split across `@colonize/core` and `@colonize/content` (engine-read stats live in core; descriptive/flavour stats live in content; duplicate the rule-relevant number rather than open a `content → core` import edge). Drove by TASK-027 ship stats split; supporting by TASK-026 UnitType registry location.
+  2. e00d06f — codify exhaustive `switch` as the reader-side tripwire for save-format const-object unions (no `default` case → adding a new literal fails the build at every consumer). Reader-side complement to PR #23 refinement #3 (const-object writer rule). Driven by TASK-028 `tileCost` over `TileType`.
+  3. 808d32f — codify publish-primitive-defer-wiring seam (ship the entity's verb; leave iteration/scheduling to the task that owns the collection). Driven by TASK-024 (`TurnManager` hooks non-serialized) + TASK-026 (`Unit.resetMovement()` primitive, wiring deferred to roster task).
