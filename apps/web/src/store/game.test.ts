@@ -62,4 +62,29 @@ describe('useGameStore', () => {
     useGameStore.getState().reset();
     expect(useGameStore.getState().screen).toBe('menu');
   });
+
+  it('starts with no remembered camera view', () => {
+    expect(useGameStore.getState().cameraView).toBeNull();
+  });
+
+  it('stores a camera view when GameScene reports one', () => {
+    useGameStore.getState().setCameraView({ scrollX: 100, scrollY: 200, zoom: 1.5 });
+    expect(useGameStore.getState().cameraView).toEqual({
+      scrollX: 100,
+      scrollY: 200,
+      zoom: 1.5,
+    });
+  });
+
+  it('clears the camera view explicitly', () => {
+    useGameStore.getState().setCameraView({ scrollX: 1, scrollY: 2, zoom: 1 });
+    useGameStore.getState().clearCameraView();
+    expect(useGameStore.getState().cameraView).toBeNull();
+  });
+
+  it('drops the camera view on reset (per-game memory only)', () => {
+    useGameStore.getState().setCameraView({ scrollX: 50, scrollY: 60, zoom: 2 });
+    useGameStore.getState().reset();
+    expect(useGameStore.getState().cameraView).toBeNull();
+  });
 });
