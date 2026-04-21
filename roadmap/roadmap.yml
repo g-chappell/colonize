@@ -367,7 +367,7 @@ epics:
         tasks:
           - id: TASK-017
             title: "Tile type enum + Map model in packages/core"
-            status: in-progress
+            status: done
             priority: high
             complexity: medium
             workspaces: [core]
@@ -377,8 +377,8 @@ epics:
               toJSON/fromJSON. Unit tests for coord math and
               serialization.
             depends_on: [TASK-004]
-            pr: null
-            completed: null
+            pr: "https://github.com/g-chappell/colonize/pull/22"
+            completed: "2026-04-21T12:45:00Z"
             blocked_reason: null
             last_attempted: "2026-04-21T12:30:00Z"
             attempt_count: 1
