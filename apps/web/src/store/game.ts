@@ -11,13 +11,17 @@ export const FACTION_NAMES: Record<PlayableFaction, string> = {
   bloodborne: 'Bloodborne Legion',
 };
 
+export type Screen = 'menu' | 'faction-select' | 'game';
+
 export interface GameState {
   gameVersion: GameVersion;
   currentTurn: number;
   faction: PlayableFaction;
+  screen: Screen;
   setCurrentTurn: (turn: number) => void;
   advanceTurn: () => void;
   setFaction: (faction: PlayableFaction) => void;
+  setScreen: (screen: Screen) => void;
   reset: () => void;
 }
 
@@ -25,6 +29,7 @@ const initialState = {
   gameVersion: CORE_VERSION,
   currentTurn: 0,
   faction: 'otk' as PlayableFaction,
+  screen: 'menu' as Screen,
 } as const;
 
 export const useGameStore = create<GameState>((set) => ({
@@ -32,5 +37,6 @@ export const useGameStore = create<GameState>((set) => ({
   setCurrentTurn: (turn) => set({ currentTurn: turn }),
   advanceTurn: () => set((state) => ({ currentTurn: state.currentTurn + 1 })),
   setFaction: (faction) => set({ faction }),
+  setScreen: (screen) => set({ screen }),
   reset: () => set({ ...initialState }),
 }));

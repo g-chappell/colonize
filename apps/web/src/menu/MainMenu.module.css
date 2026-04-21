@@ -1,0 +1,84 @@
+.menu {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  font-family: 'Georgia', 'Times New Roman', serif;
+  color: #e8d8b8;
+  background: radial-gradient(ellipse at center, #10293a 0%, #0c1e2b 70%), #0c1e2b;
+  text-align: center;
+  padding: 2rem 1.5rem;
+}
+
+.heraldry {
+  width: min(320px, 60vw);
+  height: auto;
+  margin-bottom: 0.5rem;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.6));
+}
+
+.title {
+  font-size: clamp(3rem, 8vw, 6rem);
+  margin: 0;
+  letter-spacing: 0.08em;
+  color: #d6b466;
+}
+
+.era {
+  font-size: 0.95rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  opacity: 0.7;
+  margin: 0;
+}
+
+.motto {
+  font-style: italic;
+  opacity: 0.55;
+  margin: 0 0 1.5rem;
+  letter-spacing: 0.04em;
+}
+
+.items {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: min(320px, 80vw);
+}
+
+.item {
+  width: 100%;
+  padding: 0.75rem 1.5rem;
+  background: rgba(12, 30, 43, 0.85);
+  border: 1px solid #d6b466;
+  color: #d6b466;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: bold;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    background 120ms ease,
+    color 120ms ease;
+}
+
+.item:hover:not(:disabled) {
+  background: #d6b466;
+  color: #0c1e2b;
+}
+
+.item:focus-visible {
+  outline: 2px solid #e6c477;
+  outline-offset: 2px;
+}
+
+.item:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
