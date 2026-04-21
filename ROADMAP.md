@@ -10,8 +10,8 @@ _Created: 2026-04-20_
 
 - **Total tasks:** 90
 - **Done:** 27 (30%)
-- **Ready:** 63
-- **In progress:** 0
+- **Ready:** 62
+- **In progress:** 1
 - **Blocked:** 0
 
 ---
@@ -292,7 +292,7 @@ rules including wind, currents, and Red Tide impassability.
     > GameScene renders units from store. Click selects (emits
     > event via bus); selection highlights sprite + shows stats
     > panel in HUD.
-  - :black_circle: **TASK-031** — Click-to-move with path preview + animation  `high` `medium` _(web, core)_  
+  - :large_orange_diamond: **TASK-031** — Click-to-move with path preview + animation  `high` `medium` _(web, core)_  
     _depends on: TASK-030, TASK-028_
     > Second click proposes path (via TASK-028); confirm commits
     > move. Sprite tweens along path; camera can follow. Handles
