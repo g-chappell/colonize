@@ -70,3 +70,18 @@ gap-free.
   2. 248b4a3 — codify inline-SVG-for-heraldry pattern for pre-art-epic chrome (data-testid pinned for raster swap-point)
   3. 08a217b — codify string-literal const-object pattern for save-format-bound kinds (over `enum` / `const enum`)
   4. 8fdb26e — codify zustand-store screen-routing literal-union (no react-router; `setState` in beforeEach for tests)
+
+---
+
+## Review [2026-04-21T10:30Z] — after TASK-018 through TASK-022
+- Success streak: 5 (TASK-018 → TASK-019 → TASK-020 → TASK-021 → TASK-022 since PR #23 review checkpoint; two intervening skipped cycles on dirty-tree did not reset the streak per the skill contract)
+- Patterns identified: 2
+- Proposals drafted: 2
+- Proposals de-duplicated: 2 (both novel vs CLAUDE.md + approvals/history.md + PRs #8, #17, #23, Jaro-Winkler threshold 0.85 via `alreadyCovered`)
+- Refinements committed: 2
+- PR: https://github.com/g-chappell/colonize/pull/33
+- Outcome: opened
+- Files touched: CLAUDE.md (Tier 3 — Testing patterns line 101 + Architecture notes line 123, Tier 1 [lines 57–73] untouched)
+- Refinements:
+  1. 13adafe — codify the pure-sibling module pattern for Phaser game code (camera-controls.ts, tile-atlas.ts, fog-overlay-state.ts as the three independent converges on the same split)
+  2. e29ba6d — codify `exactOptionalPropertyTypes: true` gotcha + conditional-spread fix (TASK-017 + TASK-022 both tripped on optional-property-with-undefined; bundled the `array[i]!`-after-validation corollary in the same bullet)
