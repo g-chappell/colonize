@@ -1,4 +1,6 @@
 export { TileType, ALL_TILE_TYPES, isTileType } from './tile.js';
+export { EMPTY_TILE_YIELD, getTileYield, scaleTileYield } from './tile-yield.js';
+export type { TileYield } from './tile-yield.js';
 export { GameMap } from './map.js';
 export type { Coord, MapJSON } from './map.js';
 export { generateMap, MIN_MAP_WIDTH, MIN_MAP_HEIGHT, MAX_FACTION_COUNT } from './generate.js';
