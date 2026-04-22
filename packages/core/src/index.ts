@@ -167,3 +167,27 @@ export type {
   GroundCombatOutcome,
   GroundCombatEvent,
 } from './combat/index.js';
+export {
+  DiplomacyAction,
+  ALL_DIPLOMACY_ACTIONS,
+  isDiplomacyAction,
+  getDiplomacyActionEffect,
+  aiShouldAccept,
+  RelationsMatrix,
+  MIN_RELATIONS_SCORE,
+  MAX_RELATIONS_SCORE,
+  NEUTRAL_RELATIONS_SCORE,
+  attemptDiplomacyAction,
+} from './diplomacy/index.js';
+export type {
+  DiplomacyActionEffect,
+  RelationsMatrixJSON,
+  RelationsMatrixInit,
+  RelationsEntryJSON,
+  DiplomacyAttemptOutcome,
+  DiplomacyAttemptSuccess,
+  DiplomacyAttemptBlocked,
+  DiplomacyAttemptInvalid,
+  DiplomacyAttemptStatus,
+  DiplomacyAttemptParams,
+} from './diplomacy/index.js';
