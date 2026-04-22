@@ -116,4 +116,19 @@ describe('App', () => {
       expect(screen.queryByTestId('colony-overlay')).not.toBeInTheDocument();
     });
   });
+
+  describe('trade screen', () => {
+    it('mounts the trade screen over the game stage when screen is trade', () => {
+      useGameStore.getState().setScreen('trade');
+      render(<App />);
+      expect(screen.getByTestId('hud')).toBeInTheDocument();
+      expect(screen.getByTestId('trade-screen')).toBeInTheDocument();
+    });
+
+    it('does not mount the trade screen outside the trade screen', () => {
+      useGameStore.getState().setScreen('game');
+      render(<App />);
+      expect(screen.queryByTestId('trade-screen')).not.toBeInTheDocument();
+    });
+  });
 });

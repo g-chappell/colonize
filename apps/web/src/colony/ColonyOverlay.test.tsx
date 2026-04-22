@@ -1,6 +1,13 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { fireEvent, render, screen } from '@testing-library/react';
-import { BuildingType, type ColonyJSON } from '@colonize/core';
+import {
+  BuildingType,
+  HomePort,
+  UnitType,
+  type ColonyJSON,
+  type HomePortJSON,
+  type UnitJSON,
+} from '@colonize/core';
 import { useGameStore, type SurroundingTile } from '../store/game';
 import { ColonyOverlay } from './ColonyOverlay';
 
@@ -282,6 +289,78 @@ describe('ColonyOverlay', () => {
       useGameStore.getState().assignCrewToTile('driftwatch', 'gunner-bravo', { x: 13, y: 7 });
       render(<ColonyOverlay />);
       expect(screen.getByTestId('colony-overlay-crew-pool-empty')).toBeInTheDocument();
+    });
+  });
+
+  describe('home-port trade panel', () => {
+    function makePort(): HomePortJSON {
+      return new HomePort({
+        id: 'port-otk',
+        faction: 'otk',
+        basePrices: { timber: 10, fibre: 8 },
+      }).toJSON();
+    }
+
+    function shipAt(position: { x: number; y: number }, faction = 'otk'): UnitJSON {
+      return {
+        id: 'ship-sloop-1',
+        faction,
+        position,
+        type: UnitType.Sloop,
+        movement: 4,
+        cargo: { resources: {}, artifacts: [] },
+      };
+    }
+
+    it('hides the trade panel entirely when the faction has no home port', () => {
+      render(<ColonyOverlay />);
+      expect(screen.queryByTestId('colony-overlay-trade')).not.toBeInTheDocument();
+    });
+
+    it('shows a dock-a-ship placeholder when a port exists but no eligible ship is present', () => {
+      useGameStore.getState().setHomePort('otk', makePort());
+      render(<ColonyOverlay />);
+      expect(screen.getByTestId('colony-overlay-trade-empty')).toBeInTheDocument();
+      expect(screen.queryByTestId('colony-overlay-trade-open')).not.toBeInTheDocument();
+    });
+
+    it('ignores ships of the wrong faction or on another tile', () => {
+      useGameStore.getState().setHomePort('otk', makePort());
+      useGameStore
+        .getState()
+        .setUnits([
+          shipAt({ x: 12, y: 7 }, 'phantom'),
+          { ...shipAt({ x: 0, y: 0 }), id: 'ship-far-otk' },
+        ]);
+      render(<ColonyOverlay />);
+      expect(screen.getByTestId('colony-overlay-trade-empty')).toBeInTheDocument();
+    });
+
+    it('ignores non-ship units even if at the colony tile', () => {
+      useGameStore.getState().setHomePort('otk', makePort());
+      useGameStore
+        .getState()
+        .setUnits([{ ...shipAt({ x: 12, y: 7 }), id: 'scout-1', type: UnitType.Scout }]);
+      render(<ColonyOverlay />);
+      expect(screen.getByTestId('colony-overlay-trade-empty')).toBeInTheDocument();
+    });
+
+    it('shows a Trade button when a friendly ship is at the colony tile', () => {
+      useGameStore.getState().setHomePort('otk', makePort());
+      useGameStore.getState().setUnits([shipAt({ x: 12, y: 7 })]);
+      render(<ColonyOverlay />);
+      const button = screen.getByTestId('colony-overlay-trade-open');
+      expect(button).toHaveTextContent('ship-sloop-1');
+    });
+
+    it('clicking the Trade button opens a trade session + routes the screen', () => {
+      useGameStore.getState().setHomePort('otk', makePort());
+      useGameStore.getState().setUnits([shipAt({ x: 12, y: 7 })]);
+      render(<ColonyOverlay />);
+      fireEvent.click(screen.getByTestId('colony-overlay-trade-open'));
+      const state = useGameStore.getState();
+      expect(state.screen).toBe('trade');
+      expect(state.tradeSession).toEqual({ colonyId: 'driftwatch', unitId: 'ship-sloop-1' });
     });
   });
 });

@@ -1,0 +1,199 @@
+.backdrop {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(4, 14, 22, 0.82);
+  font-family: 'Georgia', 'Times New Roman', serif;
+  color: #e8d8b8;
+  z-index: 65;
+}
+
+.panel {
+  width: min(560px, 94vw);
+  max-height: 90vh;
+  overflow: auto;
+  padding: 1.25rem 1.5rem 1.5rem;
+  background: rgba(12, 30, 43, 0.96);
+  border: 1px solid #d6b466;
+  box-shadow: 0 0 28px rgba(0, 0, 0, 0.6);
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.title {
+  margin: 0;
+  color: #d6b466;
+  font-size: 1.3rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.subtitle {
+  font-size: 0.75rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+.rows {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding: 0.5rem 0.7rem;
+  background: rgba(12, 30, 43, 0.72);
+  border: 1px solid rgba(214, 180, 102, 0.55);
+}
+
+.rowHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.rowLabel {
+  color: #d6b466;
+  font-size: 0.9rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.rowHold {
+  font-size: 0.72rem;
+  opacity: 0.7;
+  font-variant-numeric: tabular-nums;
+}
+
+.rowPrices {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  font-size: 0.72rem;
+  opacity: 0.8;
+  font-variant-numeric: tabular-nums;
+}
+
+.slider {
+  width: 100%;
+  accent-color: #d6b466;
+}
+
+.rowFooter {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.rowQty {
+  color: #e8d8b8;
+}
+
+.rowTotalGain {
+  color: #9cd67a;
+}
+
+.rowTotalLoss {
+  color: #d6876a;
+}
+
+.footer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  padding-top: 0.4rem;
+  border-top: 1px solid rgba(214, 180, 102, 0.3);
+}
+
+.profit {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.5rem;
+  font-size: 1rem;
+}
+
+.profitLabel {
+  opacity: 0.7;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  font-size: 0.78rem;
+}
+
+.profitGain {
+  color: #9cd67a;
+  font-variant-numeric: tabular-nums;
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+
+.profitLoss {
+  color: #d6876a;
+  font-variant-numeric: tabular-nums;
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.button {
+  padding: 0.5rem 1.1rem;
+  background: rgba(12, 30, 43, 0.85);
+  border: 1px solid #d6b466;
+  color: #d6b466;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: bold;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    background 120ms ease,
+    color 120ms ease;
+}
+
+.button:hover:not(:disabled) {
+  background: #d6b466;
+  color: #0c1e2b;
+}
+
+.button:focus-visible {
+  outline: 2px solid #e6c477;
+  outline-offset: 2px;
+}
+
+.button:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.missing {
+  padding: 1rem;
+  font-size: 0.85rem;
+  opacity: 0.75;
+  text-align: center;
+}

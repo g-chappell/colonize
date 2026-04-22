@@ -4,12 +4,14 @@ import type {
   ColonyJSON,
   Coord,
   GameVersion,
+  HomePortJSON,
+  ResourceId,
   RumourOutcome,
   TileType,
   TurnPhase,
   UnitJSON,
 } from '@colonize/core';
-import { CORE_VERSION, TurnPhase as TurnPhaseEnum } from '@colonize/core';
+import { CORE_VERSION, HomePort, TurnPhase as TurnPhaseEnum } from '@colonize/core';
 import {
   buildingEffort,
   colonyProductionValue,
@@ -26,7 +28,27 @@ export const FACTION_NAMES: Record<PlayableFaction, string> = {
   bloodborne: 'Bloodborne Legion',
 };
 
-export type Screen = 'menu' | 'faction-select' | 'game' | 'pause' | 'colony';
+export type Screen = 'menu' | 'faction-select' | 'game' | 'pause' | 'colony' | 'trade';
+
+// Active trade session (which ship is trading at which colony's home
+// port). Non-null while `screen === 'trade'`; cleared by
+// `closeTradeSession`. Opening trade routes the screen to 'trade';
+// closing routes back to 'colony' so the player returns to the colony
+// detail view they came from. The UI reads the full HomePort from
+// `homePorts[colony.faction]`.
+export interface TradeSession {
+  readonly colonyId: string;
+  readonly unitId: string;
+}
+
+// One line in a confirmed trade: positive qty = player bought qty
+// from the port; negative qty = player sold |qty| to the port.
+// Fed into `commitTrade` which updates both the HomePort's netVolume
+// and the ship's cargo.
+export interface TradeCommitLine {
+  readonly resourceId: ResourceId;
+  readonly qty: number;
+}
 
 // User-editable game settings that survive pause/resume. Audio volumes
 // mirror the `AudioState` defaults in apps/web/src/game/audio-state.ts —
@@ -128,6 +150,15 @@ export interface GameState {
   // showing; cleared on dismiss. The resolver (a future task) will
   // call `showRumourReveal` when a unit enters a rumour tile.
   rumourReveal: RumourOutcome | null;
+  // Per-faction home-port roster, keyed by faction id. Populated by
+  // the spawning flow (downstream task) from HOMEPORT_STARTING_PRICES
+  // in @colonize/content; stays empty until then. `commitTrade` and
+  // the trade screen read this slice, never reaching into @colonize/core
+  // for initialisation.
+  homePorts: Readonly<Record<string, HomePortJSON>>;
+  // Active trade session (which ship is trading at which colony).
+  // Non-null while `screen === 'trade'`; cleared by `closeTradeSession`.
+  tradeSession: TradeSession | null;
   settings: SettingsState;
   setCurrentTurn: (turn: number) => void;
   advanceTurn: () => void;
@@ -157,6 +188,14 @@ export interface GameState {
   commitMove: (unitId: string, position: Coord, movementCost: number) => void;
   showRumourReveal: (outcome: RumourOutcome) => void;
   dismissRumourReveal: () => void;
+  setHomePort: (factionId: string, port: HomePortJSON) => void;
+  openTradeSession: (session: TradeSession) => void;
+  closeTradeSession: () => void;
+  // Applies a trade atomically: mutates the home-port's net volume
+  // (which shifts the mid-price for future trades) AND the ship's
+  // cargo resources in the same store update, so a re-render can't
+  // observe one without the other. Lines with qty === 0 are ignored.
+  commitTrade: (factionId: string, unitId: string, lines: readonly TradeCommitLine[]) => void;
   setAudioVolume: (bus: AudioBus, volume: number) => void;
   setAudioMuted: (muted: boolean) => void;
   reset: () => void;
@@ -194,6 +233,8 @@ const initialState = {
   colonySurroundings: {} as Readonly<Record<string, readonly SurroundingTile[]>>,
   tileAssignments: {} as Readonly<Record<string, Readonly<Record<string, string>>>>,
   rumourReveal: null as RumourOutcome | null,
+  homePorts: {} as Readonly<Record<string, HomePortJSON>>,
+  tradeSession: null as TradeSession | null,
   settings: DEFAULT_SETTINGS,
 } as const;
 
@@ -337,6 +378,44 @@ export const useGameStore = create<GameState>((set) => ({
     })),
   showRumourReveal: (outcome) => set({ rumourReveal: outcome }),
   dismissRumourReveal: () => set({ rumourReveal: null }),
+  setHomePort: (factionId, port) =>
+    set((state) => ({ homePorts: { ...state.homePorts, [factionId]: port } })),
+  openTradeSession: (session) =>
+    set({ tradeSession: { colonyId: session.colonyId, unitId: session.unitId }, screen: 'trade' }),
+  closeTradeSession: () => set({ tradeSession: null, screen: 'colony' }),
+  commitTrade: (factionId, unitId, lines) =>
+    set((state) => {
+      const portJson = state.homePorts[factionId];
+      const unit = state.units.find((u) => u.id === unitId);
+      if (!portJson || !unit) return {};
+      const nonZero = lines.filter((l) => l.qty !== 0);
+      if (nonZero.length === 0) return {};
+      const port = HomePort.fromJSON(portJson);
+      const nextResources: Record<string, number> = { ...unit.cargo.resources };
+      for (const line of nonZero) {
+        if (!Number.isInteger(line.qty)) continue;
+        if (!port.trades(line.resourceId)) continue;
+        if (line.qty > 0) {
+          port.recordPlayerPurchase(line.resourceId, line.qty);
+          nextResources[line.resourceId] = (nextResources[line.resourceId] ?? 0) + line.qty;
+        } else {
+          const sellQty = -line.qty;
+          const have = nextResources[line.resourceId] ?? 0;
+          if (sellQty > have) continue;
+          port.recordPlayerSale(line.resourceId, sellQty);
+          const remaining = have - sellQty;
+          if (remaining === 0) delete nextResources[line.resourceId];
+          else nextResources[line.resourceId] = remaining;
+        }
+      }
+      const nextUnits = state.units.map((u) =>
+        u.id === unitId ? { ...u, cargo: { ...u.cargo, resources: nextResources } } : u,
+      );
+      return {
+        homePorts: { ...state.homePorts, [factionId]: port.toJSON() },
+        units: nextUnits,
+      };
+    }),
   setAudioVolume: (bus, volume) =>
     set((state) => ({
       settings:
