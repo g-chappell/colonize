@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import type {
+  BuildingType,
   ColonyJSON,
   Coord,
   GameVersion,
@@ -8,6 +9,12 @@ import type {
   UnitJSON,
 } from '@colonize/core';
 import { CORE_VERSION, TurnPhase as TurnPhaseEnum } from '@colonize/core';
+import {
+  buildingEffort,
+  colonyProductionValue,
+  tickProductionQueue,
+  type ProductionQueueItem,
+} from '../colony/build-queue';
 
 export type PlayableFaction = 'otk' | 'ironclad' | 'phantom' | 'bloodborne';
 
@@ -80,6 +87,12 @@ export interface GameState {
   // pushing fresh ColonyJSON snapshots whenever a colony mutates.
   colonies: readonly ColonyJSON[];
   selectedColonyId: string | null;
+  // Per-colony production queue, keyed by colony id. Not part of
+  // ColonyJSON (save format) yet — TASK-041 scopes this to a web-only
+  // slice until a roster task re-homes it into @colonize/core with a
+  // save-version migration. Ordering is player-controlled via
+  // reorderQueueItem; the head item is the one ticking.
+  colonyQueues: Readonly<Record<string, readonly ProductionQueueItem[]>>;
   // Outcome of a rumour tile that has been resolved but not yet
   // acknowledged by the player. Non-null while the reveal modal is
   // showing; cleared on dismiss. The resolver (a future task) will
@@ -98,6 +111,13 @@ export interface GameState {
   setProposedMove: (move: ProposedMove | null) => void;
   setColonies: (colonies: readonly ColonyJSON[]) => void;
   setSelectedColony: (colonyId: string | null) => void;
+  enqueueBuilding: (colonyId: string, buildingId: BuildingType) => void;
+  cancelQueueItem: (colonyId: string, index: number) => void;
+  reorderQueueItem: (colonyId: string, index: number, direction: 'up' | 'down') => void;
+  // Advances every colony's queue head by that colony's production
+  // value, promoting completed items into the colony's building list.
+  // Invoked once per full turn cycle by turn-controller.
+  tickColonyQueues: () => void;
   // Commits a move by updating the unit's position + deducting the
   // spent movement cost. Emitted once the sprite tween finishes so the
   // store snapshot stays in sync with the on-screen visual.
@@ -137,6 +157,7 @@ const initialState = {
   proposedMove: null as ProposedMove | null,
   colonies: [] as readonly ColonyJSON[],
   selectedColonyId: null as string | null,
+  colonyQueues: {} as Readonly<Record<string, readonly ProductionQueueItem[]>>,
   rumourReveal: null as RumourOutcome | null,
   settings: DEFAULT_SETTINGS,
 } as const;
@@ -162,6 +183,77 @@ export const useGameStore = create<GameState>((set) => ({
   setProposedMove: (move) => set({ proposedMove: move }),
   setColonies: (colonies) => set({ colonies }),
   setSelectedColony: (colonyId) => set({ selectedColonyId: colonyId }),
+  enqueueBuilding: (colonyId, buildingId) =>
+    set((state) => {
+      const colony = state.colonies.find((c) => c.id === colonyId);
+      if (!colony) return {};
+      const existing = state.colonyQueues[colonyId] ?? [];
+      if (colony.buildings.includes(buildingId)) return {};
+      if (existing.some((item) => item.buildingId === buildingId)) return {};
+      const next: readonly ProductionQueueItem[] = [
+        ...existing,
+        { buildingId, progress: 0, effort: buildingEffort(buildingId) },
+      ];
+      return { colonyQueues: { ...state.colonyQueues, [colonyId]: next } };
+    }),
+  cancelQueueItem: (colonyId, index) =>
+    set((state) => {
+      const existing = state.colonyQueues[colonyId];
+      if (!existing || index < 0 || index >= existing.length) return {};
+      const next = existing.filter((_, i) => i !== index);
+      const updatedQueues: Record<string, readonly ProductionQueueItem[]> = {
+        ...state.colonyQueues,
+      };
+      if (next.length === 0) delete updatedQueues[colonyId];
+      else updatedQueues[colonyId] = next;
+      return { colonyQueues: updatedQueues };
+    }),
+  reorderQueueItem: (colonyId, index, direction) =>
+    set((state) => {
+      const existing = state.colonyQueues[colonyId];
+      if (!existing || existing.length < 2) return {};
+      const swapWith = direction === 'up' ? index - 1 : index + 1;
+      if (index < 0 || index >= existing.length) return {};
+      if (swapWith < 0 || swapWith >= existing.length) return {};
+      const next = [...existing];
+      [next[index], next[swapWith]] = [next[swapWith]!, next[index]!];
+      return { colonyQueues: { ...state.colonyQueues, [colonyId]: next } };
+    }),
+  tickColonyQueues: () =>
+    set((state) => {
+      const updatedQueues: Record<string, readonly ProductionQueueItem[]> = {
+        ...state.colonyQueues,
+      };
+      const completionsByColony = new Map<string, BuildingType[]>();
+      let queuesChanged = false;
+      for (const colony of state.colonies) {
+        const queue = state.colonyQueues[colony.id];
+        if (!queue || queue.length === 0) continue;
+        const result = tickProductionQueue(queue, colonyProductionValue(colony));
+        if (result.next === queue && result.completed.length === 0) continue;
+        queuesChanged = true;
+        if (result.next.length === 0) delete updatedQueues[colony.id];
+        else updatedQueues[colony.id] = result.next;
+        if (result.completed.length > 0) {
+          completionsByColony.set(colony.id, [...result.completed]);
+        }
+      }
+      if (!queuesChanged) return {};
+      const nextColonies =
+        completionsByColony.size === 0
+          ? state.colonies
+          : state.colonies.map((colony) => {
+              const finished = completionsByColony.get(colony.id);
+              if (!finished || finished.length === 0) return colony;
+              const buildings = [...colony.buildings];
+              for (const id of finished) {
+                if (!buildings.includes(id)) buildings.push(id);
+              }
+              buildings.sort();
+              return { ...colony, buildings };
+            });
+      return { colonyQueues: updatedQueues, colonies: nextColonies };
+    }),
   commitMove: (unitId, position, movementCost) =>
     set((state) => ({
       units: state.units.map((u) =>
