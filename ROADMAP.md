@@ -10,8 +10,8 @@ _Created: 2026-04-20_
 
 - **Total tasks:** 90
 - **Done:** 40 (44%)
-- **Ready:** 50
-- **In progress:** 0
+- **Ready:** 49
+- **In progress:** 1
 - **Blocked:** 0
 
 ---
@@ -404,7 +404,7 @@ factions).
     > Provisions; kelp forest → Fibre; shoals → Salvage; coastal
     > grove → Timber). Assigning a crew produces yield per turn.
     > Bonuses by profession (see STORY-24).
-  - :black_circle: **TASK-043** — Drag-assign crew to tiles in colony view  `high` `medium` _(web)_  
+  - :large_orange_diamond: **TASK-043** — Drag-assign crew to tiles in colony view  `high` `medium` _(web)_  
     _depends on: TASK-039, TASK-042_
     > Drag a crew tile onto a working-slot on a surrounding
     > tile. Show pre/post yield deltas. Unassign returns to pool.
