@@ -8,6 +8,7 @@ import { MainMenu } from './menu/MainMenu';
 import { FactionSelect } from './menu/FactionSelect';
 import { PauseOverlay } from './pause/PauseOverlay';
 import { TradeScreen } from './trade/TradeScreen';
+import { CargoTransferScreen } from './transfer/CargoTransferScreen';
 import { useGameStore } from './store/game';
 
 export function App() {
@@ -53,6 +54,7 @@ export function App() {
         {screen === 'pause' && <PauseOverlay />}
         {screen === 'colony' && <ColonyOverlay />}
         {screen === 'trade' && <TradeScreen />}
+        {screen === 'transfer' && <CargoTransferScreen />}
       </div>
     </main>
   );

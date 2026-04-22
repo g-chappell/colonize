@@ -9,8 +9,8 @@ _Created: 2026-04-20_
 ## Summary
 
 - **Total tasks:** 90
-- **Done:** 45 (50%)
-- **Ready:** 45
+- **Done:** 46 (51%)
+- **Ready:** 44
 - **In progress:** 0
 - **Blocked:** 0
 
@@ -460,7 +460,7 @@ routes. The economic backbone of the mid-game.
 - **STORY-27** — Inter-colony hauling
   > Load cargo at one colony, move to another, unload — the
   > default gameplay loop for growing the economy.
-  - :black_circle: **TASK-049** — Manual load/unload actions in colony view  `high` `medium` _(web, core)_  
+  - :white_check_mark: **TASK-049** — Manual load/unload actions in colony view  `high` `medium` _(web, core)_ · [PR](https://github.com/g-chappell/colonize/pull/64)  
     _depends on: TASK-039, TASK-034_
     > With a ship in a colony, open cargo transfer panel.
     > Move goods colony ↔ ship. Sail to another colony, open

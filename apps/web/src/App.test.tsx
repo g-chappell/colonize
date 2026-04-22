@@ -131,4 +131,19 @@ describe('App', () => {
       expect(screen.queryByTestId('trade-screen')).not.toBeInTheDocument();
     });
   });
+
+  describe('cargo-transfer screen', () => {
+    it('mounts the transfer screen over the game stage when screen is transfer', () => {
+      useGameStore.getState().setScreen('transfer');
+      render(<App />);
+      expect(screen.getByTestId('hud')).toBeInTheDocument();
+      expect(screen.getByTestId('transfer-screen')).toBeInTheDocument();
+    });
+
+    it('does not mount the transfer screen outside the transfer screen', () => {
+      useGameStore.getState().setScreen('game');
+      render(<App />);
+      expect(screen.queryByTestId('transfer-screen')).not.toBeInTheDocument();
+    });
+  });
 });

@@ -28,7 +28,7 @@ export const FACTION_NAMES: Record<PlayableFaction, string> = {
   bloodborne: 'Bloodborne Legion',
 };
 
-export type Screen = 'menu' | 'faction-select' | 'game' | 'pause' | 'colony' | 'trade';
+export type Screen = 'menu' | 'faction-select' | 'game' | 'pause' | 'colony' | 'trade' | 'transfer';
 
 // Active trade session (which ship is trading at which colony's home
 // port). Non-null while `screen === 'trade'`; cleared by
@@ -46,6 +46,25 @@ export interface TradeSession {
 // Fed into `commitTrade` which updates both the HomePort's netVolume
 // and the ship's cargo.
 export interface TradeCommitLine {
+  readonly resourceId: ResourceId;
+  readonly qty: number;
+}
+
+// Active cargo-transfer session (manual load/unload between a ship and
+// a friendly colony). Non-null while `screen === 'transfer'`; cleared
+// by `closeTransferSession`. Opening routes the screen to 'transfer';
+// closing routes back to 'colony' so the player returns to the colony
+// detail view they came from.
+export interface TransferSession {
+  readonly colonyId: string;
+  readonly unitId: string;
+}
+
+// One line in a confirmed cargo transfer: positive qty moves |qty|
+// units of `resourceId` from the colony stockpile into the ship cargo;
+// negative qty moves |qty| units from the ship into the colony.
+// Fed into `commitCargoTransfer`.
+export interface TransferCommitLine {
   readonly resourceId: ResourceId;
   readonly qty: number;
 }
@@ -159,6 +178,10 @@ export interface GameState {
   // Active trade session (which ship is trading at which colony).
   // Non-null while `screen === 'trade'`; cleared by `closeTradeSession`.
   tradeSession: TradeSession | null;
+  // Active cargo-transfer session (which ship is loading/unloading at
+  // which colony). Non-null while `screen === 'transfer'`; cleared by
+  // `closeTransferSession`.
+  transferSession: TransferSession | null;
   settings: SettingsState;
   setCurrentTurn: (turn: number) => void;
   advanceTurn: () => void;
@@ -196,6 +219,19 @@ export interface GameState {
   // cargo resources in the same store update, so a re-render can't
   // observe one without the other. Lines with qty === 0 are ignored.
   commitTrade: (factionId: string, unitId: string, lines: readonly TradeCommitLine[]) => void;
+  openTransferSession: (session: TransferSession) => void;
+  closeTransferSession: () => void;
+  // Applies a manual cargo transfer atomically: positive line qty moves
+  // resources from the colony stockpile into the ship cargo, negative
+  // moves them back. Lines are clamped to the available source on each
+  // side; lines with qty === 0 or non-integer qty are ignored. Both
+  // store slices update in one set so a re-render can't observe a
+  // partial transfer.
+  commitCargoTransfer: (
+    colonyId: string,
+    unitId: string,
+    lines: readonly TransferCommitLine[],
+  ) => void;
   setAudioVolume: (bus: AudioBus, volume: number) => void;
   setAudioMuted: (muted: boolean) => void;
   reset: () => void;
@@ -235,6 +271,7 @@ const initialState = {
   rumourReveal: null as RumourOutcome | null,
   homePorts: {} as Readonly<Record<string, HomePortJSON>>,
   tradeSession: null as TradeSession | null,
+  transferSession: null as TransferSession | null,
   settings: DEFAULT_SETTINGS,
 } as const;
 
@@ -415,6 +452,54 @@ export const useGameStore = create<GameState>((set) => ({
         homePorts: { ...state.homePorts, [factionId]: port.toJSON() },
         units: nextUnits,
       };
+    }),
+  openTransferSession: (session) =>
+    set({
+      transferSession: { colonyId: session.colonyId, unitId: session.unitId },
+      screen: 'transfer',
+    }),
+  closeTransferSession: () => set({ transferSession: null, screen: 'colony' }),
+  commitCargoTransfer: (colonyId, unitId, lines) =>
+    set((state) => {
+      const colony = state.colonies.find((c) => c.id === colonyId);
+      const unit = state.units.find((u) => u.id === unitId);
+      if (!colony || !unit) return {};
+      const nonZero = lines.filter((l) => l.qty !== 0 && Number.isInteger(l.qty));
+      if (nonZero.length === 0) return {};
+      const nextShipResources: Record<string, number> = { ...unit.cargo.resources };
+      const nextColonyResources: Record<string, number> = { ...colony.stocks.resources };
+      let mutated = false;
+      for (const line of nonZero) {
+        if (typeof line.resourceId !== 'string' || line.resourceId.length === 0) continue;
+        if (line.qty > 0) {
+          const have = nextColonyResources[line.resourceId] ?? 0;
+          const move = Math.min(line.qty, have);
+          if (move <= 0) continue;
+          const remaining = have - move;
+          if (remaining === 0) delete nextColonyResources[line.resourceId];
+          else nextColonyResources[line.resourceId] = remaining;
+          nextShipResources[line.resourceId] = (nextShipResources[line.resourceId] ?? 0) + move;
+          mutated = true;
+        } else {
+          const sendQty = -line.qty;
+          const have = nextShipResources[line.resourceId] ?? 0;
+          const move = Math.min(sendQty, have);
+          if (move <= 0) continue;
+          const remaining = have - move;
+          if (remaining === 0) delete nextShipResources[line.resourceId];
+          else nextShipResources[line.resourceId] = remaining;
+          nextColonyResources[line.resourceId] = (nextColonyResources[line.resourceId] ?? 0) + move;
+          mutated = true;
+        }
+      }
+      if (!mutated) return {};
+      const nextUnits = state.units.map((u) =>
+        u.id === unitId ? { ...u, cargo: { ...u.cargo, resources: nextShipResources } } : u,
+      );
+      const nextColonies = state.colonies.map((c) =>
+        c.id === colonyId ? { ...c, stocks: { ...c.stocks, resources: nextColonyResources } } : c,
+      );
+      return { units: nextUnits, colonies: nextColonies };
     }),
   setAudioVolume: (bus, volume) =>
     set((state) => ({

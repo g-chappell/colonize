@@ -1050,7 +1050,7 @@ epics:
         tasks:
           - id: TASK-049
             title: "Manual load/unload actions in colony view"
-            status: ready
+            status: done
             priority: high
             complexity: medium
             workspaces: [web, core]
@@ -1059,9 +1059,11 @@ epics:
               Move goods colony ↔ ship. Sail to another colony, open
               same panel, transfer off. Uses CargoHold from TASK-034.
             depends_on: [TASK-039, TASK-034]
-            pr: null
-            completed: null
+            pr: "https://github.com/g-chappell/colonize/pull/64"
+            completed: "2026-04-22"
             blocked_reason: null
+            last_attempted: "2026-04-22T12:00:00Z"
+            attempt_count: 1
             last_attempted: null
             attempt_count: 0
       - id: STORY-28
