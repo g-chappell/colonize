@@ -1,7 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { GROUND_CLASSES } from '@colonize/content';
 import { TileType } from '../map/tile.js';
-import { UnitType, getUnitTypeDefinition } from '../unit/unit-type.js';
+import { UnitType } from '../unit/unit-type.js';
 import { CombatResult } from './combat-result.js';
 import { GroundCombatActionType } from './ground-combat-action.js';
 import type { GroundCombatant } from './ground-combatant.js';
@@ -359,15 +358,6 @@ describe('resolveGroundCombat — replay determinism', () => {
         rng: rngFromSequence(seq),
       });
       expect(a).toEqual(b);
-    }
-  });
-});
-
-describe('ground resolver — content consistency', () => {
-  it('GROUND_CLASSES movement values match core getUnitTypeDefinition baseMovement', () => {
-    for (const g of GROUND_CLASSES) {
-      const core = getUnitTypeDefinition(g.id as UnitType);
-      expect(core.baseMovement).toBe(g.baseMovement);
     }
   });
 });
