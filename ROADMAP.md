@@ -10,8 +10,8 @@ _Created: 2026-04-20_
 
 - **Total tasks:** 90
 - **Done:** 37 (41%)
-- **Ready:** 53
-- **In progress:** 0
+- **Ready:** 52
+- **In progress:** 1
 - **Blocked:** 0
 
 ---
@@ -382,7 +382,7 @@ factions).
   > Buildings unlock production: Tavern, Shipyard, Forge, Archive-
   > study Hall, Chapel-of-Kraken, Distillery, Gun Deck, Warehouse,
   > Rope-walk, etc. Prerequisites + costs in content.
-  - :black_circle: **TASK-040** — Building definitions + prerequisites in content  `high` `medium` _(content, core)_  
+  - :large_orange_diamond: **TASK-040** — Building definitions + prerequisites in content  `high` `medium` _(content, core)_  
     _depends on: TASK-038_
     > Define ~15 starter buildings with cost, prereq, effect
     > (e.g. Shipyard enables ship construction; Chapel-of-Kraken
