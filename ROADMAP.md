@@ -10,8 +10,8 @@ _Created: 2026-04-20_
 
 - **Total tasks:** 90
 - **Done:** 36 (40%)
-- **Ready:** 54
-- **In progress:** 0
+- **Ready:** 53
+- **In progress:** 1
 - **Blocked:** 0
 
 ---
@@ -372,7 +372,7 @@ factions).
     > Colony with id, faction, position, population, crew
     > roster, buildings, stocks. FoundColony action consumes a
     > Founding Ship unit at a valid tile. Unit tests.
-  - :black_circle: **TASK-039** — Colony view (React + Phaser inset)  `high` `large` _(web, core)_  
+  - :large_orange_diamond: **TASK-039** — Colony view (React + Phaser inset)  `high` `large` _(web, core)_  
     _depends on: TASK-038, TASK-030_
     > Dedicated screen showing a colony's tiles, workers
     > assigned, buildings, stocks, production queue. Accessible
