@@ -9,9 +9,9 @@ _Created: 2026-04-20_
 ## Summary
 
 - **Total tasks:** 90
-- **Done:** 37 (41%)
+- **Done:** 38 (42%)
 - **Ready:** 52
-- **In progress:** 1
+- **In progress:** 0
 - **Blocked:** 0
 
 ---
@@ -382,7 +382,7 @@ factions).
   > Buildings unlock production: Tavern, Shipyard, Forge, Archive-
   > study Hall, Chapel-of-Kraken, Distillery, Gun Deck, Warehouse,
   > Rope-walk, etc. Prerequisites + costs in content.
-  - :large_orange_diamond: **TASK-040** — Building definitions + prerequisites in content  `high` `medium` _(content, core)_  
+  - :white_check_mark: **TASK-040** — Building definitions + prerequisites in content  `high` `medium` _(content, core)_ · [PR](https://github.com/g-chappell/colonize/pull/54)  
     _depends on: TASK-038_
     > Define ~15 starter buildings with cost, prereq, effect
     > (e.g. Shipyard enables ship construction; Chapel-of-Kraken
