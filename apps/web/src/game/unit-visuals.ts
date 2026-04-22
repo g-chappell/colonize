@@ -23,6 +23,7 @@ export interface UnitVisualSpec {
 export const UNIT_VISUAL_SPECS: Readonly<Record<UnitType, UnitVisualSpec>> = {
   [UnitType.Scout]: { label: 'S', shape: 'circle' },
   [UnitType.Settler]: { label: 'C', shape: 'diamond' },
+  [UnitType.FoundingShip]: { label: 'H', shape: 'diamond' },
   [UnitType.Sloop]: { label: 'L', shape: 'square' },
   [UnitType.Brig]: { label: 'B', shape: 'square' },
   [UnitType.Frigate]: { label: 'F', shape: 'square' },
