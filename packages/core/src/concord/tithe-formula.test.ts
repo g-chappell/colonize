@@ -118,33 +118,25 @@ describe('calculateTithe', () => {
   });
 
   it('rejects negative, non-finite, or non-integer population', () => {
-    expect(() =>
-      calculateTithe({ population: -1, revenue: 0, gameYear: 0 }),
-    ).toThrow(RangeError);
-    expect(() =>
-      calculateTithe({ population: Number.NaN, revenue: 0, gameYear: 0 }),
-    ).toThrow(RangeError);
-    expect(() =>
-      calculateTithe({ population: 1.5, revenue: 0, gameYear: 0 }),
-    ).toThrow(RangeError);
+    expect(() => calculateTithe({ population: -1, revenue: 0, gameYear: 0 })).toThrow(RangeError);
+    expect(() => calculateTithe({ population: Number.NaN, revenue: 0, gameYear: 0 })).toThrow(
+      RangeError,
+    );
+    expect(() => calculateTithe({ population: 1.5, revenue: 0, gameYear: 0 })).toThrow(RangeError);
   });
 
   it('rejects negative or non-finite revenue', () => {
-    expect(() =>
-      calculateTithe({ population: 0, revenue: -1, gameYear: 0 }),
-    ).toThrow(RangeError);
+    expect(() => calculateTithe({ population: 0, revenue: -1, gameYear: 0 })).toThrow(RangeError);
     expect(() =>
       calculateTithe({ population: 0, revenue: Number.POSITIVE_INFINITY, gameYear: 0 }),
     ).toThrow(RangeError);
   });
 
   it('rejects non-integer or non-finite gameYear', () => {
-    expect(() =>
-      calculateTithe({ population: 0, revenue: 0, gameYear: 1.5 }),
-    ).toThrow(RangeError);
-    expect(() =>
-      calculateTithe({ population: 0, revenue: 0, gameYear: Number.NaN }),
-    ).toThrow(RangeError);
+    expect(() => calculateTithe({ population: 0, revenue: 0, gameYear: 1.5 })).toThrow(RangeError);
+    expect(() => calculateTithe({ population: 0, revenue: 0, gameYear: Number.NaN })).toThrow(
+      RangeError,
+    );
   });
 
   it('rejects a rate override that is negative or non-finite', () => {

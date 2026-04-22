@@ -122,11 +122,7 @@ describe('ConcordTensionMeter.raise', () => {
     meter.raise(10);
     meter.raise(10);
     meter.raise(20);
-    expect(meter.pendingEvents).toEqual([
-      { threshold: 10 },
-      { threshold: 20 },
-      { threshold: 40 },
-    ]);
+    expect(meter.pendingEvents).toEqual([{ threshold: 10 }, { threshold: 20 }, { threshold: 40 }]);
   });
 });
 
@@ -223,8 +219,8 @@ describe('ConcordTensionMeter save-format round-trip', () => {
   });
 
   it('rejects non-object JSON payloads', () => {
-    expect(() =>
-      ConcordTensionMeter.fromJSON(null as unknown as ConcordTensionMeterJSON),
-    ).toThrow(TypeError);
+    expect(() => ConcordTensionMeter.fromJSON(null as unknown as ConcordTensionMeterJSON)).toThrow(
+      TypeError,
+    );
   });
 });

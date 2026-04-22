@@ -132,9 +132,7 @@ export class ConcordTensionMeter {
       throw new RangeError(`ConcordTensionMeter.raise amount must be an integer (got ${amount})`);
     }
     if (amount < 0) {
-      throw new RangeError(
-        `ConcordTensionMeter.raise amount must be non-negative (got ${amount})`,
-      );
+      throw new RangeError(`ConcordTensionMeter.raise amount must be non-negative (got ${amount})`);
     }
     if (amount === 0) return [];
     this._tension += amount;
