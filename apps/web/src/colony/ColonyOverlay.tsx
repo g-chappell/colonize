@@ -1,7 +1,13 @@
 import { useEffect } from 'react';
-import type { ColonyJSON } from '@colonize/core';
+import type { BuildingType, ColonyJSON } from '@colonize/core';
+import { getBuilding, isBuildingEntryId, type BuildingEntryId } from '@colonize/content';
 import { FACTION_NAMES, useGameStore, type PlayableFaction } from '../store/game';
+import { availableBuildings, type ProductionQueueItem } from './build-queue';
 import styles from './ColonyOverlay.module.css';
+
+function buildingDisplayName(id: string): string {
+  return isBuildingEntryId(id) ? getBuilding(id as BuildingEntryId).name : id;
+}
 
 const PLAYABLE_FACTION_KEYS: readonly string[] = Object.keys(FACTION_NAMES);
 
@@ -13,19 +19,20 @@ function displayFaction(factionId: string): string {
 }
 
 // Mounts while `screen === 'colony'`. Reads the selected colony from
-// the roster and shows its summary, crew, buildings, stocks. Tile-work
-// and production-queue panels are placeholders until TASK-042 (tile
-// yields) and TASK-041 (production queue) land — the colony entity
-// (TASK-038) doesn't yet expose those fields, and rendering bogus data
-// would mislead playtesters. Closing routes the screen back to 'game'
-// so the underlying GameScene resumes its normal interaction model.
+// the roster and shows its summary, crew, buildings, stocks, production
+// queue, and buildings available to queue. The tile-work panel stays a
+// placeholder until TASK-042 (tile yields) lands. Closing routes the
+// screen back to 'game' so the underlying GameScene resumes its normal
+// interaction model.
 export function ColonyOverlay(): JSX.Element {
   const colonies = useGameStore((s) => s.colonies);
   const selectedColonyId = useGameStore((s) => s.selectedColonyId);
+  const colonyQueues = useGameStore((s) => s.colonyQueues);
   const setScreen = useGameStore((s) => s.setScreen);
   const setSelectedColony = useGameStore((s) => s.setSelectedColony);
 
   const colony = findColony(colonies, selectedColonyId);
+  const queue = colony ? (colonyQueues[colony.id] ?? []) : [];
 
   const handleClose = (): void => {
     setSelectedColony(null);
@@ -60,7 +67,7 @@ export function ColonyOverlay(): JSX.Element {
         data-testid="colony-overlay-panel"
       >
         {colony ? (
-          <ColonyDetails colony={colony} onClose={handleClose} />
+          <ColonyDetails colony={colony} queue={queue} onClose={handleClose} />
         ) : (
           <MissingColony onClose={handleClose} />
         )}
@@ -71,10 +78,11 @@ export function ColonyOverlay(): JSX.Element {
 
 interface ColonyDetailsProps {
   readonly colony: ColonyJSON;
+  readonly queue: readonly ProductionQueueItem[];
   readonly onClose: () => void;
 }
 
-function ColonyDetails({ colony, onClose }: ColonyDetailsProps): JSX.Element {
+function ColonyDetails({ colony, queue, onClose }: ColonyDetailsProps): JSX.Element {
   const resources = Object.entries(colony.stocks.resources).filter(([, qty]) => qty > 0);
   const artifacts = colony.stocks.artifacts;
   return (
@@ -172,10 +180,9 @@ function ColonyDetails({ colony, onClose }: ColonyDetailsProps): JSX.Element {
         <p className={styles.placeholder}>Tile-yield model lands with TASK-042</p>
       </section>
 
-      <section className={styles.section} data-testid="colony-overlay-queue">
-        <h3 className={styles.sectionHeader}>Production queue</h3>
-        <p className={styles.placeholder}>Build queue lands with TASK-041</p>
-      </section>
+      <ProductionQueuePanel colony={colony} queue={queue} />
+
+      <AvailableBuildingsPanel colony={colony} queue={queue} />
 
       <div className={styles.actions}>
         <button
@@ -189,6 +196,126 @@ function ColonyDetails({ colony, onClose }: ColonyDetailsProps): JSX.Element {
         </button>
       </div>
     </>
+  );
+}
+
+interface ProductionQueuePanelProps {
+  readonly colony: ColonyJSON;
+  readonly queue: readonly ProductionQueueItem[];
+}
+
+function ProductionQueuePanel({ colony, queue }: ProductionQueuePanelProps): JSX.Element {
+  const cancelQueueItem = useGameStore((s) => s.cancelQueueItem);
+  const reorderQueueItem = useGameStore((s) => s.reorderQueueItem);
+  return (
+    <section className={styles.section} data-testid="colony-overlay-queue">
+      <h3 className={styles.sectionHeader}>Production queue</h3>
+      {queue.length === 0 ? (
+        <p className={styles.empty} data-testid="colony-overlay-queue-empty">
+          No builds queued
+        </p>
+      ) : (
+        <ul className={styles.queueList}>
+          {queue.map((item, index) => (
+            <li
+              key={item.buildingId}
+              className={styles.queueItem}
+              data-testid={`colony-overlay-queue-${item.buildingId}`}
+            >
+              <div className={styles.queueHeader}>
+                <span className={styles.queueName}>{buildingDisplayName(item.buildingId)}</span>
+                <span
+                  className={styles.queueProgress}
+                  data-testid={`colony-overlay-queue-progress-${item.buildingId}`}
+                >
+                  {item.progress} / {item.effort}
+                </span>
+              </div>
+              <div
+                className={styles.progressTrack}
+                role="progressbar"
+                aria-valuemin={0}
+                aria-valuemax={item.effort}
+                aria-valuenow={item.progress}
+              >
+                <div
+                  className={styles.progressFill}
+                  style={{
+                    width: `${Math.min(100, (item.progress / Math.max(1, item.effort)) * 100)}%`,
+                  }}
+                />
+              </div>
+              <div className={styles.queueControls}>
+                <button
+                  type="button"
+                  className={styles.queueButton}
+                  onClick={() => reorderQueueItem(colony.id, index, 'up')}
+                  disabled={index === 0}
+                  aria-label={`Move ${buildingDisplayName(item.buildingId)} up`}
+                  data-testid={`colony-overlay-queue-up-${item.buildingId}`}
+                >
+                  ↑
+                </button>
+                <button
+                  type="button"
+                  className={styles.queueButton}
+                  onClick={() => reorderQueueItem(colony.id, index, 'down')}
+                  disabled={index === queue.length - 1}
+                  aria-label={`Move ${buildingDisplayName(item.buildingId)} down`}
+                  data-testid={`colony-overlay-queue-down-${item.buildingId}`}
+                >
+                  ↓
+                </button>
+                <button
+                  type="button"
+                  className={styles.queueButton}
+                  onClick={() => cancelQueueItem(colony.id, index)}
+                  aria-label={`Cancel ${buildingDisplayName(item.buildingId)}`}
+                  data-testid={`colony-overlay-queue-cancel-${item.buildingId}`}
+                >
+                  ✕
+                </button>
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
+  );
+}
+
+interface AvailableBuildingsPanelProps {
+  readonly colony: ColonyJSON;
+  readonly queue: readonly ProductionQueueItem[];
+}
+
+function AvailableBuildingsPanel({ colony, queue }: AvailableBuildingsPanelProps): JSX.Element {
+  const enqueueBuilding = useGameStore((s) => s.enqueueBuilding);
+  const available = availableBuildings(colony, queue);
+  return (
+    <section className={styles.section} data-testid="colony-overlay-available">
+      <h3 className={styles.sectionHeader}>Available to build</h3>
+      {available.length === 0 ? (
+        <p className={styles.empty} data-testid="colony-overlay-available-empty">
+          No buildings unlocked
+        </p>
+      ) : (
+        <ul className={styles.availableList}>
+          {available.map((id: BuildingType) => (
+            <li key={id}>
+              <button
+                type="button"
+                className={styles.availableButton}
+                onClick={() => enqueueBuilding(colony.id, id)}
+                data-testid={`colony-overlay-available-${id}`}
+              >
+                + {buildingDisplayName(id)}
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
   );
 }
 
