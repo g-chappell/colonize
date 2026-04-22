@@ -9,9 +9,9 @@ _Created: 2026-04-20_
 ## Summary
 
 - **Total tasks:** 90
-- **Done:** 49 (54%)
+- **Done:** 50 (56%)
 - **Ready:** 40
-- **In progress:** 1
+- **In progress:** 0
 - **Blocked:** 0
 
 ---
@@ -551,7 +551,7 @@ Collective).
   > War, peace, alliance, trade pact, tribute. Each has
   > consequences and cooldowns. Basic AI accepts/declines based
   > on relations and standing.
-  - :large_orange_diamond: **TASK-058** — Diplomacy actions + relations matrix  `high` `medium` _(core)_  
+  - :white_check_mark: **TASK-058** — Diplomacy actions + relations matrix  `high` `medium` _(core)_ · [PR](https://github.com/g-chappell/colonize/pull/69)  
     _depends on: TASK-024_
     > Per-faction-pair relations score [-100, 100]. Actions
     > shift score + lock cooldowns. Basic decision rules for

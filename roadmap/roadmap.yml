@@ -1410,7 +1410,7 @@ epics:
         tasks:
           - id: TASK-058
             title: Diplomacy actions + relations matrix
-            status: in-progress
+            status: done
             priority: high
             complexity: medium
             workspaces:
@@ -1421,8 +1421,8 @@ epics:
               AI's accept/decline.
             depends_on:
               - TASK-024
-            pr: null
-            completed: null
+            pr: https://github.com/g-chappell/colonize/pull/69
+            completed: '2026-04-22T16:18:13Z'
             blocked_reason: null
             last_attempted: '2026-04-22T16:05:10Z'
             attempt_count: 1
