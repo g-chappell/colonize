@@ -1145,7 +1145,7 @@ epics:
         tasks:
           - id: TASK-053
             title: "Combat resolver in packages/core"
-            status: ready
+            status: done
             priority: high
             complexity: large
             workspaces: [core]
@@ -1155,11 +1155,11 @@ epics:
               broadsides, boarding, ramming, fleeing options. Heavy
               unit-test coverage.
             depends_on: [TASK-027]
-            pr: null
-            completed: null
+            pr: "https://github.com/g-chappell/colonize/pull/65"
+            completed: "2026-04-22"
             blocked_reason: null
-            last_attempted: null
-            attempt_count: 0
+            last_attempted: "2026-04-22T09:25:00Z"
+            attempt_count: 1
           - id: TASK-054
             title: "Combat UI: cinematic resolver + log"
             status: ready

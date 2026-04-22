@@ -123,3 +123,20 @@ export type {
   ResolveOptions,
   MirageVariant,
 } from './rumour/index.js';
+export {
+  CombatActionType,
+  ALL_COMBAT_ACTION_TYPES,
+  isCombatActionType,
+  CombatResult,
+  ALL_COMBAT_RESULTS,
+  isCombatResult,
+  assertValidCombatant,
+  resolveCombat,
+} from './combat/index.js';
+export type {
+  Combatant,
+  CombatContext,
+  CombatOutcome,
+  CombatEvent,
+  CombatSide,
+} from './combat/index.js';
