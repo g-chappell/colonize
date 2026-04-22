@@ -9,9 +9,9 @@ _Created: 2026-04-20_
 ## Summary
 
 - **Total tasks:** 90
-- **Done:** 54 (60%)
+- **Done:** 55 (61%)
 - **Ready:** 35
-- **In progress:** 1
+- **In progress:** 0
 - **Blocked:** 0
 
 ---
@@ -634,7 +634,7 @@ Fleet invasion. Victory conditions engine.
   > Per-turn passive drain on player treasury, scaling with
   > empire size. Represents Rayon Concord authority; thematically
   > pressures player toward the Sovereignty endgame.
-  - :large_orange_diamond: **TASK-067** — Tithe calculator + tension meter  `high` `medium` _(core)_  
+  - :white_check_mark: **TASK-067** — Tithe calculator + tension meter  `high` `medium` _(core)_ · [PR](https://github.com/g-chappell/colonize/pull/75)  
     _depends on: TASK-044_
     > Per-turn tithe = f(total colony population + revenue).
     > Scale up over game years. Refusing to pay (via boycott)
