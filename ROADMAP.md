@@ -9,9 +9,9 @@ _Created: 2026-04-20_
 ## Summary
 
 - **Total tasks:** 90
-- **Done:** 46 (51%)
+- **Done:** 47 (52%)
 - **Ready:** 43
-- **In progress:** 1
+- **In progress:** 0
 - **Blocked:** 0
 
 ---
@@ -501,7 +501,7 @@ routes, colony fortifications. The stick to the carrot of trade.
   > Two ships on adjacent tiles can engage. Resolver considers
   > hull, guns, crew, morale. Outcomes: sunk, captured, crippled,
   > fled.
-  - :large_orange_diamond: **TASK-053** — Combat resolver in packages/core  `high` `large` _(core)_  
+  - :white_check_mark: **TASK-053** — Combat resolver in packages/core  `high` `large` _(core)_ · [PR](https://github.com/g-chappell/colonize/pull/65)  
     _depends on: TASK-027_
     > Pure-function takes attacker + defender + context → outcome
     > + damaged states. Randomness seeded for replay. Covers
