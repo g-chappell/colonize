@@ -7,6 +7,9 @@ export const UnitType = {
   Frigate: 'frigate',
   ShipOfTheLine: 'ship-of-the-line',
   Privateer: 'privateer',
+  Marines: 'marines',
+  Dragoons: 'dragoons',
+  Pikemen: 'pikemen',
 } as const;
 
 export type UnitType = (typeof UnitType)[keyof typeof UnitType];
@@ -21,12 +24,22 @@ export const SHIP_UNIT_TYPES: readonly UnitType[] = [
   UnitType.Privateer,
 ];
 
+export const GROUND_UNIT_TYPES: readonly UnitType[] = [
+  UnitType.Marines,
+  UnitType.Dragoons,
+  UnitType.Pikemen,
+];
+
 export function isUnitType(value: unknown): value is UnitType {
   return typeof value === 'string' && (ALL_UNIT_TYPES as readonly string[]).includes(value);
 }
 
 export function isShipUnitType(value: unknown): value is UnitType {
   return isUnitType(value) && (SHIP_UNIT_TYPES as readonly string[]).includes(value);
+}
+
+export function isGroundUnitType(value: unknown): value is UnitType {
+  return isUnitType(value) && (GROUND_UNIT_TYPES as readonly string[]).includes(value);
 }
 
 export interface UnitTypeDefinition {
@@ -43,6 +56,9 @@ const UNIT_TYPE_DEFINITIONS: Readonly<Record<UnitType, UnitTypeDefinition>> = {
   [UnitType.Frigate]: { id: UnitType.Frigate, baseMovement: 3 },
   [UnitType.ShipOfTheLine]: { id: UnitType.ShipOfTheLine, baseMovement: 2 },
   [UnitType.Privateer]: { id: UnitType.Privateer, baseMovement: 4 },
+  [UnitType.Marines]: { id: UnitType.Marines, baseMovement: 1 },
+  [UnitType.Dragoons]: { id: UnitType.Dragoons, baseMovement: 2 },
+  [UnitType.Pikemen]: { id: UnitType.Pikemen, baseMovement: 1 },
 };
 
 export function getUnitTypeDefinition(type: UnitType): UnitTypeDefinition {

@@ -187,3 +187,74 @@ export function getLegendaryShip(id: LegendaryShipId): LegendaryShipSlot {
   }
   return found;
 }
+
+export type GroundClassId = 'marines' | 'dragoons' | 'pikemen';
+
+// Descriptive + stat block for a ground unit class. `attack` / `defense` /
+// `hp` are the rule-relevant stats the ground-combat resolver reads through
+// the caller (scalar-seam pattern); `baseMovement` mirrors the core registry
+// entry. `beats` names the class this unit has a rock-paper-scissors advantage
+// over — the resolver reads it to apply the RPS multiplier.
+export interface GroundClassEntry {
+  readonly id: GroundClassId;
+  readonly name: string;
+  readonly description: string;
+  readonly hp: number;
+  readonly attack: number;
+  readonly defense: number;
+  readonly baseMovement: number;
+  readonly beats: GroundClassId;
+}
+
+export const GROUND_CLASSES: readonly GroundClassEntry[] = [
+  {
+    id: 'marines',
+    name: 'Marines',
+    description:
+      'Disciplined musket-and-bayonet line. A steady volley shreds a pike line before it can close.',
+    hp: 30,
+    attack: 14,
+    defense: 12,
+    baseMovement: 1,
+    beats: 'pikemen',
+  },
+  {
+    id: 'dragoons',
+    name: 'Dragoons',
+    description:
+      'Fast-moving skirmishers — part-rider, part-raider. Slip around a musket line to hit the flank before the second volley.',
+    hp: 25,
+    attack: 16,
+    defense: 9,
+    baseMovement: 2,
+    beats: 'marines',
+  },
+  {
+    id: 'pikemen',
+    name: 'Pikemen',
+    description:
+      'Close-order spears and boarding pikes. The hedge of points stops a dragoon charge dead.',
+    hp: 35,
+    attack: 11,
+    defense: 15,
+    baseMovement: 1,
+    beats: 'dragoons',
+  },
+];
+
+const GROUND_CLASS_IDS: readonly string[] = GROUND_CLASSES.map((g) => g.id);
+
+export function isGroundClassId(value: unknown): value is GroundClassId {
+  return typeof value === 'string' && GROUND_CLASS_IDS.includes(value);
+}
+
+export function getGroundClass(id: GroundClassId): GroundClassEntry {
+  if (!isGroundClassId(id)) {
+    throw new TypeError(`getGroundClass: not a valid GroundClassId: ${String(id)}`);
+  }
+  const found = GROUND_CLASSES.find((g) => g.id === id);
+  if (!found) {
+    throw new Error(`getGroundClass: missing GroundClassEntry for ${id}`);
+  }
+  return found;
+}

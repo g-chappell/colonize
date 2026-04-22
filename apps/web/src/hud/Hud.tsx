@@ -25,6 +25,9 @@ const UNIT_TYPE_NAMES: Readonly<Record<UnitType, string>> = {
   [UnitType.Frigate]: 'Frigate',
   [UnitType.ShipOfTheLine]: 'Ship of the Line',
   [UnitType.Privateer]: 'Privateer',
+  [UnitType.Marines]: 'Marines',
+  [UnitType.Dragoons]: 'Dragoons',
+  [UnitType.Pikemen]: 'Pikemen',
 };
 
 const PLAYABLE_FACTION_KEYS: readonly string[] = Object.keys(FACTION_NAMES);

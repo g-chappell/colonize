@@ -42,12 +42,29 @@ export {
   UnitType,
   ALL_UNIT_TYPES,
   SHIP_UNIT_TYPES,
+  GROUND_UNIT_TYPES,
   isUnitType,
   isShipUnitType,
+  isGroundUnitType,
   getUnitTypeDefinition,
   Unit,
+  DISEMBARKABLE_TILE_TYPES,
+  DISEMBARK_MOVEMENT_COST,
+  EMBARK_MOVEMENT_COST,
+  canDisembark,
+  canEmbark,
 } from './unit/index.js';
-export type { UnitTypeDefinition, UnitJSON, UnitInit, FactionId } from './unit/index.js';
+export type {
+  UnitTypeDefinition,
+  UnitJSON,
+  UnitInit,
+  FactionId,
+  CarrierShip,
+  DisembarkParams,
+  EmbarkCheck,
+  EmbarkParams,
+  EmbarkableUnit,
+} from './unit/index.js';
 export { CargoHold } from './cargo/index.js';
 export type { CargoHoldJSON, CargoHoldInit, ResourceId, ArtifactId } from './cargo/index.js';
 export {
@@ -132,6 +149,12 @@ export {
   isCombatResult,
   assertValidCombatant,
   resolveCombat,
+  GroundCombatActionType,
+  ALL_GROUND_COMBAT_ACTION_TYPES,
+  isGroundCombatActionType,
+  assertValidGroundCombatant,
+  resolveGroundCombat,
+  getTerrainDefenderModifier,
 } from './combat/index.js';
 export type {
   Combatant,
@@ -139,4 +162,8 @@ export type {
   CombatOutcome,
   CombatEvent,
   CombatSide,
+  GroundCombatant,
+  GroundCombatContext,
+  GroundCombatOutcome,
+  GroundCombatEvent,
 } from './combat/index.js';
