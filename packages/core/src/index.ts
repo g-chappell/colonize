@@ -70,6 +70,14 @@ export type {
   RecipeConsumedIngredient,
   RecipeMissingIngredient,
 } from './resource/index.js';
+export {
+  ProfessionType,
+  ALL_PROFESSION_TYPES,
+  isProfessionType,
+  getProfessionYieldMultiplier,
+  getProfessionBuildingMultiplier,
+  applyProfessionBonusToYield,
+} from './profession/index.js';
 export { Colony, foundColony, canFoundColonyAt, FOUNDABLE_TILE_TYPES } from './colony/index.js';
 export type {
   ColonyJSON,
