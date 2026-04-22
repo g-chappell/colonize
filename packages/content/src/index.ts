@@ -50,3 +50,11 @@ export {
   type BuildingEntry,
   type BuildingEntryId,
 } from './buildings.js';
+
+export {
+  TILE_YIELDS,
+  getTileYieldEntry,
+  isTileYieldEntryId,
+  type TileYieldEntry,
+  type TileYieldEntryId,
+} from './tile-yields.js';

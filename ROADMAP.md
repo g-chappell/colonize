@@ -9,8 +9,8 @@ _Created: 2026-04-20_
 ## Summary
 
 - **Total tasks:** 90
-- **Done:** 39 (43%)
-- **Ready:** 51
+- **Done:** 40 (44%)
+- **Ready:** 50
 - **In progress:** 0
 - **Blocked:** 0
 
@@ -398,7 +398,7 @@ factions).
   > Crew members can be assigned to work on surrounding ocean /
   > land / coast tiles, producing base resources (Provisions,
   > Timber, Shot-and-Powder, Salvage, etc.).
-  - :black_circle: **TASK-042** — Tile-work model + yields  `high` `medium` _(core, content)_  
+  - :white_check_mark: **TASK-042** — Tile-work model + yields  `high` `medium` _(core, content)_ · [PR](https://github.com/g-chappell/colonize/pull/56)  
     _depends on: TASK-038_
     > Each tile type has a base yield vector (fishing waters →
     > Provisions; kelp forest → Fibre; shoals → Salvage; coastal
