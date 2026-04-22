@@ -131,3 +131,18 @@ gap-free.
 - Refinements:
   1. e9bd751 — codify opaque-string-alias bridge for pre-registry save-format identifiers (`type FooId = string` + mutator `assertNonEmptyString` guard, tightened to a const-object union once the registry task lands — avoids a forbidden `content → core` import edge while the registry is still in flight). Driven by TASK-034 `ResourceId` / `ArtifactId` + TASK-038 `CrewId` / `BuildingId`.
   2. 3df426e — codify sorted-toJSON determinism for Map/Set-backed save primitives (entries must be emitted in stable sorted order so byte-parity holds across runs/machines; JS `Set` / `Map` insertion order would otherwise leak into `JSON.stringify` and break replay parity). Driven by TASK-034 CargoHold sorted toJSON + supporting evidence from TASK-029 DirectionLayer sparse row-major sort + TASK-038 Colony sorted crew/buildings; codifies the rule that FactionVisibility already followed implicitly.
+
+---
+
+## Review 2026-04-22T06:16Z — after TASK-035 through TASK-042
+- Success streak: 5 (since PR #51 review checkpoint: TASK-035 → TASK-039 → TASK-040 → TASK-041 → TASK-042)
+- Patterns identified: 2
+- Proposals drafted: 2
+- Proposals de-duplicated: 2 (both novel vs CLAUDE.md + approvals/history.md + PRs #23, #33, #39, #45, #51; Jaro-Winkler threshold 0.85 via `alreadyCovered`)
+- Refinements committed: 2
+- PR: https://github.com/g-chappell/colonize/pull/57
+- Outcome: opened
+- Files touched: CLAUDE.md (Tier 3 Architecture notes, two bullets appended after the "Map/Set-backed save-format emitters sort entries in toJSON" bullet; Tier 1 [lines 57–73] untouched)
+- Refinements:
+  1. 8747a47 — codify scalar seams for pre-registry axis values (primitives whose numeric axis will come from a not-yet-existing registry accept the scalar as a function argument with edge-validation, keeping the signature stable across the registry upgrade — the numeric-axis half of the opaque-string-alias rule). Driven by TASK-041 `buildingEffort` + `colonyProductionValue` proxies and TASK-042 `scaleTileYield(base, multiplier)` deferring the profession-multiplier lookup to its caller.
+  2. 79a3c0b — codify trimming consumer-specific fields off save-format registries (drop speculative `effect` / `unlocked` / descriptive-subtype fields when the consumer system owning their semantics doesn't yet exist; consumers read the registry id through their own lookup and attach their own behaviour). Driven by TASK-035 dropping `LegendaryShipSlot.unlocked`, TASK-040 omitting `BuildingDefinition.effect`, and TASK-042 resisting TileType expansion for fishing-waters / kelp-forest / coastal-grove — three instances in one streak.
