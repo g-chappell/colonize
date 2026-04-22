@@ -1529,7 +1529,7 @@ epics:
         tasks:
           - id: TASK-063
             title: Implement per-faction bonus hooks
-            status: ready
+            status: in-progress
             priority: high
             complexity: medium
             workspaces:
@@ -1547,8 +1547,8 @@ epics:
             pr: null
             completed: null
             blocked_reason: null
-            last_attempted: null
-            attempt_count: 0
+            last_attempted: '2026-04-22T00:00:00Z'
+            attempt_count: 1
           - id: TASK-064
             title: Faction-select bonus tooltip polish
             status: ready

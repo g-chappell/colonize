@@ -10,8 +10,8 @@ _Created: 2026-04-20_
 
 - **Total tasks:** 90
 - **Done:** 51 (57%)
-- **Ready:** 39
-- **In progress:** 0
+- **Ready:** 38
+- **In progress:** 1
 - **Blocked:** 0
 
 ---
@@ -594,7 +594,7 @@ Collective).
   > Each of the four playables has mechanical identity: OTK
   > (bloodline/legendary), Ironclad (production), Phantom (raid
   > stealth), Bloodborne (combat/recruit).
-  - :black_circle: **TASK-063** — Implement per-faction bonus hooks  `high` `medium` _(core, content)_  
+  - :large_orange_diamond: **TASK-063** — Implement per-faction bonus hooks  `high` `medium` _(core, content)_  
     _depends on: TASK-038, TASK-053_
     > Bonus application points in economy, combat, and map
     > systems. OTK: Red Tide traversal + Legendary blueprints.
