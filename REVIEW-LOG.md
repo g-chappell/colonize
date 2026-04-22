@@ -162,3 +162,17 @@ gap-free.
   1. 398e3ae — extend pure-sibling pattern to non-trivial React component logic (the *ergonomic* form distinct from the *strict* Phaser-isolation form; React surfaces with non-trivial pure logic — slider grids, multi-row forms, predicate gates — get a `*-math.ts` sibling tested directly with plain inputs). Driven by TASK-048 `trade-math.ts` + TASK-049 `transfer-math.ts`, both citing the existing Phaser-narrow bullet as not-quite-applicable.
   2. 6b88aaa — codify multi-slice zustand mutations in a single `set(...)` call (store actions touching ≥ 2 slices commit them atomically so external observers never see a partial-write race). Driven by TASK-048 `commitTrade` + TASK-049 `commitCargoTransfer` — both producing one `set` for unit-cargo + faction-state slices together.
   3. d0bd44e — codify clamp-and-skip on out-of-range qty at the zustand store boundary (per-line clamp + silent skip + continue with the rest of the cart, not throw or no-op the whole batch — the store boundary is user-input adjacent so cheap edge guards earn their keep, distinct from the Tier 1 strict-validation rule for `packages/core`). Driven by TASK-048 `commitTrade` silent-ignore on sell-exceeds-hold + TASK-049 `commitCargoTransfer` clamp on load > colonyStock — TASK-049's lesson explicitly cites TASK-048's posture.
+
+---
+
+## Review [2026-04-22 18:26] — after TASK-054 through TASK-063
+- Success streak: 5
+- Patterns identified: 6 (slice-driven self-mounting overlays; cooldowns-as-absolute-expiry-turn; discriminated-union outcomes; scoped useState confirmation modals; Esc handler hierarchy with stopPropagation; PlayableFactionId drift-guard sibling tests)
+- Proposals drafted: 1 (five patterns appeared in only one AGENT-LOG entry — deferred per the ≥ 2-entry bar)
+- Proposals de-duplicated: 1 (novel vs CLAUDE.md + bodies of PRs #33, #39, #45, #51, #57, #66)
+- Refinements committed: 1
+- PR: https://github.com/g-chappell/colonize/pull/72
+- Outcome: opened
+- Files touched: CLAUDE.md (Tier 3 — one bullet inserted in Architecture notes between "Top-level screen routing" and "Heraldic / crest visuals"; Tier 1 [lines 57–74] untouched)
+- Refinements:
+  1. f3e9725 — codify slice-driven self-mounting overlays for "happens-during-an-action" events (CombatOverlay + RumourRevealModal pattern: unconditional mount in App.tsx's game-stage block + nullable store slice + `return null` when slice is null — distinct from the existing terminal/overlay-*screen* dichotomy which governs player-chosen UI-navigation chrome). Driven by TASK-055 CombatOverlay explicitly citing RumourRevealModal as the precedent (≥ 2 instances of the same decision without a rule to cite) — every upcoming transient event modal (turn-event banner, treaty-accepted confetti, discovery cutscene) will face the same choice.
