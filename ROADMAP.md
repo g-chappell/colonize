@@ -10,8 +10,8 @@ _Created: 2026-04-20_
 
 - **Total tasks:** 90
 - **Done:** 33 (37%)
-- **Ready:** 57
-- **In progress:** 0
+- **Ready:** 56
+- **In progress:** 1
 - **Blocked:** 0
 
 ---
@@ -277,7 +277,7 @@ rules including wind, currents, and Red Tide impassability.
     > Pathfinder returning tile-by-tile path + total cost. Per-
     > tile cost from map (ocean = 1, Red Tide = ∞ unless unit
     > has RedTideImmunity flag). Unit tests with a small map.
-  - :black_circle: **TASK-029** — Wind / current zones  `med` `medium` _(core)_  
+  - :large_orange_diamond: **TASK-029** — Wind / current zones  `med` `medium` _(core)_  
     _depends on: TASK-028_
     > Add optional WindZone + CurrentZone layers to the map
     > (seeded at gen). Modify sailing move-cost by direction
