@@ -58,3 +58,11 @@ export {
   type TileYieldEntry,
   type TileYieldEntryId,
 } from './tile-yields.js';
+
+export {
+  RESOURCES,
+  getResource,
+  isResourceEntryId,
+  type ResourceEntry,
+  type ResourceEntryId,
+} from './resources.js';
