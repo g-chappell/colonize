@@ -1,5 +1,12 @@
 import { create } from 'zustand';
-import type { Coord, GameVersion, RumourOutcome, TurnPhase, UnitJSON } from '@colonize/core';
+import type {
+  ColonyJSON,
+  Coord,
+  GameVersion,
+  RumourOutcome,
+  TurnPhase,
+  UnitJSON,
+} from '@colonize/core';
 import { CORE_VERSION, TurnPhase as TurnPhaseEnum } from '@colonize/core';
 
 export type PlayableFaction = 'otk' | 'ironclad' | 'phantom' | 'bloodborne';
@@ -11,7 +18,7 @@ export const FACTION_NAMES: Record<PlayableFaction, string> = {
   bloodborne: 'Bloodborne Legion',
 };
 
-export type Screen = 'menu' | 'faction-select' | 'game' | 'pause';
+export type Screen = 'menu' | 'faction-select' | 'game' | 'pause' | 'colony';
 
 // User-editable game settings that survive pause/resume. Audio volumes
 // mirror the `AudioState` defaults in apps/web/src/game/audio-state.ts —
@@ -66,6 +73,13 @@ export interface GameState {
   units: readonly UnitJSON[];
   selectedUnitId: string | null;
   proposedMove: ProposedMove | null;
+  // Plain-data colony roster (ColonyJSON, not Colony instances) — same
+  // rationale as `units`: zustand state must round-trip through
+  // structuredClone for devtools; class instances do not. The roster
+  // owner (founding action / cloud save reload) is responsible for
+  // pushing fresh ColonyJSON snapshots whenever a colony mutates.
+  colonies: readonly ColonyJSON[];
+  selectedColonyId: string | null;
   // Outcome of a rumour tile that has been resolved but not yet
   // acknowledged by the player. Non-null while the reveal modal is
   // showing; cleared on dismiss. The resolver (a future task) will
@@ -82,6 +96,8 @@ export interface GameState {
   setUnits: (units: readonly UnitJSON[]) => void;
   setSelectedUnit: (unitId: string | null) => void;
   setProposedMove: (move: ProposedMove | null) => void;
+  setColonies: (colonies: readonly ColonyJSON[]) => void;
+  setSelectedColony: (colonyId: string | null) => void;
   // Commits a move by updating the unit's position + deducting the
   // spent movement cost. Emitted once the sprite tween finishes so the
   // store snapshot stays in sync with the on-screen visual.
@@ -119,6 +135,8 @@ const initialState = {
   units: [] as readonly UnitJSON[],
   selectedUnitId: null as string | null,
   proposedMove: null as ProposedMove | null,
+  colonies: [] as readonly ColonyJSON[],
+  selectedColonyId: null as string | null,
   rumourReveal: null as RumourOutcome | null,
   settings: DEFAULT_SETTINGS,
 } as const;
@@ -142,6 +160,8 @@ export const useGameStore = create<GameState>((set) => ({
       proposedMove: state.selectedUnitId === unitId ? state.proposedMove : null,
     })),
   setProposedMove: (move) => set({ proposedMove: move }),
+  setColonies: (colonies) => set({ colonies }),
+  setSelectedColony: (colonyId) => set({ selectedColonyId: colonyId }),
   commitMove: (unitId, position, movementCost) =>
     set((state) => ({
       units: state.units.map((u) =>

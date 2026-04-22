@@ -838,7 +838,7 @@ epics:
             attempt_count: 1
           - id: TASK-039
             title: "Colony view (React + Phaser inset)"
-            status: ready
+            status: done
             priority: high
             complexity: large
             workspaces: [web, core]
@@ -847,11 +847,11 @@ epics:
               assigned, buildings, stocks, production queue. Accessible
               by clicking a colony sprite on the main map.
             depends_on: [TASK-038, TASK-030]
-            pr: null
-            completed: null
+            pr: "https://github.com/g-chappell/colonize/pull/53"
+            completed: "2026-04-22"
             blocked_reason: null
-            last_attempted: null
-            attempt_count: 0
+            last_attempted: "2026-04-22T00:00:00Z"
+            attempt_count: 1
       - id: STORY-22
         title: "Building tree"
         description: |

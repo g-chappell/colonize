@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { bus } from './bus';
 import { SCENE_KEYS } from './game/asset-keys';
+import { useGameStore } from './store/game';
 
 // Phaser's module init touches the canvas 2D context, which jsdom
 // (used by vitest) does not implement. We import Phaser dynamically
@@ -34,6 +35,19 @@ export function GameCanvas(): JSX.Element {
     let destroyed = false;
     let gameInstance: PhaserGame | null = null;
     const busUnsubscribes: Array<() => void> = [];
+
+    // Colony-open routing lives here (not inside GameScene) because the
+    // overlay is a React screen and the screen slice is owned by the
+    // zustand store. GameScene emits the bus event; this effect routes
+    // the open. Subscribed for the full GameCanvas lifetime so the
+    // event fires regardless of which Phaser scene is active.
+    busUnsubscribes.push(
+      bus.on('colony:selected', ({ colonyId }) => {
+        const state = useGameStore.getState();
+        state.setSelectedColony(colonyId);
+        if (colonyId !== null) state.setScreen('colony');
+      }),
+    );
 
     void import('./game').then(({ createGame }) => {
       if (destroyed || !parentRef.current) return;

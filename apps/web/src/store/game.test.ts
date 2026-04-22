@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { CORE_VERSION, TurnPhase, UnitType, type UnitJSON } from '@colonize/core';
+import { CORE_VERSION, TurnPhase, UnitType, type ColonyJSON, type UnitJSON } from '@colonize/core';
 import { useGameStore } from './game';
 
 const EMPTY_CARGO = { resources: {}, artifacts: [] } as const;
@@ -241,6 +241,43 @@ describe('useGameStore', () => {
     });
     useGameStore.getState().reset();
     expect(useGameStore.getState().proposedMove).toBeNull();
+  });
+
+  describe('colonies', () => {
+    const sampleColony: ColonyJSON = {
+      id: 'colony-1',
+      faction: 'otk',
+      position: { x: 7, y: 9 },
+      population: 3,
+      crew: ['settler-1'],
+      buildings: ['tavern'],
+      stocks: { resources: { rum: 12 }, artifacts: [] },
+    };
+
+    it('starts with an empty colony roster and no selection', () => {
+      expect(useGameStore.getState().colonies).toEqual([]);
+      expect(useGameStore.getState().selectedColonyId).toBeNull();
+    });
+
+    it('replaces the colony roster wholesale', () => {
+      useGameStore.getState().setColonies([sampleColony]);
+      expect(useGameStore.getState().colonies).toEqual([sampleColony]);
+    });
+
+    it('stores and clears the selected colony id', () => {
+      useGameStore.getState().setSelectedColony('colony-1');
+      expect(useGameStore.getState().selectedColonyId).toBe('colony-1');
+      useGameStore.getState().setSelectedColony(null);
+      expect(useGameStore.getState().selectedColonyId).toBeNull();
+    });
+
+    it('drops colonies and selection on reset', () => {
+      useGameStore.getState().setColonies([sampleColony]);
+      useGameStore.getState().setSelectedColony('colony-1');
+      useGameStore.getState().reset();
+      expect(useGameStore.getState().colonies).toEqual([]);
+      expect(useGameStore.getState().selectedColonyId).toBeNull();
+    });
   });
 
   describe('settings', () => {
