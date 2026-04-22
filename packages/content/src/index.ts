@@ -85,3 +85,11 @@ export {
   getHomePortStartingPrices,
   type ResourcePriceTable,
 } from './homeport-prices.js';
+
+export {
+  DIPLOMACY_ACTION_FLAVOURS,
+  getDiplomacyActionFlavour,
+  isDiplomacyActionId,
+  type DiplomacyActionId,
+  type DiplomacyActionFlavourEntry,
+} from './diplomacy-flavour.js';

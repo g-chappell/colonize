@@ -1,0 +1,297 @@
+.backdrop {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(4, 14, 22, 0.82);
+  font-family: 'Georgia', 'Times New Roman', serif;
+  color: #e8d8b8;
+  z-index: 65;
+}
+
+.panel {
+  width: min(720px, 94vw);
+  max-height: 90vh;
+  overflow: auto;
+  padding: 1.25rem 1.5rem 1.5rem;
+  background: rgba(12, 30, 43, 0.96);
+  border: 1px solid #d6b466;
+  box-shadow: 0 0 28px rgba(0, 0, 0, 0.6);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.title {
+  margin: 0;
+  color: #d6b466;
+  font-size: 1.3rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.subtitle {
+  font-size: 0.75rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+.factionGrid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.factionCard {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  padding: 0.7rem 0.9rem;
+  background: rgba(12, 30, 43, 0.72);
+  border: 1px solid rgba(214, 180, 102, 0.55);
+}
+
+.factionHeader {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.factionName {
+  color: #d6b466;
+  font-size: 1rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.stanceChip {
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  padding: 0.12rem 0.55rem;
+  border: 1px solid currentColor;
+  font-variant-numeric: tabular-nums;
+}
+
+.stanceHostile {
+  color: #d6876a;
+}
+
+.stanceTense {
+  color: #e2b56a;
+}
+
+.stanceNeutral {
+  color: #c9bfa9;
+}
+
+.stanceWarm {
+  color: #bed997;
+}
+
+.stanceAllied {
+  color: #9cd67a;
+}
+
+.factionMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  font-size: 0.78rem;
+  opacity: 0.85;
+}
+
+.lastAction {
+  font-style: italic;
+  opacity: 0.8;
+}
+
+.lastActionEmpty {
+  opacity: 0.4;
+}
+
+.actionGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.4rem;
+  margin-top: 0.3rem;
+}
+
+.actionButton {
+  padding: 0.45rem 0.7rem;
+  background: rgba(12, 30, 43, 0.85);
+  border: 1px solid #d6b466;
+  color: #d6b466;
+  font-family: inherit;
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  transition:
+    background 120ms ease,
+    color 120ms ease;
+}
+
+.actionButton:hover:not(:disabled) {
+  background: #d6b466;
+  color: #0c1e2b;
+}
+
+.actionButton:focus-visible {
+  outline: 2px solid #e6c477;
+  outline-offset: 2px;
+}
+
+.actionButton:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.actionFriendly {
+  border-color: #9cd67a;
+  color: #bed997;
+}
+
+.actionHostile {
+  border-color: #d6876a;
+  color: #d6876a;
+}
+
+.actionLabel {
+  font-weight: bold;
+}
+
+.actionCooldown {
+  font-size: 0.66rem;
+  letter-spacing: 0.1em;
+  opacity: 0.8;
+  text-transform: uppercase;
+}
+
+.footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  padding-top: 0.4rem;
+  border-top: 1px solid rgba(214, 180, 102, 0.3);
+}
+
+.button {
+  padding: 0.5rem 1.1rem;
+  background: rgba(12, 30, 43, 0.85);
+  border: 1px solid #d6b466;
+  color: #d6b466;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: bold;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    background 120ms ease,
+    color 120ms ease;
+}
+
+.button:hover:not(:disabled) {
+  background: #d6b466;
+  color: #0c1e2b;
+}
+
+.button:focus-visible {
+  outline: 2px solid #e6c477;
+  outline-offset: 2px;
+}
+
+.button:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.modalBackdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(4, 14, 22, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 70;
+}
+
+.modalPanel {
+  width: min(440px, 92vw);
+  padding: 1.1rem 1.3rem 1.2rem;
+  background: rgba(12, 30, 43, 0.98);
+  border: 1px solid #d6b466;
+  box-shadow: 0 0 22px rgba(0, 0, 0, 0.7);
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.modalTitle {
+  margin: 0;
+  color: #d6b466;
+  font-size: 1.05rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.modalSummary {
+  font-size: 0.88rem;
+  opacity: 0.88;
+  margin: 0;
+}
+
+.modalFlavour {
+  font-style: italic;
+  opacity: 0.78;
+  font-size: 0.83rem;
+  margin: 0;
+  border-left: 2px solid rgba(214, 180, 102, 0.5);
+  padding-left: 0.6rem;
+}
+
+.modalMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  font-size: 0.78rem;
+  opacity: 0.85;
+}
+
+.modalMetaLabel {
+  opacity: 0.6;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-size: 0.68rem;
+}
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.missing {
+  padding: 1rem;
+  font-size: 0.85rem;
+  opacity: 0.75;
+  text-align: center;
+}
