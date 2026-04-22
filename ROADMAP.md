@@ -10,8 +10,8 @@ _Created: 2026-04-20_
 
 - **Total tasks:** 90
 - **Done:** 41 (46%)
-- **Ready:** 49
-- **In progress:** 0
+- **Ready:** 48
+- **In progress:** 1
 - **Blocked:** 0
 
 ---
@@ -413,7 +413,7 @@ factions).
   > Raw → processed → finished goods. Timber → Planks → Ship
   > components; Provisions + Sugar → Rum (trade good); Salvage +
   > Forgework → Forgework items; Abyssal materia (risk/reward).
-  - :black_circle: **TASK-044** — Resource types + chain definitions  `high` `medium` _(core, content)_  
+  - :large_orange_diamond: **TASK-044** — Resource types + chain definitions  `high` `medium` _(core, content)_  
     _depends on: TASK-040, TASK-042_
     > Resource enum + recipe table (inputs + building + output).
     > Turn tick converts queued recipes. Failure modes
