@@ -2,6 +2,8 @@ import { describe, it, expect } from 'vitest';
 import { generateMap, MIN_MAP_WIDTH, MIN_MAP_HEIGHT, MAX_FACTION_COUNT } from './generate.js';
 import { GameMap } from './map.js';
 import { TileType } from './tile.js';
+import { ALL_DIRECTIONS } from './direction.js';
+import { DirectionLayer } from './direction-layer.js';
 import { ALL_RUMOUR_KINDS, RumourTile } from '../rumour/rumour.js';
 
 function countTiles(map: GameMap, type: TileType): number {
@@ -290,5 +292,71 @@ describe('generateMap — rumours', () => {
       const revived = RumourTile.fromJSON(r.toJSON());
       expect(revived.toJSON()).toEqual(r.toJSON());
     }
+  });
+});
+
+describe('generateMap — wind and current zones', () => {
+  const seeds = [1, 2, 3, 42, 777, 12345];
+
+  it.each(seeds)('returns non-empty wind + current layers (seed=%i)', (seed) => {
+    const g = generateMap({ seed, width: 40, height: 25 });
+    expect(g.wind.size).toBeGreaterThan(0);
+    expect(g.current.size).toBeGreaterThan(0);
+  });
+
+  it('wind and current layers match the map dimensions', () => {
+    const g = generateMap({ seed: 7, width: 30, height: 20 });
+    expect(g.wind.width).toBe(30);
+    expect(g.wind.height).toBe(20);
+    expect(g.current.width).toBe(30);
+    expect(g.current.height).toBe(20);
+  });
+
+  it('zones only occupy navigable water tiles', () => {
+    const g = generateMap({ seed: 42, width: 40, height: 25 });
+    const navigable = new Set<TileType>([
+      TileType.Ocean,
+      TileType.RayonPassage,
+      TileType.FloatingCity,
+      TileType.FataMorgana,
+    ]);
+    for (let y = 0; y < g.map.height; y++) {
+      for (let x = 0; x < g.map.width; x++) {
+        if (g.wind.get(x, y) !== null) {
+          expect(navigable.has(g.map.get(x, y))).toBe(true);
+        }
+        if (g.current.get(x, y) !== null) {
+          expect(navigable.has(g.map.get(x, y))).toBe(true);
+        }
+      }
+    }
+  });
+
+  it('stored directions are all known Direction values', () => {
+    const g = generateMap({ seed: 42, width: 40, height: 25 });
+    const valid = new Set(ALL_DIRECTIONS);
+    for (const e of g.wind.toJSON().entries) expect(valid.has(e.dir)).toBe(true);
+    for (const e of g.current.toJSON().entries) expect(valid.has(e.dir)).toBe(true);
+  });
+
+  it('produces identical wind and current placements for the same seed', () => {
+    const a = generateMap({ seed: 42, width: 40, height: 25 });
+    const b = generateMap({ seed: 42, width: 40, height: 25 });
+    expect(a.wind.toJSON()).toEqual(b.wind.toJSON());
+    expect(a.current.toJSON()).toEqual(b.current.toJSON());
+  });
+
+  it('produces different wind placements for different seeds', () => {
+    const a = generateMap({ seed: 1, width: 40, height: 25 });
+    const b = generateMap({ seed: 2, width: 40, height: 25 });
+    expect(a.wind.toJSON()).not.toEqual(b.wind.toJSON());
+  });
+
+  it('layers survive JSON round-trip', () => {
+    const g = generateMap({ seed: 99, width: 40, height: 25 });
+    const revivedWind = DirectionLayer.fromJSON(g.wind.toJSON());
+    const revivedCurrent = DirectionLayer.fromJSON(g.current.toJSON());
+    expect(revivedWind.toJSON()).toEqual(g.wind.toJSON());
+    expect(revivedCurrent.toJSON()).toEqual(g.current.toJSON());
   });
 });

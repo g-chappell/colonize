@@ -617,7 +617,7 @@ epics:
             attempt_count: 1
           - id: TASK-029
             title: "Wind / current zones"
-            status: ready
+            status: done
             priority: med
             complexity: medium
             workspaces: [core]
@@ -626,11 +626,11 @@ epics:
               (seeded at gen). Modify sailing move-cost by direction
               travelled vs wind direction. Tested on a small map.
             depends_on: [TASK-028]
-            pr: null
-            completed: null
+            pr: "https://github.com/g-chappell/colonize/pull/49"
+            completed: "2026-04-22"
             blocked_reason: null
-            last_attempted: null
-            attempt_count: 0
+            last_attempted: "2026-04-22T00:00:00Z"
+            attempt_count: 1
       - id: STORY-16
         title: "Unit interaction in GameScene"
         description: |

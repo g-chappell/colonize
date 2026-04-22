@@ -13,8 +13,19 @@ export {
   MAX_FACTION_COUNT,
 } from './map/index.js';
 export type { Coord, MapJSON, GenerateMapOptions, GeneratedMap } from './map/index.js';
-export { findPath, tileCost } from './map/index.js';
+export { findPath, tileCost, sailingStepCost, MIN_SAILING_STEP_COST } from './map/index.js';
 export type { PathfindFlags, PathResult } from './map/index.js';
+export {
+  Direction,
+  ALL_DIRECTIONS,
+  isDirection,
+  oppositeDirection,
+  stepDirection,
+  directionAngleDelta,
+  directionalCostOffset,
+  DirectionLayer,
+} from './map/index.js';
+export type { DirectionLayerJSON, DirectionLayerEntryJSON } from './map/index.js';
 export {
   Visibility,
   ALL_VISIBILITY_STATES,

@@ -1,5 +1,7 @@
 import { GameMap, type Coord } from './map.js';
 import { TileType } from './tile.js';
+import { ALL_DIRECTIONS, type Direction } from './direction.js';
+import { DirectionLayer } from './direction-layer.js';
 import { ALL_RUMOUR_KINDS, RumourTile } from '../rumour/rumour.js';
 
 export interface GenerateMapOptions {
@@ -13,6 +15,8 @@ export interface GeneratedMap {
   readonly map: GameMap;
   readonly factionStarts: readonly Coord[];
   readonly rumours: readonly RumourTile[];
+  readonly wind: DirectionLayer;
+  readonly current: DirectionLayer;
 }
 
 export const MIN_MAP_WIDTH = 20;
@@ -52,13 +56,39 @@ export function generateMap(options: GenerateMapOptions): GeneratedMap {
   scatterFataMorgana(map, rng);
   const factionStarts = pickFactionStarts(map, rng, factionCount);
   const rumours = scatterRumours(map, rng, factionStarts);
+  const wind = seedDirectionZones(
+    map,
+    rng,
+    WIND_ZONE_MIN,
+    WIND_ZONE_MAX,
+    WIND_ZONE_SIZE_MIN,
+    WIND_ZONE_SIZE_MAX,
+  );
+  const current = seedDirectionZones(
+    map,
+    rng,
+    CURRENT_ZONE_MIN,
+    CURRENT_ZONE_MAX,
+    CURRENT_ZONE_SIZE_MIN,
+    CURRENT_ZONE_SIZE_MAX,
+  );
 
-  return { map, factionStarts, rumours };
+  return { map, factionStarts, rumours, wind, current };
 }
 
 const RUMOUR_MIN_COUNT = 4;
 const RUMOUR_MAX_COUNT = 8;
 const RUMOUR_START_KEEP_OUT = 3;
+
+const WIND_ZONE_MIN = 2;
+const WIND_ZONE_MAX = 4;
+const WIND_ZONE_SIZE_MIN = 6;
+const WIND_ZONE_SIZE_MAX = 14;
+
+const CURRENT_ZONE_MIN = 1;
+const CURRENT_ZONE_MAX = 3;
+const CURRENT_ZONE_SIZE_MIN = 4;
+const CURRENT_ZONE_SIZE_MAX = 10;
 
 // Mulberry32: small, fast, well-distributed 32-bit PRNG. Deterministic for a given seed.
 function mulberry32(seed: number): () => number {
@@ -241,6 +271,71 @@ function nearAnyStart(x: number, y: number, starts: readonly Coord[], radius: nu
     if (Math.max(Math.abs(s.x - x), Math.abs(s.y - y)) <= radius) return true;
   }
   return false;
+}
+
+function seedDirectionZones(
+  map: GameMap,
+  rng: () => number,
+  minCount: number,
+  maxCount: number,
+  minSize: number,
+  maxSize: number,
+): DirectionLayer {
+  const layer = new DirectionLayer(map.width, map.height);
+  const count = randInt(rng, minCount, maxCount);
+  for (let i = 0; i < count; i++) {
+    const origin = findRandomNavigableCell(map, rng);
+    if (!origin) break;
+    const size = randInt(rng, minSize, maxSize);
+    const dir = ALL_DIRECTIONS[Math.floor(rng() * ALL_DIRECTIONS.length)] as Direction;
+    growDirectionBlob(map, layer, rng, origin, size, dir);
+  }
+  return layer;
+}
+
+function growDirectionBlob(
+  map: GameMap,
+  layer: DirectionLayer,
+  rng: () => number,
+  origin: Coord,
+  targetSize: number,
+  dir: Direction,
+): void {
+  const cells: Coord[] = [origin];
+  layer.set(origin.x, origin.y, dir);
+  const maxStalls = targetSize * 3;
+  let stalls = 0;
+  while (cells.length < targetSize && stalls < maxStalls) {
+    const anchor = cells[Math.floor(rng() * cells.length)]!;
+    const candidates = map
+      .neighbours(anchor.x, anchor.y)
+      .filter((n) => isNavigable(map.get(n.x, n.y)) && layer.get(n.x, n.y) === null);
+    if (candidates.length === 0) {
+      stalls++;
+      continue;
+    }
+    const pick = candidates[Math.floor(rng() * candidates.length)]!;
+    layer.set(pick.x, pick.y, dir);
+    cells.push(pick);
+  }
+}
+
+function findRandomNavigableCell(map: GameMap, rng: () => number): Coord | null {
+  for (let i = 0; i < 200; i++) {
+    const x = Math.floor(rng() * map.width);
+    const y = Math.floor(rng() * map.height);
+    if (isNavigable(map.get(x, y))) return { x, y };
+  }
+  return null;
+}
+
+function isNavigable(type: TileType): boolean {
+  return (
+    type === TileType.Ocean ||
+    type === TileType.RayonPassage ||
+    type === TileType.FloatingCity ||
+    type === TileType.FataMorgana
+  );
 }
 
 function nearestOcean(
