@@ -1,9 +1,40 @@
-import { useEffect } from 'react';
-import type { BuildingType, ColonyJSON } from '@colonize/core';
+import { useEffect, useState, type DragEvent } from 'react';
+import type { BuildingType, ColonyJSON, Coord, TileYield } from '@colonize/core';
+import { getTileYield } from '@colonize/core';
 import { getBuilding, isBuildingEntryId, type BuildingEntryId } from '@colonize/content';
-import { FACTION_NAMES, useGameStore, type PlayableFaction } from '../store/game';
+import {
+  FACTION_NAMES,
+  coordKey,
+  useGameStore,
+  type PlayableFaction,
+  type SurroundingTile,
+} from '../store/game';
 import { availableBuildings, type ProductionQueueItem } from './build-queue';
 import styles from './ColonyOverlay.module.css';
+
+const CREW_DRAG_MIME = 'application/x-colonize-crew';
+
+const TILE_TYPE_LABELS: Record<string, string> = {
+  ocean: 'Ocean',
+  'rayon-passage': 'Rayon passage',
+  island: 'Island',
+  'floating-city': 'Floating city',
+  'red-tide': 'Red tide',
+  'fata-morgana': 'Fata Morgana',
+};
+
+function tileLabel(type: string): string {
+  return TILE_TYPE_LABELS[type] ?? type;
+}
+
+function formatYield(yields: TileYield): string {
+  const entries = Object.entries(yields);
+  if (entries.length === 0) return 'none';
+  return entries
+    .map(([id, qty]) => `${id} +${qty}`)
+    .sort()
+    .join(', ');
+}
 
 function buildingDisplayName(id: string): string {
   return isBuildingEntryId(id) ? getBuilding(id as BuildingEntryId).name : id;
@@ -19,11 +50,10 @@ function displayFaction(factionId: string): string {
 }
 
 // Mounts while `screen === 'colony'`. Reads the selected colony from
-// the roster and shows its summary, crew, buildings, stocks, production
-// queue, and buildings available to queue. The tile-work panel stays a
-// placeholder until TASK-042 (tile yields) lands. Closing routes the
-// screen back to 'game' so the underlying GameScene resumes its normal
-// interaction model.
+// the roster and shows its summary, crew pool, 8-neighbour work-slot
+// grid, buildings, stocks, production queue, and buildings available
+// to queue. Closing routes the screen back to 'game' so the underlying
+// GameScene resumes its normal interaction model.
 export function ColonyOverlay(): JSX.Element {
   const colonies = useGameStore((s) => s.colonies);
   const selectedColonyId = useGameStore((s) => s.selectedColonyId);
@@ -113,22 +143,7 @@ function ColonyDetails({ colony, queue, onClose }: ColonyDetailsProps): JSX.Elem
         />
       </dl>
 
-      <section className={styles.section} data-testid="colony-overlay-crew">
-        <h3 className={styles.sectionHeader}>Crew assigned</h3>
-        {colony.crew.length === 0 ? (
-          <p className={styles.empty} data-testid="colony-overlay-crew-empty">
-            No crew assigned
-          </p>
-        ) : (
-          <ul className={styles.list}>
-            {colony.crew.map((id) => (
-              <li key={id} className={styles.chip} data-testid={`colony-overlay-crew-${id}`}>
-                {id}
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
+      <CrewAndTilesPanel colony={colony} />
 
       <section className={styles.section} data-testid="colony-overlay-buildings">
         <h3 className={styles.sectionHeader}>Buildings</h3>
@@ -175,11 +190,6 @@ function ColonyDetails({ colony, queue, onClose }: ColonyDetailsProps): JSX.Elem
         )}
       </section>
 
-      <section className={styles.section} data-testid="colony-overlay-tiles">
-        <h3 className={styles.sectionHeader}>Worked tiles</h3>
-        <p className={styles.placeholder}>Tile-yield model lands with TASK-042</p>
-      </section>
-
       <ProductionQueuePanel colony={colony} queue={queue} />
 
       <AvailableBuildingsPanel colony={colony} queue={queue} />
@@ -198,6 +208,187 @@ function ColonyDetails({ colony, queue, onClose }: ColonyDetailsProps): JSX.Elem
     </>
   );
 }
+
+interface CrewAndTilesPanelProps {
+  readonly colony: ColonyJSON;
+}
+
+// Crew pool + 8-neighbour work-slot grid. Drag a crew chip onto a slot
+// to assign; assignment displaces any prior occupant back to the pool,
+// and a crew can also be moved tile-to-tile by dragging. Click the
+// small ✕ on an assigned chip to return the crew to the pool.
+function CrewAndTilesPanel({ colony }: CrewAndTilesPanelProps): JSX.Element {
+  const surroundings = useGameStore((s) => s.colonySurroundings[colony.id] ?? EMPTY_SURROUNDINGS);
+  const assignments = useGameStore((s) => s.tileAssignments[colony.id] ?? EMPTY_ASSIGNMENTS);
+  const assignCrewToTile = useGameStore((s) => s.assignCrewToTile);
+  const unassignCrewFromTile = useGameStore((s) => s.unassignCrewFromTile);
+  const [draggingCrewId, setDraggingCrewId] = useState<string | null>(null);
+
+  const assignedCrew = new Set(Object.values(assignments));
+  const poolCrew = colony.crew.filter((id) => !assignedCrew.has(id));
+
+  const handleCrewDragStart =
+    (id: string) =>
+    (event: DragEvent<HTMLLIElement>): void => {
+      event.dataTransfer.setData(CREW_DRAG_MIME, id);
+      event.dataTransfer.setData('text/plain', id);
+      event.dataTransfer.effectAllowed = 'move';
+      setDraggingCrewId(id);
+    };
+
+  const handleDragEnd = (): void => setDraggingCrewId(null);
+
+  const handleTileDragOver = (event: DragEvent<HTMLLIElement>): void => {
+    event.preventDefault();
+    event.dataTransfer.dropEffect = 'move';
+  };
+
+  const handleTileDrop =
+    (coord: Coord) =>
+    (event: DragEvent<HTMLLIElement>): void => {
+      event.preventDefault();
+      const crewId = event.dataTransfer.getData(CREW_DRAG_MIME) || draggingCrewId;
+      if (!crewId) return;
+      assignCrewToTile(colony.id, crewId, coord);
+      setDraggingCrewId(null);
+    };
+
+  return (
+    <>
+      <section className={styles.section} data-testid="colony-overlay-crew">
+        <h3 className={styles.sectionHeader}>Crew pool</h3>
+        {colony.crew.length === 0 ? (
+          <p className={styles.empty} data-testid="colony-overlay-crew-empty">
+            No crew assigned
+          </p>
+        ) : poolCrew.length === 0 ? (
+          <p className={styles.empty} data-testid="colony-overlay-crew-pool-empty">
+            All crew working tiles
+          </p>
+        ) : (
+          <ul className={styles.list}>
+            {poolCrew.map((id) => (
+              <li
+                key={id}
+                className={`${styles.chip} ${styles.crewDraggable}`}
+                draggable
+                onDragStart={handleCrewDragStart(id)}
+                onDragEnd={handleDragEnd}
+                data-testid={`colony-overlay-crew-${id}`}
+              >
+                {id}
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+
+      <section className={styles.section} data-testid="colony-overlay-tiles">
+        <h3 className={styles.sectionHeader}>Worked tiles</h3>
+        {surroundings.length === 0 ? (
+          <p className={styles.empty} data-testid="colony-overlay-tiles-empty">
+            No surrounding tiles mapped
+          </p>
+        ) : (
+          <ul className={styles.tileGrid}>
+            {surroundings.map((cell) => (
+              <TileSlot
+                key={coordKey(cell.coord)}
+                colonyId={colony.id}
+                cell={cell}
+                assignedCrewId={assignments[coordKey(cell.coord)] ?? null}
+                onDragOver={handleTileDragOver}
+                onDrop={handleTileDrop(cell.coord)}
+                onUnassign={() => unassignCrewFromTile(colony.id, cell.coord)}
+                onCrewDragStart={handleCrewDragStart}
+                onCrewDragEnd={handleDragEnd}
+              />
+            ))}
+          </ul>
+        )}
+      </section>
+    </>
+  );
+}
+
+interface TileSlotProps {
+  readonly colonyId: string;
+  readonly cell: SurroundingTile;
+  readonly assignedCrewId: string | null;
+  readonly onDragOver: (event: DragEvent<HTMLLIElement>) => void;
+  readonly onDrop: (event: DragEvent<HTMLLIElement>) => void;
+  readonly onUnassign: () => void;
+  readonly onCrewDragStart: (id: string) => (event: DragEvent<HTMLLIElement>) => void;
+  readonly onCrewDragEnd: () => void;
+}
+
+function TileSlot({
+  cell,
+  assignedCrewId,
+  onDragOver,
+  onDrop,
+  onUnassign,
+  onCrewDragStart,
+  onCrewDragEnd,
+}: TileSlotProps): JSX.Element {
+  const baseYield = getTileYield(cell.type);
+  const postYield = assignedCrewId ? baseYield : {};
+  const slotTestId = `colony-overlay-tile-${cell.coord.x}-${cell.coord.y}`;
+  return (
+    <li
+      className={`${styles.tileSlot} ${assignedCrewId ? styles.tileSlotOccupied : ''}`}
+      onDragOver={onDragOver}
+      onDrop={onDrop}
+      data-testid={slotTestId}
+    >
+      <div className={styles.tileHeader}>
+        <span className={styles.tileType}>{tileLabel(cell.type)}</span>
+        <span className={styles.tileCoord}>
+          {cell.coord.x},{cell.coord.y}
+        </span>
+      </div>
+      <div
+        className={styles.tileYield}
+        data-testid={`${slotTestId}-yield`}
+        aria-label={`Yield: ${formatYield(postYield)}; if worked: ${formatYield(baseYield)}`}
+      >
+        <span className={styles.yieldPre} data-testid={`${slotTestId}-yield-pre`}>
+          now: {formatYield(postYield)}
+        </span>
+        <span className={styles.yieldPost} data-testid={`${slotTestId}-yield-post`}>
+          worked: {formatYield(baseYield)}
+        </span>
+      </div>
+      {assignedCrewId ? (
+        <div className={styles.tileCrewRow}>
+          <span
+            className={`${styles.chip} ${styles.crewDraggable}`}
+            draggable
+            onDragStart={onCrewDragStart(assignedCrewId)}
+            onDragEnd={onCrewDragEnd}
+            data-testid={`colony-overlay-crew-${assignedCrewId}`}
+          >
+            {assignedCrewId}
+          </span>
+          <button
+            type="button"
+            className={styles.unassignButton}
+            onClick={onUnassign}
+            aria-label={`Unassign ${assignedCrewId}`}
+            data-testid={`${slotTestId}-unassign`}
+          >
+            ✕
+          </button>
+        </div>
+      ) : null}
+    </li>
+  );
+}
+
+// Frozen empty-default sentinels so `useGameStore` selector identity is
+// stable across renders for colonies without a snapshot/assignment yet.
+const EMPTY_SURROUNDINGS: readonly SurroundingTile[] = Object.freeze([]);
+const EMPTY_ASSIGNMENTS: Readonly<Record<string, string>> = Object.freeze({});
 
 interface ProductionQueuePanelProps {
   readonly colony: ColonyJSON;

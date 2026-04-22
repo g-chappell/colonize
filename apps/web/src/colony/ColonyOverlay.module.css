@@ -295,3 +295,108 @@
   outline: 2px solid #e6c477;
   outline-offset: 2px;
 }
+
+.crewDraggable {
+  cursor: grab;
+  user-select: none;
+}
+
+.crewDraggable:active {
+  cursor: grabbing;
+}
+
+.tileGrid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.4rem;
+}
+
+.tileSlot {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding: 0.5rem 0.6rem;
+  background: rgba(12, 30, 43, 0.6);
+  border: 1px dashed rgba(214, 180, 102, 0.45);
+  font-size: 0.78rem;
+  transition:
+    border-color 120ms ease,
+    background 120ms ease;
+}
+
+.tileSlot:hover {
+  border-color: rgba(214, 180, 102, 0.85);
+}
+
+.tileSlotOccupied {
+  border-style: solid;
+  border-color: rgba(214, 180, 102, 0.7);
+  background: rgba(12, 30, 43, 0.8);
+}
+
+.tileHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.4rem;
+}
+
+.tileType {
+  color: #d6b466;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 0.72rem;
+}
+
+.tileCoord {
+  opacity: 0.55;
+  font-variant-numeric: tabular-nums;
+  font-size: 0.72rem;
+}
+
+.tileYield {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  font-size: 0.72rem;
+}
+
+.yieldPre {
+  color: #e8d8b8;
+}
+
+.yieldPost {
+  opacity: 0.6;
+  font-style: italic;
+}
+
+.tileCrewRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.unassignButton {
+  min-width: 1.5rem;
+  padding: 0.15rem 0.4rem;
+  background: rgba(12, 30, 43, 0.85);
+  border: 1px solid rgba(214, 180, 102, 0.6);
+  color: #d6b466;
+  font-family: inherit;
+  font-size: 0.8rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.unassignButton:hover {
+  background: #d6b466;
+  color: #0c1e2b;
+}
+
+.unassignButton:focus-visible {
+  outline: 2px solid #e6c477;
+  outline-offset: 2px;
+}

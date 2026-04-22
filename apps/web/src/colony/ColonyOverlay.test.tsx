@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { BuildingType, type ColonyJSON } from '@colonize/core';
-import { useGameStore } from '../store/game';
+import { useGameStore, type SurroundingTile } from '../store/game';
 import { ColonyOverlay } from './ColonyOverlay';
 
 const sampleColony: ColonyJSON = {
@@ -58,9 +58,9 @@ describe('ColonyOverlay', () => {
     expect(screen.getByTestId('colony-overlay-artifact-kraken-totem')).toBeInTheDocument();
   });
 
-  it('shows the tile-yield placeholder until TASK-042 lands', () => {
+  it('shows an empty-surroundings placeholder until a snapshot lands', () => {
     render(<ColonyOverlay />);
-    expect(screen.getByTestId('colony-overlay-tiles')).toHaveTextContent(/TASK-042/);
+    expect(screen.getByTestId('colony-overlay-tiles-empty')).toBeInTheDocument();
   });
 
   it('returns to the game screen + clears selection on close', () => {
@@ -194,6 +194,94 @@ describe('ColonyOverlay', () => {
       expect(
         screen.getByTestId(`colony-overlay-queue-down-${BuildingType.Warehouse}`),
       ).toBeDisabled();
+    });
+  });
+
+  describe('tile-work drag and drop', () => {
+    const surroundings: readonly SurroundingTile[] = [
+      { coord: { x: 11, y: 6 }, type: 'ocean' },
+      { coord: { x: 13, y: 7 }, type: 'island' },
+      { coord: { x: 12, y: 6 }, type: 'red-tide' },
+    ];
+
+    beforeEach(() => {
+      useGameStore.getState().setColonySurroundings('driftwatch', surroundings);
+    });
+
+    it('renders a slot per surrounding tile with its type + coord', () => {
+      render(<ColonyOverlay />);
+      expect(screen.getByTestId('colony-overlay-tile-11-6')).toHaveTextContent(/Ocean/);
+      expect(screen.getByTestId('colony-overlay-tile-11-6')).toHaveTextContent('11,6');
+      expect(screen.getByTestId('colony-overlay-tile-13-7')).toHaveTextContent(/Island/);
+    });
+
+    it('shows pre/post yield on an unworked slot', () => {
+      render(<ColonyOverlay />);
+      const oceanSlot = screen.getByTestId('colony-overlay-tile-11-6');
+      expect(oceanSlot).toHaveTextContent(/now: none/);
+      expect(oceanSlot).toHaveTextContent(/worked: provisions \+1/);
+    });
+
+    it('drag-drops a crew chip onto a tile to assign', () => {
+      render(<ColonyOverlay />);
+      const crewChip = screen.getByTestId('colony-overlay-crew-settler-alpha');
+      const oceanSlot = screen.getByTestId('colony-overlay-tile-11-6');
+      const dataTransfer = {
+        data: new Map<string, string>(),
+        setData(type: string, value: string) {
+          this.data.set(type, value);
+        },
+        getData(type: string) {
+          return this.data.get(type) ?? '';
+        },
+        effectAllowed: '',
+        dropEffect: '',
+      };
+      fireEvent.dragStart(crewChip, { dataTransfer });
+      fireEvent.dragOver(oceanSlot, { dataTransfer });
+      fireEvent.drop(oceanSlot, { dataTransfer });
+
+      expect(useGameStore.getState().tileAssignments['driftwatch']).toEqual({
+        '11,6': 'settler-alpha',
+      });
+    });
+
+    it('removes the assigned crew from the pool', () => {
+      useGameStore.getState().assignCrewToTile('driftwatch', 'settler-alpha', { x: 11, y: 6 });
+      render(<ColonyOverlay />);
+      const oceanSlot = screen.getByTestId('colony-overlay-tile-11-6');
+      // The crew chip is now inside the tile slot, not listed in the pool's <ul>.
+      expect(oceanSlot).toContainElement(screen.getByTestId('colony-overlay-crew-settler-alpha'));
+      // Pool still contains the other crew member.
+      expect(screen.getByTestId('colony-overlay-crew-gunner-bravo')).toBeInTheDocument();
+    });
+
+    it('shows the post-assignment yield on a worked slot', () => {
+      useGameStore.getState().assignCrewToTile('driftwatch', 'settler-alpha', { x: 11, y: 6 });
+      render(<ColonyOverlay />);
+      const oceanSlot = screen.getByTestId('colony-overlay-tile-11-6');
+      expect(oceanSlot).toHaveTextContent(/now: provisions \+1/);
+      expect(oceanSlot).toHaveTextContent(/worked: provisions \+1/);
+    });
+
+    it('the unassign button returns the crew to the pool', () => {
+      useGameStore.getState().assignCrewToTile('driftwatch', 'settler-alpha', { x: 11, y: 6 });
+      render(<ColonyOverlay />);
+      fireEvent.click(screen.getByTestId('colony-overlay-tile-11-6-unassign'));
+      expect(useGameStore.getState().tileAssignments['driftwatch']).toBeUndefined();
+    });
+
+    it('shows an empty-yield label on non-yielding tile types', () => {
+      render(<ColonyOverlay />);
+      const redTideSlot = screen.getByTestId('colony-overlay-tile-12-6');
+      expect(redTideSlot).toHaveTextContent(/worked: none/);
+    });
+
+    it('shows a pool-empty placeholder when every crew is assigned', () => {
+      useGameStore.getState().assignCrewToTile('driftwatch', 'settler-alpha', { x: 11, y: 6 });
+      useGameStore.getState().assignCrewToTile('driftwatch', 'gunner-bravo', { x: 13, y: 7 });
+      render(<ColonyOverlay />);
+      expect(screen.getByTestId('colony-overlay-crew-pool-empty')).toBeInTheDocument();
     });
   });
 });
