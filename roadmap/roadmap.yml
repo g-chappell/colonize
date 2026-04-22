@@ -1724,7 +1724,7 @@ epics:
             attempt_count: 1
           - id: TASK-071
             title: Sovereignty War UI overlay + progress tracker
-            status: in-progress
+            status: done
             priority: high
             complexity: medium
             workspaces:
@@ -1735,8 +1735,8 @@ epics:
               map. Narrative beats at 25/50/75/100% progress.
             depends_on:
               - TASK-070
-            pr: null
-            completed: null
+            pr: https://github.com/g-chappell/colonize/pull/77
+            completed: "2026-04-22"
             blocked_reason: null
             last_attempted: "2026-04-22T00:00:00Z"
             attempt_count: 1
