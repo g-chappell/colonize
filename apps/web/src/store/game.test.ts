@@ -1,5 +1,12 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { CORE_VERSION, TurnPhase, UnitType, type ColonyJSON, type UnitJSON } from '@colonize/core';
+import {
+  BuildingType,
+  CORE_VERSION,
+  TurnPhase,
+  UnitType,
+  type ColonyJSON,
+  type UnitJSON,
+} from '@colonize/core';
 import { useGameStore } from './game';
 
 const EMPTY_CARGO = { resources: {}, artifacts: [] } as const;
@@ -277,6 +284,151 @@ describe('useGameStore', () => {
       useGameStore.getState().reset();
       expect(useGameStore.getState().colonies).toEqual([]);
       expect(useGameStore.getState().selectedColonyId).toBeNull();
+    });
+  });
+
+  describe('colony production queue', () => {
+    const sampleColony: ColonyJSON = {
+      id: 'colony-1',
+      faction: 'otk',
+      position: { x: 7, y: 9 },
+      population: 3,
+      crew: [],
+      buildings: [],
+      stocks: { resources: {}, artifacts: [] },
+    };
+
+    beforeEach(() => {
+      useGameStore.getState().setColonies([sampleColony]);
+    });
+
+    it('starts with an empty queue map', () => {
+      expect(useGameStore.getState().colonyQueues).toEqual({});
+    });
+
+    it('enqueues a building at the tail of the colony queue', () => {
+      useGameStore.getState().enqueueBuilding('colony-1', BuildingType.Tavern);
+      useGameStore.getState().enqueueBuilding('colony-1', BuildingType.Warehouse);
+      const queue = useGameStore.getState().colonyQueues['colony-1'];
+      expect(queue).toBeDefined();
+      expect(queue!.map((q) => q.buildingId)).toEqual([
+        BuildingType.Tavern,
+        BuildingType.Warehouse,
+      ]);
+      expect(queue![0]!.progress).toBe(0);
+      expect(queue![0]!.effort).toBeGreaterThan(0);
+    });
+
+    it('rejects duplicate enqueue of a building already in the queue', () => {
+      useGameStore.getState().enqueueBuilding('colony-1', BuildingType.Tavern);
+      useGameStore.getState().enqueueBuilding('colony-1', BuildingType.Tavern);
+      expect(useGameStore.getState().colonyQueues['colony-1']).toHaveLength(1);
+    });
+
+    it('rejects enqueue of a building already built', () => {
+      useGameStore.getState().setColonies([
+        {
+          ...sampleColony,
+          buildings: [BuildingType.Tavern],
+        },
+      ]);
+      useGameStore.getState().enqueueBuilding('colony-1', BuildingType.Tavern);
+      expect(useGameStore.getState().colonyQueues['colony-1']).toBeUndefined();
+    });
+
+    it('ignores enqueue for an unknown colony', () => {
+      useGameStore.getState().enqueueBuilding('mystery', BuildingType.Tavern);
+      expect(useGameStore.getState().colonyQueues).toEqual({});
+    });
+
+    it('cancels a queue item by index', () => {
+      useGameStore.getState().enqueueBuilding('colony-1', BuildingType.Tavern);
+      useGameStore.getState().enqueueBuilding('colony-1', BuildingType.Warehouse);
+      useGameStore.getState().cancelQueueItem('colony-1', 0);
+      const queue = useGameStore.getState().colonyQueues['colony-1'];
+      expect(queue!.map((q) => q.buildingId)).toEqual([BuildingType.Warehouse]);
+    });
+
+    it('removes the colony key entirely when the last item is cancelled', () => {
+      useGameStore.getState().enqueueBuilding('colony-1', BuildingType.Tavern);
+      useGameStore.getState().cancelQueueItem('colony-1', 0);
+      expect(useGameStore.getState().colonyQueues['colony-1']).toBeUndefined();
+    });
+
+    it('ignores cancel for an out-of-range index', () => {
+      useGameStore.getState().enqueueBuilding('colony-1', BuildingType.Tavern);
+      useGameStore.getState().cancelQueueItem('colony-1', 5);
+      expect(useGameStore.getState().colonyQueues['colony-1']).toHaveLength(1);
+    });
+
+    it('reorders queue items up and down', () => {
+      useGameStore.getState().enqueueBuilding('colony-1', BuildingType.Tavern);
+      useGameStore.getState().enqueueBuilding('colony-1', BuildingType.Warehouse);
+      useGameStore.getState().enqueueBuilding('colony-1', BuildingType.Sawmill);
+      useGameStore.getState().reorderQueueItem('colony-1', 2, 'up');
+      let queue = useGameStore.getState().colonyQueues['colony-1'];
+      expect(queue!.map((q) => q.buildingId)).toEqual([
+        BuildingType.Tavern,
+        BuildingType.Sawmill,
+        BuildingType.Warehouse,
+      ]);
+      useGameStore.getState().reorderQueueItem('colony-1', 0, 'down');
+      queue = useGameStore.getState().colonyQueues['colony-1'];
+      expect(queue!.map((q) => q.buildingId)).toEqual([
+        BuildingType.Sawmill,
+        BuildingType.Tavern,
+        BuildingType.Warehouse,
+      ]);
+    });
+
+    it('ignores reorder at the boundary', () => {
+      useGameStore.getState().enqueueBuilding('colony-1', BuildingType.Tavern);
+      useGameStore.getState().enqueueBuilding('colony-1', BuildingType.Warehouse);
+      useGameStore.getState().reorderQueueItem('colony-1', 0, 'up');
+      useGameStore.getState().reorderQueueItem('colony-1', 1, 'down');
+      const queue = useGameStore.getState().colonyQueues['colony-1'];
+      expect(queue!.map((q) => q.buildingId)).toEqual([
+        BuildingType.Tavern,
+        BuildingType.Warehouse,
+      ]);
+    });
+
+    it('tick advances the head item progress by production value', () => {
+      useGameStore.getState().enqueueBuilding('colony-1', BuildingType.Tavern);
+      useGameStore.getState().tickColonyQueues();
+      const queue = useGameStore.getState().colonyQueues['colony-1'];
+      // population=3 → +3 progress on the head item
+      expect(queue![0]!.progress).toBe(3);
+    });
+
+    it('tick promotes a completed building into colony.buildings', () => {
+      // Warehouse effort = 20; population = 3. Need ceil(20/3) = 7 ticks.
+      useGameStore.getState().enqueueBuilding('colony-1', BuildingType.Warehouse);
+      for (let i = 0; i < 7; i++) useGameStore.getState().tickColonyQueues();
+      const colony = useGameStore.getState().colonies.find((c) => c.id === 'colony-1')!;
+      expect(colony.buildings).toContain(BuildingType.Warehouse);
+      expect(useGameStore.getState().colonyQueues['colony-1']).toBeUndefined();
+    });
+
+    it('keeps completed buildings sorted for save-format parity', () => {
+      useGameStore.getState().setColonies([
+        {
+          ...sampleColony,
+          population: 100, // enough production to finish in one tick
+          buildings: ['shipyard'],
+        },
+      ]);
+      useGameStore.getState().enqueueBuilding('colony-1', BuildingType.Tavern);
+      useGameStore.getState().tickColonyQueues();
+      const colony = useGameStore.getState().colonies.find((c) => c.id === 'colony-1')!;
+      expect([...colony.buildings]).toEqual([...colony.buildings].sort());
+      expect(colony.buildings).toContain(BuildingType.Tavern);
+    });
+
+    it('resets the queue map on reset', () => {
+      useGameStore.getState().enqueueBuilding('colony-1', BuildingType.Tavern);
+      useGameStore.getState().reset();
+      expect(useGameStore.getState().colonyQueues).toEqual({});
     });
   });
 
