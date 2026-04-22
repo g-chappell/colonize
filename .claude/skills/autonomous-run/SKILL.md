@@ -206,7 +206,12 @@ gh pr merge <num> --auto --squash --delete-branch
 
 ## Step 10 — LOG CYCLE
 
-Append to `AGENT-LOG.md`:
+Append to `AGENT-LOG.md` **at the end of the file** — after the last
+existing `### Run` block and its trailing `---` separator. The file is
+chronologically ordered; `scripts/notify-cycle.sh` and any human reader
+scanning the tail both rely on the newest entry being the last one. Do
+NOT insert near the top beneath the `## Run History` header — that is
+the start marker, not an insertion point.
 
 ```markdown
 ### Run [<ISO timestamp>]
