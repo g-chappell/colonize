@@ -1012,7 +1012,7 @@ epics:
         tasks:
           - id: TASK-047
             title: "HomePort entity + price model"
-            status: ready
+            status: in-progress
             priority: high
             complexity: medium
             workspaces: [core]
@@ -1024,8 +1024,8 @@ epics:
             pr: null
             completed: null
             blocked_reason: null
-            last_attempted: null
-            attempt_count: 0
+            last_attempted: "2026-04-22T00:00:00Z"
+            attempt_count: 1
           - id: TASK-048
             title: "Home-port trade UI"
             status: ready

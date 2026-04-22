@@ -10,8 +10,8 @@ _Created: 2026-04-20_
 
 - **Total tasks:** 90
 - **Done:** 43 (48%)
-- **Ready:** 47
-- **In progress:** 0
+- **Ready:** 46
+- **In progress:** 1
 - **Blocked:** 0
 
 ---
@@ -446,7 +446,7 @@ routes. The economic backbone of the mid-game.
   > Each faction has a home-port (OTK: Port Royal; others:
   > equivalents). Player can buy/sell goods at prices that flex
   > with supply/demand.
-  - :black_circle: **TASK-047** — HomePort entity + price model  `high` `medium` _(core)_  
+  - :large_orange_diamond: **TASK-047** — HomePort entity + price model  `high` `medium` _(core)_  
     _depends on: TASK-044_
     > HomePort with price-per-good that moves inversely to
     > volume sold. Bounded prices. Buy-back prices < sell prices
