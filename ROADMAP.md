@@ -9,9 +9,9 @@ _Created: 2026-04-20_
 ## Summary
 
 - **Total tasks:** 90
-- **Done:** 44 (49%)
+- **Done:** 45 (50%)
 - **Ready:** 45
-- **In progress:** 1
+- **In progress:** 0
 - **Blocked:** 0
 
 ---
@@ -451,7 +451,7 @@ routes. The economic backbone of the mid-game.
     > HomePort with price-per-good that moves inversely to
     > volume sold. Bounded prices. Buy-back prices < sell prices
     > (spread). Per-faction starting prices in content.
-  - :large_orange_diamond: **TASK-048** — Home-port trade UI  `high` `medium` _(web)_  
+  - :white_check_mark: **TASK-048** — Home-port trade UI  `high` `medium` _(web)_ · [PR](https://github.com/g-chappell/colonize/pull/63)  
     _depends on: TASK-047, TASK-039_
     > Trade screen accessible when a trade-capable ship is in a
     > home-port colony. Show all tradable goods with current

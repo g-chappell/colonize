@@ -1028,7 +1028,7 @@ epics:
             attempt_count: 1
           - id: TASK-048
             title: "Home-port trade UI"
-            status: in-progress
+            status: done
             priority: high
             complexity: medium
             workspaces: [web]
@@ -1037,8 +1037,8 @@ epics:
               home-port colony. Show all tradable goods with current
               prices, buy/sell sliders, running profit.
             depends_on: [TASK-047, TASK-039]
-            pr: null
-            completed: null
+            pr: "https://github.com/g-chappell/colonize/pull/63"
+            completed: "2026-04-22"
             blocked_reason: null
             last_attempted: "2026-04-22T00:00:00Z"
             attempt_count: 1
