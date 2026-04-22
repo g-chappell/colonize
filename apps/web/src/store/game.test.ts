@@ -2,10 +2,13 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import {
   BuildingType,
   CORE_VERSION,
+  CombatActionType,
+  CombatResult,
   HomePort,
   TurnPhase,
   UnitType,
   type ColonyJSON,
+  type CombatOutcome,
   type UnitJSON,
 } from '@colonize/core';
 import { useGameStore } from './game';
@@ -828,6 +831,57 @@ describe('useGameStore', () => {
       expect(next.stocks.resources.timber).toBe(2);
       expect(next.stocks.resources.fibre).toBe(7);
       expect(next.stocks.artifacts).toEqual(['kraken-totem']);
+    });
+  });
+
+  describe('combat outcome slice', () => {
+    const sampleOutcome: CombatOutcome = {
+      action: CombatActionType.Broadside,
+      result: CombatResult.DefenderSunk,
+      attacker: {
+        id: 'a',
+        faction: 'otk',
+        hull: 50,
+        maxHull: 50,
+        guns: 12,
+        crew: 50,
+        maxCrew: 50,
+        movement: 4,
+        maxMovement: 4,
+      },
+      defender: {
+        id: 'd',
+        faction: 'ironclad',
+        hull: 0,
+        maxHull: 50,
+        guns: 10,
+        crew: 50,
+        maxCrew: 50,
+        movement: 3,
+        maxMovement: 3,
+      },
+      events: [{ kind: 'broadside-volley', firer: 'attacker', damage: 50, targetHullAfter: 0 }],
+    };
+
+    it('starts null', () => {
+      expect(useGameStore.getState().combatOutcome).toBeNull();
+    });
+
+    it('showCombatOutcome stores the outcome reference', () => {
+      useGameStore.getState().showCombatOutcome(sampleOutcome);
+      expect(useGameStore.getState().combatOutcome).toBe(sampleOutcome);
+    });
+
+    it('dismissCombatOutcome clears the outcome', () => {
+      useGameStore.getState().showCombatOutcome(sampleOutcome);
+      useGameStore.getState().dismissCombatOutcome();
+      expect(useGameStore.getState().combatOutcome).toBeNull();
+    });
+
+    it('reset clears a pending combat outcome', () => {
+      useGameStore.getState().showCombatOutcome(sampleOutcome);
+      useGameStore.getState().reset();
+      expect(useGameStore.getState().combatOutcome).toBeNull();
     });
   });
 });

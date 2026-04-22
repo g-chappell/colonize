@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import './App.css';
 import { ColonyOverlay } from './colony/ColonyOverlay';
+import { CombatOverlay } from './combat/CombatOverlay';
 import { GameCanvas } from './GameCanvas';
 import { Hud } from './hud/Hud';
 import { RumourRevealModal } from './hud/RumourRevealModal';
@@ -51,6 +52,7 @@ export function App() {
         <GameCanvas />
         <Hud />
         <RumourRevealModal />
+        <CombatOverlay />
         {screen === 'pause' && <PauseOverlay />}
         {screen === 'colony' && <ColonyOverlay />}
         {screen === 'trade' && <TradeScreen />}

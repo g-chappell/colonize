@@ -1,5 +1,6 @@
 import { afterEach, describe, it, expect, beforeEach } from 'vitest';
 import { fireEvent, render, screen } from '@testing-library/react';
+import { CombatActionType, CombatResult, type CombatOutcome } from '@colonize/core';
 import { App } from './App';
 import { bus } from './bus';
 import { useGameStore } from './store/game';
@@ -144,6 +145,50 @@ describe('App', () => {
       useGameStore.getState().setScreen('game');
       render(<App />);
       expect(screen.queryByTestId('transfer-screen')).not.toBeInTheDocument();
+    });
+  });
+
+  describe('combat overlay', () => {
+    const sampleOutcome: CombatOutcome = {
+      action: CombatActionType.Broadside,
+      result: CombatResult.DefenderSunk,
+      attacker: {
+        id: 'a',
+        faction: 'otk',
+        hull: 50,
+        maxHull: 50,
+        guns: 12,
+        crew: 50,
+        maxCrew: 50,
+        movement: 4,
+        maxMovement: 4,
+      },
+      defender: {
+        id: 'd',
+        faction: 'ironclad',
+        hull: 0,
+        maxHull: 50,
+        guns: 10,
+        crew: 50,
+        maxCrew: 50,
+        movement: 3,
+        maxMovement: 3,
+      },
+      events: [{ kind: 'broadside-volley', firer: 'attacker', damage: 50, targetHullAfter: 0 }],
+    };
+
+    it('mounts the combat overlay over the game stage when an outcome is set', () => {
+      useGameStore.getState().setScreen('game');
+      useGameStore.getState().showCombatOutcome(sampleOutcome);
+      render(<App />);
+      expect(screen.getByTestId('hud')).toBeInTheDocument();
+      expect(screen.getByTestId('combat-overlay')).toBeInTheDocument();
+    });
+
+    it('does not mount the combat overlay when no outcome is pending', () => {
+      useGameStore.getState().setScreen('game');
+      render(<App />);
+      expect(screen.queryByTestId('combat-overlay')).not.toBeInTheDocument();
     });
   });
 });
