@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import './App.css';
 import { ColonyOverlay } from './colony/ColonyOverlay';
 import { CombatOverlay } from './combat/CombatOverlay';
+import { CouncilPickModal } from './council/CouncilPickModal';
 import { DiplomacyScreen } from './diplomacy/DiplomacyScreen';
 import { GameCanvas } from './GameCanvas';
 import { Hud } from './hud/Hud';
@@ -54,6 +55,7 @@ export function App() {
         <Hud />
         <RumourRevealModal />
         <CombatOverlay />
+        <CouncilPickModal />
         {screen === 'pause' && <PauseOverlay />}
         {screen === 'colony' && <ColonyOverlay />}
         {screen === 'trade' && <TradeScreen />}

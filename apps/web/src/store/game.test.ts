@@ -884,4 +884,100 @@ describe('useGameStore', () => {
       expect(useGameStore.getState().combatOutcome).toBeNull();
     });
   });
+
+  describe('Archive Charter pool', () => {
+    function seededRng(seed: number): () => number {
+      let state = Math.max(0, Math.min(1, seed));
+      return () => {
+        state = (state * 9301 + 49297) % 233280;
+        return state / 233280;
+      };
+    }
+
+    it('seedFactionCharters lazily installs the full roster', () => {
+      useGameStore.getState().seedFactionCharters('otk');
+      const snapshot = useGameStore.getState().factionCharters.otk;
+      expect(snapshot).toBeDefined();
+      expect(snapshot!.available).toHaveLength(20);
+      expect(snapshot!.selected).toEqual([]);
+    });
+
+    it('seedFactionCharters is idempotent — re-seeding preserves prior state', () => {
+      useGameStore.getState().seedFactionCharters('otk');
+      useGameStore.getState().openCouncilPick('otk', 50, seededRng(0.42));
+      const picked = useGameStore.getState().councilPick!.hand[0];
+      useGameStore.getState().selectCharter(picked);
+      const before = useGameStore.getState().factionCharters.otk!;
+      useGameStore.getState().seedFactionCharters('otk');
+      const after = useGameStore.getState().factionCharters.otk!;
+      expect(after).toEqual(before);
+    });
+
+    it('openCouncilPick draws two distinct charters and activates a session', () => {
+      useGameStore.getState().openCouncilPick('otk', 50, seededRng(0.17));
+      const state = useGameStore.getState();
+      expect(state.councilPick).not.toBeNull();
+      expect(state.councilPick!.factionId).toBe('otk');
+      expect(state.councilPick!.threshold).toBe(50);
+      expect(state.councilPick!.hand[0]).not.toBe(state.councilPick!.hand[1]);
+    });
+
+    it('openCouncilPick lazily seeds the faction if not yet seeded', () => {
+      expect(useGameStore.getState().factionCharters.otk).toBeUndefined();
+      useGameStore.getState().openCouncilPick('otk', 50, seededRng(0.11));
+      expect(useGameStore.getState().factionCharters.otk).toBeDefined();
+    });
+
+    it('openCouncilPick is a no-op when a session is already active', () => {
+      useGameStore.getState().openCouncilPick('otk', 50, seededRng(0.22));
+      const first = useGameStore.getState().councilPick;
+      useGameStore.getState().openCouncilPick('otk', 150, seededRng(0.33));
+      expect(useGameStore.getState().councilPick).toBe(first);
+    });
+
+    it('openCouncilPick is a no-op on a non-positive threshold', () => {
+      useGameStore.getState().openCouncilPick('otk', 0, seededRng(0.44));
+      expect(useGameStore.getState().councilPick).toBeNull();
+      useGameStore.getState().openCouncilPick('otk', Number.NaN, seededRng(0.55));
+      expect(useGameStore.getState().councilPick).toBeNull();
+    });
+
+    it('selectCharter moves the pick to selected, removes from available, clears the session', () => {
+      useGameStore.getState().openCouncilPick('otk', 50, seededRng(0.61));
+      const hand = useGameStore.getState().councilPick!.hand;
+      useGameStore.getState().selectCharter(hand[0]);
+      const state = useGameStore.getState();
+      expect(state.councilPick).toBeNull();
+      const snap = state.factionCharters.otk!;
+      expect(snap.selected).toContain(hand[0]);
+      expect(snap.available).not.toContain(hand[0]);
+      expect(snap.available).toContain(hand[1]);
+    });
+
+    it('selectCharter skips silently when the id is not in the offered hand', () => {
+      useGameStore.getState().openCouncilPick('otk', 50, seededRng(0.71));
+      const handBefore = useGameStore.getState().councilPick!.hand;
+      const notInHand =
+        handBefore[0] === 'pirata-codex-fragment' && handBefore[1] === 'pirata-codex-fragment'
+          ? 'bloodline-writ'
+          : 'pirata-codex-fragment';
+      const safeNotInHand =
+        notInHand === handBefore[0] || notInHand === handBefore[1] ? 'kelp-witch-pact' : notInHand;
+      useGameStore.getState().selectCharter(safeNotInHand as (typeof handBefore)[0]);
+      expect(useGameStore.getState().councilPick).not.toBeNull();
+    });
+
+    it('selectCharter is a no-op when no session is active', () => {
+      useGameStore.getState().selectCharter('pirata-codex-fragment');
+      expect(useGameStore.getState().factionCharters).toEqual({});
+    });
+
+    it('reset clears factionCharters and councilPick', () => {
+      useGameStore.getState().openCouncilPick('otk', 50, seededRng(0.81));
+      useGameStore.getState().reset();
+      const state = useGameStore.getState();
+      expect(state.councilPick).toBeNull();
+      expect(state.factionCharters).toEqual({});
+    });
+  });
 });
