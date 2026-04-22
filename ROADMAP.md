@@ -9,8 +9,8 @@ _Created: 2026-04-20_
 ## Summary
 
 - **Total tasks:** 90
-- **Done:** 55 (61%)
-- **Ready:** 35
+- **Done:** 56 (62%)
+- **Ready:** 34
 - **In progress:** 0
 - **Blocked:** 0
 
@@ -659,7 +659,7 @@ Fleet invasion. Victory conditions engine.
   > Player triggers Sovereignty at will once ready. Concord Fleet
   > (REF-analog, surface-only) spawns at map edge and invades.
   > Defeat or survive long enough = victory.
-  - :black_circle: **TASK-070** — Sovereignty trigger + Concord Fleet spawn  `high` `large` _(core, content)_  
+  - :white_check_mark: **TASK-070** — Sovereignty trigger + Concord Fleet spawn  `high` `large` _(core, content)_ · [PR](https://github.com/g-chappell/colonize/pull/76)  
     _depends on: TASK-055, TASK-063_
     > Trigger action (requires minimum year + tension or
     > charters). Spawn Concord Fleet: escalating waves of

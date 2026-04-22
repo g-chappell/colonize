@@ -1703,7 +1703,7 @@ epics:
         tasks:
           - id: TASK-070
             title: Sovereignty trigger + Concord Fleet spawn
-            status: ready
+            status: done
             priority: high
             complexity: large
             workspaces:
@@ -1717,11 +1717,11 @@ epics:
             depends_on:
               - TASK-055
               - TASK-063
-            pr: null
-            completed: null
+            pr: https://github.com/g-chappell/colonize/pull/76
+            completed: "2026-04-22"
             blocked_reason: null
-            last_attempted: null
-            attempt_count: 0
+            last_attempted: "2026-04-22T00:00:00Z"
+            attempt_count: 1
           - id: TASK-071
             title: Sovereignty War UI overlay + progress tracker
             status: ready

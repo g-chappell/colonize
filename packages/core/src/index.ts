@@ -242,6 +242,10 @@ export {
   calculateTithe,
   yearMultiplier,
   ConcordTensionMeter,
+  DEFAULT_SOVEREIGNTY_TRIGGER_THRESHOLDS,
+  canDeclareSovereignty,
+  sovereigntyTriggerStatus,
+  ConcordFleetCampaign,
 } from './concord/index.js';
 export type {
   TitheRates,
@@ -249,4 +253,15 @@ export type {
   ConcordTensionMeterInit,
   ConcordTensionMeterJSON,
   ConcordUltimatumEvent,
+  SovereigntyTriggerInputs,
+  SovereigntyTriggerStatus,
+  SovereigntyTriggerThresholds,
+  ConcordCampaignOutcome,
+  ConcordDifficultyId,
+  ConcordFleetCampaignInit,
+  ConcordFleetCampaignJSON,
+  ConcordFleetGroundUnitId,
+  ConcordFleetPendingWave,
+  ConcordFleetShipUnitId,
+  ConcordFleetWave,
 } from './concord/index.js';

@@ -109,3 +109,12 @@ export {
   type ArchiveCharterFlavour,
   type ArchiveCharterFlavourId,
 } from './charters.js';
+
+export {
+  CONCORD_CAMPAIGN_DIFFICULTIES,
+  getConcordCampaignDifficulty,
+  isConcordCampaignDifficultyId,
+  type ConcordCampaignDifficulty,
+  type ConcordCampaignDifficultyId,
+  type ConcordCampaignWave,
+} from './concord-campaign.js';
