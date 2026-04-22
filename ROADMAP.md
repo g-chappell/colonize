@@ -10,8 +10,8 @@ _Created: 2026-04-20_
 
 - **Total tasks:** 90
 - **Done:** 38 (42%)
-- **Ready:** 52
-- **In progress:** 0
+- **Ready:** 51
+- **In progress:** 1
 - **Blocked:** 0
 
 ---
@@ -388,7 +388,7 @@ factions).
     > (e.g. Shipyard enables ship construction; Chapel-of-Kraken
     > grants Talisman blessings). Data in content/buildings.ts;
     > logic in core.
-  - :black_circle: **TASK-041** — Building construction queue UI  `high` `medium` _(web)_  
+  - :large_orange_diamond: **TASK-041** — Building construction queue UI  `high` `medium` _(web)_  
     _depends on: TASK-039, TASK-040_
     > In colony view, allow queuing buildings. Show progress,
     > allow cancel/reorder. Turn-over ticks queue forward by
