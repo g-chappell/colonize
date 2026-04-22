@@ -10,6 +10,8 @@ import { RumourRevealModal } from './hud/RumourRevealModal';
 import { MainMenu } from './menu/MainMenu';
 import { FactionSelect } from './menu/FactionSelect';
 import { PauseOverlay } from './pause/PauseOverlay';
+import { SovereigntyBeatModal } from './sovereignty/SovereigntyBeatModal';
+import { SovereigntyWarOverlay } from './sovereignty/SovereigntyWarOverlay';
 import { TradeScreen } from './trade/TradeScreen';
 import { CargoTransferScreen } from './transfer/CargoTransferScreen';
 import { useGameStore } from './store/game';
@@ -52,10 +54,12 @@ export function App() {
       <p className="motto">Hic sunt dracones.</p>
       <div className="game-stage">
         <GameCanvas />
+        <SovereigntyWarOverlay />
         <Hud />
         <RumourRevealModal />
         <CombatOverlay />
         <CouncilPickModal />
+        <SovereigntyBeatModal />
         {screen === 'pause' && <PauseOverlay />}
         {screen === 'colony' && <ColonyOverlay />}
         {screen === 'trade' && <TradeScreen />}

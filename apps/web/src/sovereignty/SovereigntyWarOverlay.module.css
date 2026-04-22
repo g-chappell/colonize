@@ -1,0 +1,104 @@
+/* Pointer-events: none at every layer — the overlay paints the
+   Sovereignty-War vignette and progress bar over the Phaser canvas
+   without eating map clicks. The banner's progress label is a passive
+   element so no child needs pointer-events: auto here, unlike the
+   generic .hud > * pattern. */
+
+.root {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  font-family: 'Georgia', 'Times New Roman', serif;
+  color: #f2d8c8;
+}
+
+/* Full-canvas red vignette — sits below the HUD chrome but above the
+   Phaser canvas. Uses a corner-weighted gradient so the map middle
+   stays readable while the edges carry the war's menace. */
+.tint {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(139, 0, 0, 0) 40%,
+    rgba(139, 0, 0, 0.18) 75%,
+    rgba(139, 0, 0, 0.35) 100%
+  );
+  animation: sovereigntyPulse 3.6s ease-in-out infinite;
+}
+
+@keyframes sovereigntyPulse {
+  0%,
+  100% {
+    opacity: 0.85;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* Banner sits above the AiThinkingIndicator slot in the HUD's
+   topCenter. A small vertical offset keeps the two from overlapping
+   when both show simultaneously (the AI-thinking chip is ~1.5rem tall
+   at top: 0.75rem, so this banner sits below it at ~3.5rem). */
+.banner {
+  position: absolute;
+  top: 3.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  min-width: 18rem;
+  padding: 0.55rem 1rem 0.7rem;
+  background: rgba(28, 10, 10, 0.88);
+  border: 1px solid #a04040;
+  box-shadow: 0 0 12px rgba(160, 40, 40, 0.5);
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  text-align: center;
+}
+
+.title {
+  margin: 0;
+  font-size: 0.72rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: #f2d8c8;
+  opacity: 0.8;
+}
+
+.turns {
+  font-size: 0.95rem;
+  font-weight: bold;
+  letter-spacing: 0.1em;
+  color: #f2d8c8;
+}
+
+.turnsValue {
+  color: #f4a060;
+}
+
+.track {
+  position: relative;
+  width: 100%;
+  height: 0.45rem;
+  background: rgba(80, 20, 20, 0.85);
+  border: 1px solid #6a2020;
+  overflow: hidden;
+}
+
+.fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, #f4a060 0%, #f47060 50%, #c83020 100%);
+  transition: width 400ms ease-out;
+}
+
+.percent {
+  font-size: 0.65rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #f4a060;
+  opacity: 0.85;
+}
