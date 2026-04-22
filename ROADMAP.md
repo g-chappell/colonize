@@ -9,9 +9,9 @@ _Created: 2026-04-20_
 ## Summary
 
 - **Total tasks:** 90
-- **Done:** 41 (46%)
+- **Done:** 42 (47%)
 - **Ready:** 48
-- **In progress:** 1
+- **In progress:** 0
 - **Blocked:** 0
 
 ---
@@ -413,7 +413,7 @@ factions).
   > Raw → processed → finished goods. Timber → Planks → Ship
   > components; Provisions + Sugar → Rum (trade good); Salvage +
   > Forgework → Forgework items; Abyssal materia (risk/reward).
-  - :large_orange_diamond: **TASK-044** — Resource types + chain definitions  `high` `medium` _(core, content)_  
+  - :white_check_mark: **TASK-044** — Resource types + chain definitions  `high` `medium` _(core, content)_ · [PR](https://github.com/g-chappell/colonize/pull/59)  
     _depends on: TASK-040, TASK-042_
     > Resource enum + recipe table (inputs + building + output).
     > Turn tick converts queued recipes. Failure modes
