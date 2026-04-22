@@ -9,9 +9,9 @@ _Created: 2026-04-20_
 ## Summary
 
 - **Total tasks:** 90
-- **Done:** 34 (38%)
+- **Done:** 35 (39%)
 - **Ready:** 55
-- **In progress:** 1
+- **In progress:** 0
 - **Blocked:** 0
 
 ---
@@ -367,7 +367,7 @@ factions).
   > Found a colony at a floating-city node (bonus) or on an
   > island tile (requires dedicated founding unit). Colony has a
   > population, treasury, production queue.
-  - :large_orange_diamond: **TASK-038** — Colony entity + founding action  `high` `medium` _(core)_  
+  - :white_check_mark: **TASK-038** — Colony entity + founding action  `high` `medium` _(core)_ · [PR](https://github.com/g-chappell/colonize/pull/50)  
     _depends on: TASK-017, TASK-026_
     > Colony with id, faction, position, population, crew
     > roster, buildings, stocks. FoundColony action consumes a

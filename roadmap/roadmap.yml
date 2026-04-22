@@ -822,7 +822,7 @@ epics:
         tasks:
           - id: TASK-038
             title: "Colony entity + founding action"
-            status: in-progress
+            status: done
             priority: high
             complexity: medium
             workspaces: [core]
@@ -831,8 +831,8 @@ epics:
               roster, buildings, stocks. FoundColony action consumes a
               Founding Ship unit at a valid tile. Unit tests.
             depends_on: [TASK-017, TASK-026]
-            pr: null
-            completed: null
+            pr: "https://github.com/g-chappell/colonize/pull/50"
+            completed: "2026-04-22"
             blocked_reason: null
             last_attempted: "2026-04-22T00:00:00Z"
             attempt_count: 1
