@@ -74,3 +74,9 @@ export {
   type ProfessionEntry,
   type ProfessionEntryId,
 } from './professions.js';
+
+export {
+  HOMEPORT_STARTING_PRICES,
+  getHomePortStartingPrices,
+  type ResourcePriceTable,
+} from './homeport-prices.js';
