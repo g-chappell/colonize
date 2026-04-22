@@ -206,4 +206,26 @@ describe('App', () => {
       expect(screen.queryByTestId('combat-overlay')).not.toBeInTheDocument();
     });
   });
+
+  describe('council pick modal', () => {
+    it('mounts the Council pick modal over the game stage when a session is active', () => {
+      useGameStore.getState().setScreen('game');
+      useGameStore.setState({
+        councilPick: {
+          factionId: 'otk',
+          threshold: 50,
+          hand: ['pirata-codex-fragment', 'bloodline-writ'],
+        },
+      });
+      render(<App />);
+      expect(screen.getByTestId('hud')).toBeInTheDocument();
+      expect(screen.getByTestId('council-pick')).toBeInTheDocument();
+    });
+
+    it('does not mount the Council pick modal when no session is active', () => {
+      useGameStore.getState().setScreen('game');
+      render(<App />);
+      expect(screen.queryByTestId('council-pick')).not.toBeInTheDocument();
+    });
+  });
 });

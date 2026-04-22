@@ -1,11 +1,14 @@
 import { create } from 'zustand';
 import type {
+  ArchiveCharterId,
   BuildingType,
+  CharterHand,
   ColonyJSON,
   CombatOutcome,
   Coord,
   DiplomacyAction,
   DiplomacyAttemptOutcome,
+  FactionChartersJSON,
   GameVersion,
   HomePortJSON,
   RelationsMatrixJSON,
@@ -17,6 +20,7 @@ import type {
 } from '@colonize/core';
 import {
   CORE_VERSION,
+  FactionCharters,
   HomePort,
   RelationsMatrix,
   TurnPhase as TurnPhaseEnum,
@@ -85,6 +89,21 @@ export interface TransferSession {
 export interface TransferCommitLine {
   readonly resourceId: ResourceId;
   readonly qty: number;
+}
+
+// Active Council pick session — the modal data for a two-charter draw
+// that the player must resolve before it dismisses. Non-null while the
+// Council modal is showing. Filled by `openCouncilPick` (which draws a
+// hand from the faction's available pool) and cleared by
+// `selectCharter` or `dismissCouncilPick`. The UI treats this as an
+// unbidden event-modal (slice-driven self-mounting overlay per
+// CLAUDE.md), NOT a `Screen` literal — the player was mid-something
+// when the chime threshold crossed, and a resolved pick returns them
+// there.
+export interface CouncilPickSession {
+  readonly factionId: string;
+  readonly threshold: number;
+  readonly hand: CharterHand;
 }
 
 // User-editable game settings that survive pause/resume. Audio volumes
@@ -206,6 +225,15 @@ export interface GameState {
   // which colony). Non-null while `screen === 'transfer'`; cleared by
   // `closeTransferSession`.
   transferSession: TransferSession | null;
+  // Per-faction Archive-Charter ledger, keyed by faction id. Each value
+  // is a plain FactionChartersJSON snapshot (available + selected). A
+  // missing key means the faction has not yet been seeded — the store
+  // lazily seeds on first `openCouncilPick`, so tests and the founding
+  // flow do not have to remember to call `seedFactionCharters` up-front.
+  factionCharters: Readonly<Record<string, FactionChartersJSON>>;
+  // Active Council pick-2 session. Non-null while the Council modal
+  // should be mounted. See `CouncilPickSession` above for the shape.
+  councilPick: CouncilPickSession | null;
   // Per-faction-pair relations + cooldowns, plain JSON for zustand
   // round-trip compatibility. Gameplay code reconstitutes a
   // RelationsMatrix instance via `RelationsMatrix.fromJSON` when it
@@ -243,6 +271,26 @@ export interface GameState {
   // spent movement cost. Emitted once the sprite tween finishes so the
   // store snapshot stays in sync with the on-screen visual.
   commitMove: (unitId: string, position: Coord, movementCost: number) => void;
+  // Seed the faction's charter pool with the full 20-charter roster
+  // unless already seeded. Safe to call multiple times — re-seeding a
+  // faction that has already drawn / picked is a no-op, so this is
+  // idempotent from the caller's point of view.
+  seedFactionCharters: (factionId: string) => void;
+  // Open a Council pick-2 session for `factionId` at `threshold`,
+  // drawing two charters from the faction's available pool via
+  // `FactionCharters.drawHand`. No-op if a session is already active
+  // (the prior session must be resolved first), if the faction has
+  // fewer than two charters available, or if the threshold is not
+  // positive. Uses `rng` for the draw; defaults to `Math.random` so
+  // tests can pass a seeded rng.
+  openCouncilPick: (factionId: string, threshold: number, rng?: () => number) => void;
+  // Commit the active Council pick: move the chosen charter into the
+  // faction's selected list, drop it from available, and clear the
+  // session so the modal dismisses. Silently skips when no session is
+  // active or when `charterId` is not one of the two currently offered
+  // (defence-in-depth for malformed input; the modal's buttons only
+  // fire one of the two legitimate ids).
+  selectCharter: (charterId: ArchiveCharterId) => void;
   showRumourReveal: (outcome: RumourOutcome) => void;
   dismissRumourReveal: () => void;
   showCombatOutcome: (outcome: CombatOutcome) => void;
@@ -324,6 +372,8 @@ const initialState = {
   tileAssignments: {} as Readonly<Record<string, Readonly<Record<string, string>>>>,
   rumourReveal: null as RumourOutcome | null,
   combatOutcome: null as CombatOutcome | null,
+  factionCharters: {} as Readonly<Record<string, FactionChartersJSON>>,
+  councilPick: null as CouncilPickSession | null,
   homePorts: {} as Readonly<Record<string, HomePortJSON>>,
   tradeSession: null as TradeSession | null,
   transferSession: null as TransferSession | null,
@@ -470,6 +520,44 @@ export const useGameStore = create<GameState>((set) => ({
       ),
       proposedMove: null,
     })),
+  seedFactionCharters: (factionId) =>
+    set((state) => {
+      if (factionId in state.factionCharters) return {};
+      const fc = new FactionCharters();
+      return { factionCharters: { ...state.factionCharters, [factionId]: fc.toJSON() } };
+    }),
+  openCouncilPick: (factionId, threshold, rng) =>
+    set((state) => {
+      if (state.councilPick !== null) return {};
+      if (!Number.isFinite(threshold) || threshold <= 0) return {};
+      const existing = state.factionCharters[factionId];
+      const fc = existing ? FactionCharters.fromJSON(existing) : new FactionCharters();
+      const available = fc.available;
+      if (available.length < 2) return {};
+      const hand = FactionCharters.drawHand(available, rng);
+      const nextCharters = existing
+        ? state.factionCharters
+        : { ...state.factionCharters, [factionId]: fc.toJSON() };
+      return {
+        factionCharters: nextCharters,
+        councilPick: { factionId, threshold, hand },
+      };
+    }),
+  selectCharter: (charterId) =>
+    set((state) => {
+      const session = state.councilPick;
+      if (!session) return {};
+      if (charterId !== session.hand[0] && charterId !== session.hand[1]) return {};
+      const snapshot = state.factionCharters[session.factionId];
+      if (!snapshot) return {};
+      const fc = FactionCharters.fromJSON(snapshot);
+      if (!fc.isAvailable(charterId)) return {};
+      fc.pick(charterId);
+      return {
+        factionCharters: { ...state.factionCharters, [session.factionId]: fc.toJSON() },
+        councilPick: null,
+      };
+    }),
   showRumourReveal: (outcome) => set({ rumourReveal: outcome }),
   dismissRumourReveal: () => set({ rumourReveal: null }),
   showCombatOutcome: (outcome) => set({ combatOutcome: outcome }),
