@@ -1,0 +1,150 @@
+.backdrop {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(4, 14, 22, 0.78);
+  font-family: 'Georgia', 'Times New Roman', serif;
+  color: #e8d8b8;
+  z-index: 60;
+}
+
+.panel {
+  width: min(560px, 92vw);
+  max-height: 88vh;
+  padding: 1.25rem 1.5rem;
+  background: rgba(12, 30, 43, 0.96);
+  border: 1px solid #d6b466;
+  box-shadow: 0 0 28px rgba(0, 0, 0, 0.55);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.title {
+  margin: 0;
+  color: #d6b466;
+  font-size: 1.3rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+.cinematic {
+  position: relative;
+  height: 110px;
+  background: linear-gradient(180deg, rgba(34, 56, 78, 0.65), rgba(8, 18, 28, 0.85));
+  border: 1px solid rgba(214, 180, 102, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.25rem;
+  overflow: hidden;
+}
+
+.ship {
+  width: 56px;
+  height: 28px;
+  background: #d6b466;
+  border: 1px solid #f4dca0;
+  border-radius: 6px 12px 6px 12px;
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    opacity 180ms ease;
+  opacity: 0.85;
+}
+
+.shipActive {
+  transform: translateY(-4px) scale(1.08);
+  box-shadow: 0 0 14px rgba(244, 220, 160, 0.85);
+  opacity: 1;
+}
+
+.shipDefender {
+  transform: scaleX(-1);
+}
+
+.shipDefender.shipActive {
+  transform: scaleX(-1) translateY(-4px) scale(1.08);
+}
+
+.beatLabel {
+  position: absolute;
+  bottom: 6px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #d6b466;
+  opacity: 0.85;
+}
+
+.log {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  max-height: 180px;
+  overflow-y: auto;
+  font-size: 0.85rem;
+}
+
+.logItem {
+  padding: 0.3rem 0.6rem;
+  background: rgba(28, 50, 68, 0.55);
+  border-left: 3px solid #d6b466;
+  font-variant-numeric: tabular-nums;
+}
+
+.result {
+  margin: 0.25rem 0 0;
+  text-align: center;
+  font-style: italic;
+  color: #f4dca0;
+  letter-spacing: 0.08em;
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.button {
+  flex: 0 0 auto;
+  min-width: 110px;
+  padding: 0.5rem 1.1rem;
+  background: rgba(12, 30, 43, 0.85);
+  border: 1px solid #d6b466;
+  color: #d6b466;
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: bold;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    background 120ms ease,
+    color 120ms ease;
+}
+
+.button:hover:not(:disabled) {
+  background: #d6b466;
+  color: #0c1e2b;
+}
+
+.button:focus-visible {
+  outline: 2px solid #e6c477;
+  outline-offset: 2px;
+}
+
+.button:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}

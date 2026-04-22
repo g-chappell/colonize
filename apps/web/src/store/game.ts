@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import type {
   BuildingType,
   ColonyJSON,
+  CombatOutcome,
   Coord,
   GameVersion,
   HomePortJSON,
@@ -169,6 +170,12 @@ export interface GameState {
   // showing; cleared on dismiss. The resolver (a future task) will
   // call `showRumourReveal` when a unit enters a rumour tile.
   rumourReveal: RumourOutcome | null;
+  // Outcome of a combat engagement that has been resolved but not yet
+  // dismissed by the player. Non-null while the combat overlay is
+  // showing; cleared by `dismissCombatOutcome`. A future combat
+  // orchestrator calls `showCombatOutcome` after `resolveCombat` from
+  // @colonize/core returns.
+  combatOutcome: CombatOutcome | null;
   // Per-faction home-port roster, keyed by faction id. Populated by
   // the spawning flow (downstream task) from HOMEPORT_STARTING_PRICES
   // in @colonize/content; stays empty until then. `commitTrade` and
@@ -211,6 +218,8 @@ export interface GameState {
   commitMove: (unitId: string, position: Coord, movementCost: number) => void;
   showRumourReveal: (outcome: RumourOutcome) => void;
   dismissRumourReveal: () => void;
+  showCombatOutcome: (outcome: CombatOutcome) => void;
+  dismissCombatOutcome: () => void;
   setHomePort: (factionId: string, port: HomePortJSON) => void;
   openTradeSession: (session: TradeSession) => void;
   closeTradeSession: () => void;
@@ -269,6 +278,7 @@ const initialState = {
   colonySurroundings: {} as Readonly<Record<string, readonly SurroundingTile[]>>,
   tileAssignments: {} as Readonly<Record<string, Readonly<Record<string, string>>>>,
   rumourReveal: null as RumourOutcome | null,
+  combatOutcome: null as CombatOutcome | null,
   homePorts: {} as Readonly<Record<string, HomePortJSON>>,
   tradeSession: null as TradeSession | null,
   transferSession: null as TransferSession | null,
@@ -415,6 +425,8 @@ export const useGameStore = create<GameState>((set) => ({
     })),
   showRumourReveal: (outcome) => set({ rumourReveal: outcome }),
   dismissRumourReveal: () => set({ rumourReveal: null }),
+  showCombatOutcome: (outcome) => set({ combatOutcome: outcome }),
+  dismissCombatOutcome: () => set({ combatOutcome: null }),
   setHomePort: (factionId, port) =>
     set((state) => ({ homePorts: { ...state.homePorts, [factionId]: port } })),
   openTradeSession: (session) =>
