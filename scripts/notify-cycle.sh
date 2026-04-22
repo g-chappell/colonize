@@ -46,11 +46,24 @@ if [[ ! -f "$LOG" ]]; then
   exit 0
 fi
 
-# Extract the most recent "### Run" block (tail-scan keeps it cheap).
+# Extract the most recent "### Run" block. Picks the block whose
+# `### Run [YYYY-MM-DD HH:MM]` timestamp is lexicographically largest,
+# NOT the last one by file position — defends against the log briefly
+# drifting out of chronological order (seen historically when a cycle
+# inserted its entry near the top of the file instead of appending).
+# ISO-8601 sorts lexicographically, so string max == chronological max.
 LAST_ENTRY="$(awk '
-  /^### Run/ { buf = $0; next }
+  function flush(   _ts) {
+    if (buf == "") return
+    _ts = ""
+    if (match(buf, /^### Run \[[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}\]/)) {
+      _ts = substr(buf, RSTART + 9, RLENGTH - 10)
+    }
+    if (_ts > best_ts) { best_ts = _ts; best = buf }
+  }
+  /^### Run/ { flush(); buf = $0; next }
   buf        { buf = buf "\n" $0 }
-  END        { print buf }
+  END        { flush(); print best }
 ' "$LOG")"
 
 if [[ -z "$LAST_ENTRY" ]]; then
