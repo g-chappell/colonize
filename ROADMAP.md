@@ -10,8 +10,8 @@ _Created: 2026-04-20_
 
 - **Total tasks:** 90
 - **Done:** 52 (58%)
-- **Ready:** 38
-- **In progress:** 0
+- **Ready:** 37
+- **In progress:** 1
 - **Blocked:** 0
 
 ---
@@ -618,7 +618,7 @@ Fleet invasion. Victory conditions engine.
   > Chimes (Liberty-Bells analog). Accumulate Chimes to trigger
   > Elders Council events that offer 2-of-N Archive Charters to
   > pick.
-  - :black_circle: **TASK-065** — Liberty Chimes production + Council threshold  `high` `medium` _(core, content)_  
+  - :large_orange_diamond: **TASK-065** — Liberty Chimes production + Council threshold  `high` `medium` _(core, content)_  
     _depends on: TASK-040_
     > Chimes produced per turn per qualifying building. At each
     > threshold, trigger Council event. Events defer until
