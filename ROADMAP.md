@@ -9,8 +9,8 @@ _Created: 2026-04-20_
 ## Summary
 
 - **Total tasks:** 90
-- **Done:** 48 (53%)
-- **Ready:** 42
+- **Done:** 49 (54%)
+- **Ready:** 41
 - **In progress:** 0
 - **Blocked:** 0
 
@@ -516,7 +516,7 @@ routes, colony fortifications. The stick to the carrot of trade.
 - **STORY-31** — Ground combat on islands
   > Marine / Dragoon-analog / Cannon units disembark to capture
   > island settlements. Smaller-scale ground resolver.
-  - :black_circle: **TASK-055** — Ground unit types + ground-combat resolver  `high` `medium` _(core, content)_  
+  - :white_check_mark: **TASK-055** — Ground unit types + ground-combat resolver  `high` `medium` _(core, content)_ · [PR](https://github.com/g-chappell/colonize/pull/68)  
     _depends on: TASK-053_
     > Three ground types with rock-paper-scissors balance.
     > Ground resolver variant of TASK-053 with terrain modifiers.

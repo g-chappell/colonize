@@ -16,14 +16,19 @@ export {
   SHIP_CLASSES,
   OTK_LEGENDARY_SHIP_SLOTS,
   ALL_LEGENDARY_SHIP_IDS,
+  GROUND_CLASSES,
   getShipClass,
   getLegendaryShip,
+  getGroundClass,
   isShipClassId,
   isLegendaryShipId,
+  isGroundClassId,
   type ShipClassEntry,
   type ShipClassId,
   type LegendaryShipSlot,
   type LegendaryShipId,
+  type GroundClassEntry,
+  type GroundClassId,
 } from './units.js';
 
 export {

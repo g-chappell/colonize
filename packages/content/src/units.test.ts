@@ -1,12 +1,16 @@
 import { describe, it, expect } from 'vitest';
 import {
   ALL_LEGENDARY_SHIP_IDS,
+  GROUND_CLASSES,
   OTK_LEGENDARY_SHIP_SLOTS,
   SHIP_CLASSES,
+  getGroundClass,
   getLegendaryShip,
   getShipClass,
+  isGroundClassId,
   isLegendaryShipId,
   isShipClassId,
+  type GroundClassId,
   type LegendaryShipId,
   type ShipClassId,
 } from './units.js';
@@ -181,5 +185,80 @@ describe('isLegendaryShipId / getLegendaryShip / ALL_LEGENDARY_SHIP_IDS', () => 
 
   it('getLegendaryShip throws TypeError on unknown id', () => {
     expect(() => getLegendaryShip('santa-maria' as LegendaryShipId)).toThrow(TypeError);
+  });
+});
+
+describe('GROUND_CLASSES', () => {
+  it('exposes the three ground classes', () => {
+    expect(GROUND_CLASSES.map((g) => g.id)).toEqual(['marines', 'dragoons', 'pikemen']);
+  });
+
+  it('every class has positive integer stats and a non-empty name + description', () => {
+    for (const g of GROUND_CLASSES) {
+      expect(Number.isInteger(g.hp)).toBe(true);
+      expect(g.hp).toBeGreaterThan(0);
+      expect(Number.isInteger(g.attack)).toBe(true);
+      expect(g.attack).toBeGreaterThan(0);
+      expect(Number.isInteger(g.defense)).toBe(true);
+      expect(g.defense).toBeGreaterThan(0);
+      expect(Number.isInteger(g.baseMovement)).toBe(true);
+      expect(g.baseMovement).toBeGreaterThan(0);
+      expect(g.name.length).toBeGreaterThan(0);
+      expect(g.description.length).toBeGreaterThan(0);
+    }
+  });
+
+  it('forms a rock-paper-scissors cycle (marines → pikemen → dragoons → marines)', () => {
+    const byId: Record<GroundClassId, GroundClassId> = {
+      marines: getGroundClass('marines').beats,
+      dragoons: getGroundClass('dragoons').beats,
+      pikemen: getGroundClass('pikemen').beats,
+    };
+    expect(byId.marines).toBe('pikemen');
+    expect(byId.pikemen).toBe('dragoons');
+    expect(byId.dragoons).toBe('marines');
+  });
+
+  it('no ground class beats itself', () => {
+    for (const g of GROUND_CLASSES) {
+      expect(g.beats).not.toBe(g.id);
+    }
+  });
+
+  it('pikemen are the sturdiest and dragoons the fastest', () => {
+    const marines = getGroundClass('marines');
+    const dragoons = getGroundClass('dragoons');
+    const pikemen = getGroundClass('pikemen');
+    expect(pikemen.hp).toBeGreaterThan(marines.hp);
+    expect(pikemen.hp).toBeGreaterThan(dragoons.hp);
+    expect(dragoons.baseMovement).toBeGreaterThan(marines.baseMovement);
+    expect(dragoons.baseMovement).toBeGreaterThan(pikemen.baseMovement);
+  });
+});
+
+describe('isGroundClassId / getGroundClass', () => {
+  it('isGroundClassId narrows known ids', () => {
+    expect(isGroundClassId('marines')).toBe(true);
+    expect(isGroundClassId('dragoons')).toBe(true);
+    expect(isGroundClassId('pikemen')).toBe(true);
+  });
+
+  it('isGroundClassId rejects unknown values', () => {
+    expect(isGroundClassId('lancer')).toBe(false);
+    expect(isGroundClassId('sloop')).toBe(false);
+    expect(isGroundClassId('')).toBe(false);
+    expect(isGroundClassId(0)).toBe(false);
+    expect(isGroundClassId(undefined)).toBe(false);
+    expect(isGroundClassId(null)).toBe(false);
+  });
+
+  it('getGroundClass returns the matching entry', () => {
+    const dragoons = getGroundClass('dragoons');
+    expect(dragoons.id).toBe('dragoons');
+    expect(dragoons.name).toBe('Dragoons');
+  });
+
+  it('getGroundClass throws TypeError on unknown id', () => {
+    expect(() => getGroundClass('lancer' as GroundClassId)).toThrow(TypeError);
   });
 });

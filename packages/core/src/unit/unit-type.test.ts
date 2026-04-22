@@ -1,8 +1,10 @@
 import { describe, it, expect } from 'vitest';
 import {
   ALL_UNIT_TYPES,
+  GROUND_UNIT_TYPES,
   SHIP_UNIT_TYPES,
   UnitType,
+  isGroundUnitType,
   isShipUnitType,
   isUnitType,
   getUnitTypeDefinition,
@@ -20,6 +22,9 @@ describe('UnitType registry', () => {
         UnitType.Frigate,
         UnitType.ShipOfTheLine,
         UnitType.Privateer,
+        UnitType.Marines,
+        UnitType.Dragoons,
+        UnitType.Pikemen,
       ]),
     );
   });
@@ -63,7 +68,36 @@ describe('SHIP_UNIT_TYPES', () => {
     expect(isShipUnitType(UnitType.Scout)).toBe(false);
     expect(isShipUnitType(UnitType.Settler)).toBe(false);
     expect(isShipUnitType(UnitType.FoundingShip)).toBe(false);
-    expect(isShipUnitType('dragoon')).toBe(false);
+    expect(isShipUnitType(UnitType.Marines)).toBe(false);
+    expect(isShipUnitType('galleon')).toBe(false);
+  });
+});
+
+describe('GROUND_UNIT_TYPES', () => {
+  it('lists exactly the three ground types', () => {
+    expect(new Set(GROUND_UNIT_TYPES)).toEqual(
+      new Set([UnitType.Marines, UnitType.Dragoons, UnitType.Pikemen]),
+    );
+  });
+
+  it('ground and ship sets are disjoint', () => {
+    for (const g of GROUND_UNIT_TYPES) {
+      expect((SHIP_UNIT_TYPES as readonly string[]).includes(g)).toBe(false);
+    }
+  });
+
+  it('isGroundUnitType narrows ground units', () => {
+    expect(isGroundUnitType(UnitType.Marines)).toBe(true);
+    expect(isGroundUnitType(UnitType.Dragoons)).toBe(true);
+    expect(isGroundUnitType(UnitType.Pikemen)).toBe(true);
+  });
+
+  it('isGroundUnitType rejects ships and unknown strings', () => {
+    expect(isGroundUnitType(UnitType.Sloop)).toBe(false);
+    expect(isGroundUnitType(UnitType.Scout)).toBe(false);
+    expect(isGroundUnitType('lancer')).toBe(false);
+    expect(isGroundUnitType(undefined)).toBe(false);
+    expect(isGroundUnitType(null)).toBe(false);
   });
 });
 
@@ -91,7 +125,15 @@ describe('getUnitTypeDefinition', () => {
     expect(priv.baseMovement).toBeGreaterThan(sotl.baseMovement);
   });
 
+  it('dragoons outrun marines and pikemen', () => {
+    const dragoons = getUnitTypeDefinition(UnitType.Dragoons);
+    const marines = getUnitTypeDefinition(UnitType.Marines);
+    const pikemen = getUnitTypeDefinition(UnitType.Pikemen);
+    expect(dragoons.baseMovement).toBeGreaterThan(marines.baseMovement);
+    expect(dragoons.baseMovement).toBeGreaterThan(pikemen.baseMovement);
+  });
+
   it('throws TypeError on unknown string', () => {
-    expect(() => getUnitTypeDefinition('dragoon' as UnitType)).toThrow(TypeError);
+    expect(() => getUnitTypeDefinition('lancer' as UnitType)).toThrow(TypeError);
   });
 });
