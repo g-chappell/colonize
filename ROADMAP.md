@@ -10,8 +10,8 @@ _Created: 2026-04-20_
 
 - **Total tasks:** 90
 - **Done:** 50 (56%)
-- **Ready:** 40
-- **In progress:** 0
+- **Ready:** 39
+- **In progress:** 1
 - **Blocked:** 0
 
 ---
@@ -556,7 +556,7 @@ Collective).
     > Per-faction-pair relations score [-100, 100]. Actions
     > shift score + lock cooldowns. Basic decision rules for
     > AI's accept/decline.
-  - :black_circle: **TASK-059** — Diplomacy screen (React)  `high` `medium` _(web)_  
+  - :large_orange_diamond: **TASK-059** — Diplomacy screen (React)  `high` `medium` _(web)_  
     _depends on: TASK-058_
     > Per-faction panels: current relations, last action, offer
     > new pact. Modal confirms with relevant costs/gifts.
