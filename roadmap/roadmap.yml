@@ -878,7 +878,7 @@ epics:
             attempt_count: 1
           - id: TASK-041
             title: "Building construction queue UI"
-            status: in-progress
+            status: done
             priority: high
             complexity: medium
             workspaces: [web]
@@ -887,8 +887,8 @@ epics:
               allow cancel/reorder. Turn-over ticks queue forward by
               colony production value.
             depends_on: [TASK-039, TASK-040]
-            pr: null
-            completed: null
+            pr: "https://github.com/g-chappell/colonize/pull/55"
+            completed: "2026-04-22"
             blocked_reason: null
             last_attempted: "2026-04-22T00:00:00Z"
             attempt_count: 1
