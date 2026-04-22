@@ -1,9 +1,13 @@
 import { describe, it, expect } from 'vitest';
 import {
+  ALL_LEGENDARY_SHIP_IDS,
   OTK_LEGENDARY_SHIP_SLOTS,
   SHIP_CLASSES,
+  getLegendaryShip,
   getShipClass,
+  isLegendaryShipId,
   isShipClassId,
+  type LegendaryShipId,
   type ShipClassId,
 } from './units.js';
 
@@ -95,12 +99,6 @@ describe('OTK_LEGENDARY_SHIP_SLOTS', () => {
     ]);
   });
 
-  it('every slot is locked in the MVP', () => {
-    for (const slot of OTK_LEGENDARY_SHIP_SLOTS) {
-      expect(slot.unlocked).toBe(false);
-    }
-  });
-
   it('every slot has a unique id', () => {
     const ids = OTK_LEGENDARY_SHIP_SLOTS.map((s) => s.id);
     expect(new Set(ids).size).toBe(ids.length);
@@ -109,7 +107,7 @@ describe('OTK_LEGENDARY_SHIP_SLOTS', () => {
   it('legendary slot ids do not collide with base ShipClass ids', () => {
     const baseIds = new Set(SHIP_CLASSES.map((s) => s.id));
     for (const slot of OTK_LEGENDARY_SHIP_SLOTS) {
-      expect(baseIds.has(slot.id as ShipClassId)).toBe(false);
+      expect(baseIds.has(slot.id as unknown as ShipClassId)).toBe(false);
     }
   });
 
@@ -118,5 +116,70 @@ describe('OTK_LEGENDARY_SHIP_SLOTS', () => {
       expect(slot.name.length).toBeGreaterThan(0);
       expect(slot.description.length).toBeGreaterThan(0);
     }
+  });
+
+  it('every slot names a known base class', () => {
+    for (const slot of OTK_LEGENDARY_SHIP_SLOTS) {
+      expect(isShipClassId(slot.baseClass)).toBe(true);
+    }
+  });
+
+  it('every slot has positive integer stats', () => {
+    for (const slot of OTK_LEGENDARY_SHIP_SLOTS) {
+      expect(Number.isInteger(slot.hull)).toBe(true);
+      expect(slot.hull).toBeGreaterThan(0);
+      expect(Number.isInteger(slot.guns)).toBe(true);
+      expect(slot.guns).toBeGreaterThan(0);
+      expect(Number.isInteger(slot.crewCapacity)).toBe(true);
+      expect(slot.crewCapacity).toBeGreaterThan(0);
+      expect(Number.isInteger(slot.baseMovement)).toBe(true);
+      expect(slot.baseMovement).toBeGreaterThan(0);
+    }
+  });
+
+  it('legendary stats dominate their base class (>= on every axis, > on at least one)', () => {
+    for (const slot of OTK_LEGENDARY_SHIP_SLOTS) {
+      const base = getShipClass(slot.baseClass);
+      expect(slot.hull).toBeGreaterThanOrEqual(base.hull);
+      expect(slot.guns).toBeGreaterThanOrEqual(base.guns);
+      expect(slot.crewCapacity).toBeGreaterThanOrEqual(base.crewCapacity);
+      expect(slot.baseMovement).toBeGreaterThanOrEqual(base.baseMovement);
+      const dominatesOnAtLeastOne =
+        slot.hull > base.hull ||
+        slot.guns > base.guns ||
+        slot.crewCapacity > base.crewCapacity ||
+        slot.baseMovement > base.baseMovement;
+      expect(dominatesOnAtLeastOne).toBe(true);
+    }
+  });
+});
+
+describe('isLegendaryShipId / getLegendaryShip / ALL_LEGENDARY_SHIP_IDS', () => {
+  it('ALL_LEGENDARY_SHIP_IDS matches the slot order', () => {
+    expect(ALL_LEGENDARY_SHIP_IDS).toEqual(OTK_LEGENDARY_SHIP_SLOTS.map((s) => s.id));
+  });
+
+  it('isLegendaryShipId narrows known ids', () => {
+    expect(isLegendaryShipId('black-pearl')).toBe(true);
+    expect(isLegendaryShipId('revenge')).toBe(true);
+  });
+
+  it('isLegendaryShipId rejects unknown values', () => {
+    expect(isLegendaryShipId('santa-maria')).toBe(false);
+    expect(isLegendaryShipId('sloop')).toBe(false);
+    expect(isLegendaryShipId('')).toBe(false);
+    expect(isLegendaryShipId(0)).toBe(false);
+    expect(isLegendaryShipId(undefined)).toBe(false);
+    expect(isLegendaryShipId(null)).toBe(false);
+  });
+
+  it('getLegendaryShip returns the matching entry', () => {
+    const dutchman = getLegendaryShip('flying-dutchman');
+    expect(dutchman.id).toBe('flying-dutchman');
+    expect(dutchman.baseClass).toBe('frigate');
+  });
+
+  it('getLegendaryShip throws TypeError on unknown id', () => {
+    expect(() => getLegendaryShip('santa-maria' as LegendaryShipId)).toThrow(TypeError);
   });
 });

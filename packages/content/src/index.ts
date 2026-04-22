@@ -15,11 +15,15 @@ export { FACTIONS, getFaction, type FactionEntry, type PlayableFactionId } from 
 export {
   SHIP_CLASSES,
   OTK_LEGENDARY_SHIP_SLOTS,
+  ALL_LEGENDARY_SHIP_IDS,
   getShipClass,
+  getLegendaryShip,
   isShipClassId,
+  isLegendaryShipId,
   type ShipClassEntry,
   type ShipClassId,
   type LegendaryShipSlot,
+  type LegendaryShipId,
 } from './units.js';
 
 export {

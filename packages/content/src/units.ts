@@ -80,11 +80,27 @@ export function getShipClass(id: ShipClassId): ShipClassEntry {
   return found;
 }
 
+export type LegendaryShipId =
+  | 'queen-annes-revenge'
+  | 'black-pearl'
+  | 'flying-dutchman'
+  | 'whydah'
+  | 'ranger'
+  | 'revenge';
+
+// Stat block mirrors ShipClassEntry so HUD + shipyard code can treat a redeemed
+// legendary ship as a drop-in class. Numbers are lore-grounded (OTK.md §9) and
+// dominate the baseClass — >= on every axis, > on at least one — so the
+// blueprint redemption always pays off without flattening the speed hierarchy.
 export interface LegendaryShipSlot {
-  readonly id: string;
+  readonly id: LegendaryShipId;
   readonly name: string;
   readonly description: string;
-  readonly unlocked: boolean;
+  readonly baseClass: ShipClassId;
+  readonly hull: number;
+  readonly guns: number;
+  readonly crewCapacity: number;
+  readonly baseMovement: number;
 }
 
 export const OTK_LEGENDARY_SHIP_SLOTS: readonly LegendaryShipSlot[] = [
@@ -92,42 +108,82 @@ export const OTK_LEGENDARY_SHIP_SLOTS: readonly LegendaryShipSlot[] = [
     id: 'queen-annes-revenge',
     name: "Queen Anne's Revenge",
     description:
-      "Blackbeard's flagship — a fast forty-gun terror. Reserved as an OTK Legendary slot; not yet rebuilt.",
-    unlocked: false,
+      "Blackbeard's flagship — a forty-gun terror under a blackened hull and a banner of black smoke.",
+    baseClass: 'frigate',
+    hull: 90,
+    guns: 40,
+    crewCapacity: 250,
+    baseMovement: 3,
   },
   {
     id: 'black-pearl',
     name: 'The Black Pearl',
     description:
-      'Black hull, black sails, an unholy turn of speed. Reserved as an OTK Legendary slot; not yet rebuilt.',
-    unlocked: false,
+      'Black hull, black sails, black spars — and an unnatural turn of speed no privateer has ever matched.',
+    baseClass: 'privateer',
+    hull: 50,
+    guns: 20,
+    crewCapacity: 110,
+    baseMovement: 5,
   },
   {
     id: 'flying-dutchman',
     name: 'The Flying Dutchman',
     description:
-      'Forty-six guns and a herald-of-catastrophe legend. Reserved as an OTK Legendary slot; not yet rebuilt.',
-    unlocked: false,
+      'Forty-eight guns across a herald-of-catastrophe hull, rumoured fastest ship both on and beneath the sea.',
+    baseClass: 'frigate',
+    hull: 100,
+    guns: 48,
+    crewCapacity: 300,
+    baseMovement: 4,
   },
   {
     id: 'whydah',
     name: 'The Whydah',
     description:
-      'Twenty-eight guns and the hold of a thousand prizes. Reserved as an OTK Legendary slot; not yet rebuilt.',
-    unlocked: false,
+      "A frigate-scaled prize-taker; its hold is said to have borne a thousand captures before Bellamy's wreck.",
+    baseClass: 'frigate',
+    hull: 80,
+    guns: 32,
+    crewCapacity: 220,
+    baseMovement: 3,
   },
   {
     id: 'ranger',
     name: 'The Ranger',
     description:
-      "Thirty-gun brig, sealed in legend under Calico Jack's command. Reserved as an OTK Legendary slot; not yet rebuilt.",
-    unlocked: false,
+      'A thirty-gun brig sealed in legend under the flags of Hornigold, Vane, Bellamy, and Bonnet.',
+    baseClass: 'brig',
+    hull: 60,
+    guns: 30,
+    crewCapacity: 130,
+    baseMovement: 4,
   },
   {
     id: 'revenge',
     name: 'The Revenge',
     description:
-      "Stede Bonnet's twelve-gun sloop, the quiet ghost of smuggling runs. Reserved as an OTK Legendary slot; not yet rebuilt.",
-    unlocked: false,
+      "Stede Bonnet's twelve-gun sloop — the quiet ghost of smuggling runs, rebuilt keener than ever.",
+    baseClass: 'sloop',
+    hull: 40,
+    guns: 14,
+    crewCapacity: 90,
+    baseMovement: 5,
   },
 ];
+
+export const ALL_LEGENDARY_SHIP_IDS: readonly LegendaryShipId[] = OTK_LEGENDARY_SHIP_SLOTS.map(
+  (s) => s.id,
+);
+
+export function isLegendaryShipId(value: unknown): value is LegendaryShipId {
+  return typeof value === 'string' && (ALL_LEGENDARY_SHIP_IDS as readonly string[]).includes(value);
+}
+
+export function getLegendaryShip(id: LegendaryShipId): LegendaryShipSlot {
+  const found = OTK_LEGENDARY_SHIP_SLOTS.find((s) => s.id === id);
+  if (!found) {
+    throw new TypeError(`getLegendaryShip: not a valid LegendaryShipId: ${String(id)}`);
+  }
+  return found;
+}
