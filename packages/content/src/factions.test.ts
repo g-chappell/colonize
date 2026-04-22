@@ -1,6 +1,11 @@
 import { describe, it, expect } from 'vitest';
 import { FACTIONS, getFaction, type PlayableFactionId } from './factions.js';
 
+// The `PlayableFactionId` union is also declared in
+// `@colonize/core/faction/faction-bonus.ts` (mechanical-bonus registry). The
+// two declarations drift-check each other through a matching assertion in
+// each package — neither side can import from the other per the dependency-
+// direction rule, so both sides pin the canonical MVP set independently.
 describe('FACTIONS', () => {
   it('includes all four MVP playable factions', () => {
     const ids = FACTIONS.map((f) => f.id).sort();

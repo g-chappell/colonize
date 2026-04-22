@@ -191,3 +191,18 @@ export type {
   DiplomacyAttemptStatus,
   DiplomacyAttemptParams,
 } from './diplomacy/index.js';
+export {
+  ALL_PLAYABLE_FACTION_IDS,
+  FACTION_BONUSES,
+  isPlayableFactionId,
+  getFactionBonus,
+  factionPathfindFlags,
+  factionColonyProductionMultiplier,
+  factionBuildingCostMultiplier,
+  factionCombatDamageMultiplier,
+  factionRaidLootMultiplier,
+  factionHasOpenOceanStealth,
+  factionCanRedeemLegendaryBlueprint,
+  factionGrantsFreeSoldierPerColonyPerTurn,
+} from './faction/index.js';
+export type { PlayableFactionId, FactionBonus } from './faction/index.js';
