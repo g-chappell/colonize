@@ -38,7 +38,15 @@ export {
 export type { VisibilityJSON } from './visibility/index.js';
 export { TurnPhase, ALL_TURN_PHASES, isTurnPhase, TurnManager } from './turn/index.js';
 export type { TurnHook, TurnHookContext, TurnHookEvent, TurnStateJSON } from './turn/index.js';
-export { UnitType, ALL_UNIT_TYPES, isUnitType, getUnitTypeDefinition, Unit } from './unit/index.js';
+export {
+  UnitType,
+  ALL_UNIT_TYPES,
+  SHIP_UNIT_TYPES,
+  isUnitType,
+  isShipUnitType,
+  getUnitTypeDefinition,
+  Unit,
+} from './unit/index.js';
 export type { UnitTypeDefinition, UnitJSON, UnitInit, FactionId } from './unit/index.js';
 export { CargoHold } from './cargo/index.js';
 export type { CargoHoldJSON, CargoHoldInit, ResourceId, ArtifactId } from './cargo/index.js';

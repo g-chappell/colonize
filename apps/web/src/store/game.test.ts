@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import {
   BuildingType,
   CORE_VERSION,
+  HomePort,
   TurnPhase,
   UnitType,
   type ColonyJSON,
@@ -578,6 +579,93 @@ describe('useGameStore', () => {
         bgmVolume: 0.5,
         muted: false,
       });
+    });
+  });
+
+  describe('trade session + commitTrade', () => {
+    function seedPort(): void {
+      const port = new HomePort({
+        id: 'port-otk',
+        faction: 'otk',
+        basePrices: { timber: 10, fibre: 8 },
+      });
+      useGameStore.getState().setHomePort('otk', port.toJSON());
+    }
+
+    function seedShip(resources: Record<string, number> = {}): void {
+      useGameStore.getState().setUnits([
+        {
+          id: 'ship-1',
+          faction: 'otk',
+          position: { x: 0, y: 0 },
+          type: UnitType.Sloop,
+          movement: 4,
+          cargo: { resources, artifacts: [] },
+        },
+      ]);
+    }
+
+    beforeEach(() => {
+      seedPort();
+    });
+
+    it('openTradeSession sets session + routes screen to trade', () => {
+      useGameStore.getState().openTradeSession({ colonyId: 'c1', unitId: 'ship-1' });
+      const state = useGameStore.getState();
+      expect(state.screen).toBe('trade');
+      expect(state.tradeSession).toEqual({ colonyId: 'c1', unitId: 'ship-1' });
+    });
+
+    it('closeTradeSession clears session + routes back to colony', () => {
+      useGameStore.getState().openTradeSession({ colonyId: 'c1', unitId: 'ship-1' });
+      useGameStore.getState().closeTradeSession();
+      const state = useGameStore.getState();
+      expect(state.screen).toBe('colony');
+      expect(state.tradeSession).toBeNull();
+    });
+
+    it('commitTrade applies buys (qty > 0) — adds to ship cargo + decrements port netVolume', () => {
+      seedShip({});
+      useGameStore.getState().commitTrade('otk', 'ship-1', [{ resourceId: 'timber', qty: 3 }]);
+      const state = useGameStore.getState();
+      expect(state.units[0]!.cargo.resources.timber).toBe(3);
+      expect(HomePort.fromJSON(state.homePorts.otk!).netVolume('timber')).toBe(-3);
+    });
+
+    it('commitTrade applies sells (qty < 0) — removes from ship cargo + increments port netVolume', () => {
+      seedShip({ timber: 5 });
+      useGameStore.getState().commitTrade('otk', 'ship-1', [{ resourceId: 'timber', qty: -2 }]);
+      const state = useGameStore.getState();
+      expect(state.units[0]!.cargo.resources.timber).toBe(3);
+      expect(HomePort.fromJSON(state.homePorts.otk!).netVolume('timber')).toBe(2);
+    });
+
+    it('commitTrade drops a resource key to zero cleanly instead of leaving a 0 entry', () => {
+      seedShip({ timber: 2 });
+      useGameStore.getState().commitTrade('otk', 'ship-1', [{ resourceId: 'timber', qty: -2 }]);
+      expect(useGameStore.getState().units[0]!.cargo.resources.timber).toBeUndefined();
+    });
+
+    it('commitTrade silently ignores sells exceeding ship cargo', () => {
+      seedShip({ timber: 1 });
+      useGameStore.getState().commitTrade('otk', 'ship-1', [{ resourceId: 'timber', qty: -10 }]);
+      const state = useGameStore.getState();
+      expect(state.units[0]!.cargo.resources.timber).toBe(1);
+      expect(HomePort.fromJSON(state.homePorts.otk!).netVolume('timber')).toBe(0);
+    });
+
+    it('commitTrade is a no-op when every line qty is zero', () => {
+      seedShip({ timber: 5 });
+      const before = useGameStore.getState().units;
+      useGameStore.getState().commitTrade('otk', 'ship-1', [{ resourceId: 'timber', qty: 0 }]);
+      expect(useGameStore.getState().units).toBe(before);
+    });
+
+    it('commitTrade is a no-op when the faction has no home port', () => {
+      seedShip({ timber: 5 });
+      const before = useGameStore.getState().units;
+      useGameStore.getState().commitTrade('phantom', 'ship-1', [{ resourceId: 'timber', qty: -1 }]);
+      expect(useGameStore.getState().units).toBe(before);
     });
   });
 });
