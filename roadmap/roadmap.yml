@@ -964,7 +964,7 @@ epics:
         tasks:
           - id: TASK-045
             title: "Profession model + yield multipliers"
-            status: in-progress
+            status: done
             priority: high
             complexity: medium
             workspaces: [core, content]
@@ -973,8 +973,8 @@ epics:
               yield or building. Crew has current profession; can have
               training-in-progress.
             depends_on: [TASK-042, TASK-044]
-            pr: null
-            completed: null
+            pr: "https://github.com/g-chappell/colonize/pull/61"
+            completed: "2026-04-22"
             blocked_reason: null
             last_attempted: "2026-04-22T00:00:00Z"
             attempt_count: 1

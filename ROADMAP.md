@@ -9,9 +9,9 @@ _Created: 2026-04-20_
 ## Summary
 
 - **Total tasks:** 90
-- **Done:** 42 (47%)
+- **Done:** 43 (48%)
 - **Ready:** 47
-- **In progress:** 1
+- **In progress:** 0
 - **Blocked:** 0
 
 ---
@@ -424,7 +424,7 @@ factions).
   > Shipwright, Gunner, Cartographer, Scholar, Quartermaster,
   > Loremaster. Each grants yield bonuses in matching buildings/
   > tiles. Trainable via schools or Archive pilgrimages.
-  - :large_orange_diamond: **TASK-045** — Profession model + yield multipliers  `high` `medium` _(core, content)_  
+  - :white_check_mark: **TASK-045** — Profession model + yield multipliers  `high` `medium` _(core, content)_ · [PR](https://github.com/g-chappell/colonize/pull/61)  
     _depends on: TASK-042, TASK-044_
     > Profession enum. Each profession has +X% bonus to specific
     > yield or building. Crew has current profession; can have
