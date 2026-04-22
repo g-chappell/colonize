@@ -1160,7 +1160,7 @@ epics:
             attempt_count: 1
           - id: TASK-054
             title: "Combat UI: cinematic resolver + log"
-            status: in-progress
+            status: done
             priority: high
             complexity: medium
             workspaces: [web]
@@ -1169,8 +1169,8 @@ epics:
               fire), then a log panel with step-by-step resolution.
               "Skip" option fast-forwards.
             depends_on: [TASK-053]
-            pr: null
-            completed: null
+            pr: "https://github.com/g-chappell/colonize/pull/67"
+            completed: "2026-04-22"
             blocked_reason: null
             last_attempted: "2026-04-22T13:00:00Z"
             attempt_count: 1

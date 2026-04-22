@@ -9,9 +9,9 @@ _Created: 2026-04-20_
 ## Summary
 
 - **Total tasks:** 90
-- **Done:** 47 (52%)
+- **Done:** 48 (53%)
 - **Ready:** 42
-- **In progress:** 1
+- **In progress:** 0
 - **Blocked:** 0
 
 ---
@@ -507,7 +507,7 @@ routes, colony fortifications. The stick to the carrot of trade.
     > + damaged states. Randomness seeded for replay. Covers
     > broadsides, boarding, ramming, fleeing options. Heavy
     > unit-test coverage.
-  - :large_orange_diamond: **TASK-054** — Combat UI: cinematic resolver + log  `high` `medium` _(web)_  
+  - :white_check_mark: **TASK-054** — Combat UI: cinematic resolver + log  `high` `medium` _(web)_ · [PR](https://github.com/g-chappell/colonize/pull/67)  
     _depends on: TASK-053_
     > On engagement, show a short cinematic (sprites exchanging
     > fire), then a log panel with step-by-step resolution.
