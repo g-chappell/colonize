@@ -93,3 +93,11 @@ export {
   type DiplomacyActionId,
   type DiplomacyActionFlavourEntry,
 } from './diplomacy-flavour.js';
+
+export {
+  COUNCIL_THRESHOLD_FLAVOURS,
+  LIBERTY_CHIMES_SUMMARY,
+  getCouncilThresholdFlavour,
+  isCouncilThresholdValue,
+  type CouncilThresholdFlavour,
+} from './chimes-flavour.js';
