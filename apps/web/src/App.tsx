@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import './App.css';
 import { ColonyOverlay } from './colony/ColonyOverlay';
 import { CombatOverlay } from './combat/CombatOverlay';
+import { DiplomacyScreen } from './diplomacy/DiplomacyScreen';
 import { GameCanvas } from './GameCanvas';
 import { Hud } from './hud/Hud';
 import { RumourRevealModal } from './hud/RumourRevealModal';
@@ -57,6 +58,7 @@ export function App() {
         {screen === 'colony' && <ColonyOverlay />}
         {screen === 'trade' && <TradeScreen />}
         {screen === 'transfer' && <CargoTransferScreen />}
+        {screen === 'diplomacy' && <DiplomacyScreen />}
       </div>
     </main>
   );

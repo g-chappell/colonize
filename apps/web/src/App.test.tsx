@@ -148,6 +148,21 @@ describe('App', () => {
     });
   });
 
+  describe('diplomacy screen', () => {
+    it('mounts the diplomacy screen over the game stage when screen is diplomacy', () => {
+      useGameStore.getState().setScreen('diplomacy');
+      render(<App />);
+      expect(screen.getByTestId('hud')).toBeInTheDocument();
+      expect(screen.getByTestId('diplomacy-screen')).toBeInTheDocument();
+    });
+
+    it('does not mount the diplomacy screen outside the diplomacy screen', () => {
+      useGameStore.getState().setScreen('game');
+      render(<App />);
+      expect(screen.queryByTestId('diplomacy-screen')).not.toBeInTheDocument();
+    });
+  });
+
   describe('combat overlay', () => {
     const sampleOutcome: CombatOutcome = {
       action: CombatActionType.Broadside,

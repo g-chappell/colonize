@@ -50,6 +50,7 @@ export function Hud(): JSX.Element {
         <AiThinkingIndicator />
       </div>
       <div className={styles.topRight}>
+        <DiplomacyButton />
         <MenuButton />
         <ResourceBar />
       </div>
@@ -74,6 +75,21 @@ export function MenuButton(): JSX.Element {
       data-testid="hud-menu-button"
     >
       ☰
+    </button>
+  );
+}
+
+export function DiplomacyButton(): JSX.Element {
+  const openDiplomacy = useGameStore((s) => s.openDiplomacy);
+  return (
+    <button
+      type="button"
+      className={styles.menuButton}
+      onClick={() => openDiplomacy()}
+      aria-label="Open diplomacy screen"
+      data-testid="hud-diplomacy-button"
+    >
+      ⚖
     </button>
   );
 }

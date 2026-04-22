@@ -4,15 +4,24 @@ import type {
   ColonyJSON,
   CombatOutcome,
   Coord,
+  DiplomacyAction,
+  DiplomacyAttemptOutcome,
   GameVersion,
   HomePortJSON,
+  RelationsMatrixJSON,
   ResourceId,
   RumourOutcome,
   TileType,
   TurnPhase,
   UnitJSON,
 } from '@colonize/core';
-import { CORE_VERSION, HomePort, TurnPhase as TurnPhaseEnum } from '@colonize/core';
+import {
+  CORE_VERSION,
+  HomePort,
+  RelationsMatrix,
+  TurnPhase as TurnPhaseEnum,
+  attemptDiplomacyAction,
+} from '@colonize/core';
 import {
   buildingEffort,
   colonyProductionValue,
@@ -29,7 +38,15 @@ export const FACTION_NAMES: Record<PlayableFaction, string> = {
   bloodborne: 'Bloodborne Legion',
 };
 
-export type Screen = 'menu' | 'faction-select' | 'game' | 'pause' | 'colony' | 'trade' | 'transfer';
+export type Screen =
+  | 'menu'
+  | 'faction-select'
+  | 'game'
+  | 'pause'
+  | 'colony'
+  | 'trade'
+  | 'transfer'
+  | 'diplomacy';
 
 // Active trade session (which ship is trading at which colony's home
 // port). Non-null while `screen === 'trade'`; cleared by
@@ -189,6 +206,16 @@ export interface GameState {
   // which colony). Non-null while `screen === 'transfer'`; cleared by
   // `closeTransferSession`.
   transferSession: TransferSession | null;
+  // Per-faction-pair relations + cooldowns, plain JSON for zustand
+  // round-trip compatibility. Gameplay code reconstitutes a
+  // RelationsMatrix instance via `RelationsMatrix.fromJSON` when it
+  // needs the methods; the diplomacy screen just reads the snapshot.
+  relations: RelationsMatrixJSON;
+  // Most recent diplomacy-attempt outcome, surfaced in the diplomacy
+  // screen as "last action" text. Cleared by `dismissDiplomacyOutcome`
+  // or replaced on the next attempt. Not persisted in the save format
+  // (cosmetic session state only).
+  lastDiplomacyOutcome: DiplomacyAttemptOutcome | null;
   settings: SettingsState;
   setCurrentTurn: (turn: number) => void;
   advanceTurn: () => void;
@@ -241,6 +268,24 @@ export interface GameState {
     unitId: string,
     lines: readonly TransferCommitLine[],
   ) => void;
+  // Replace the relations snapshot wholesale. Used by save-load and
+  // tests that want to seed starting relations without going through
+  // individual mutations.
+  setRelations: (relations: RelationsMatrixJSON) => void;
+  // Open / close the diplomacy overlay. Open routes the screen to
+  // 'diplomacy'; close routes back to 'game' (diplomacy is launched
+  // from the HUD, not from a screen-chain that would want to route
+  // elsewhere).
+  openDiplomacy: () => void;
+  closeDiplomacy: () => void;
+  // Attempt a diplomacy action against `target`. Reconstitutes the
+  // RelationsMatrix from the store snapshot, invokes
+  // `attemptDiplomacyAction` from @colonize/core, writes the resulting
+  // snapshot back, and records the outcome for the UI. Returns the
+  // outcome so the caller can surface immediate feedback (flavour
+  // flash, modal result).
+  attemptDiplomacy: (target: string, action: DiplomacyAction) => DiplomacyAttemptOutcome;
+  dismissDiplomacyOutcome: () => void;
   setAudioVolume: (bus: AudioBus, volume: number) => void;
   setAudioMuted: (muted: boolean) => void;
   reset: () => void;
@@ -282,6 +327,8 @@ const initialState = {
   homePorts: {} as Readonly<Record<string, HomePortJSON>>,
   tradeSession: null as TradeSession | null,
   transferSession: null as TransferSession | null,
+  relations: { entries: [] } as RelationsMatrixJSON,
+  lastDiplomacyOutcome: null as DiplomacyAttemptOutcome | null,
   settings: DEFAULT_SETTINGS,
 } as const;
 
@@ -513,6 +560,26 @@ export const useGameStore = create<GameState>((set) => ({
       );
       return { units: nextUnits, colonies: nextColonies };
     }),
+  setRelations: (relations) => set({ relations }),
+  openDiplomacy: () => set({ screen: 'diplomacy' }),
+  closeDiplomacy: () => set({ screen: 'game' }),
+  attemptDiplomacy: (target, action) => {
+    const state = useGameStore.getState();
+    const matrix = RelationsMatrix.fromJSON(state.relations);
+    const outcome = attemptDiplomacyAction({
+      matrix,
+      proposer: state.faction,
+      target,
+      action,
+      // TurnManager.turn starts at 1 (attempt.ts asserts positive integer).
+      // currentTurn in the store starts at 0 until the first advance, so
+      // clamp to 1 for a freshly-loaded game where no turn has ticked yet.
+      currentTurn: Math.max(1, state.currentTurn),
+    });
+    set({ relations: matrix.toJSON(), lastDiplomacyOutcome: outcome });
+    return outcome;
+  },
+  dismissDiplomacyOutcome: () => set({ lastDiplomacyOutcome: null }),
   setAudioVolume: (bus, volume) =>
     set((state) => ({
       settings:
