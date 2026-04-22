@@ -1,14 +1,20 @@
 import type { GameMap, Coord } from './map.js';
 import { TileType } from './tile.js';
+import { directionalCostOffset, stepDirection } from './direction.js';
+import type { DirectionLayer } from './direction-layer.js';
 
 export interface PathfindFlags {
   readonly redTideImmunity?: boolean;
+  readonly wind?: DirectionLayer;
+  readonly current?: DirectionLayer;
 }
 
 export interface PathResult {
   readonly path: readonly Coord[];
   readonly cost: number;
 }
+
+export const MIN_SAILING_STEP_COST = 0.25;
 
 export function tileCost(type: TileType, flags: PathfindFlags = {}): number {
   switch (type) {
@@ -22,6 +28,28 @@ export function tileCost(type: TileType, flags: PathfindFlags = {}): number {
     case TileType.Island:
       return Infinity;
   }
+}
+
+export function sailingStepCost(
+  map: GameMap,
+  from: Coord,
+  to: Coord,
+  flags: PathfindFlags = {},
+): number {
+  const base = tileCost(map.get(to.x, to.y), flags);
+  if (!Number.isFinite(base)) return base;
+  const dir = stepDirection(from, to);
+  if (dir === null) return base;
+  let cost = base;
+  if (flags.wind) {
+    const w = flags.wind.get(to.x, to.y);
+    if (w !== null) cost += directionalCostOffset(dir, w);
+  }
+  if (flags.current) {
+    const c = flags.current.get(to.x, to.y);
+    if (c !== null) cost += directionalCostOffset(dir, c);
+  }
+  return Math.max(MIN_SAILING_STEP_COST, cost);
 }
 
 export function findPath(
@@ -51,8 +79,11 @@ export function findPath(
   const cameFrom = new Map<number, number>();
   gScore.set(startKey, 0);
 
+  const heuristicScale =
+    flags.wind !== undefined || flags.current !== undefined ? MIN_SAILING_STEP_COST : 1;
+
   const open = new MinHeap();
-  open.push(startKey, heuristic(start, goal));
+  open.push(startKey, heuristic(start, goal) * heuristicScale);
 
   while (open.size > 0) {
     const currentKey = open.pop();
@@ -64,7 +95,7 @@ export function findPath(
     const currentG = gScore.get(currentKey)!;
 
     for (const n of map.neighbours(cx, cy)) {
-      const step = tileCost(map.get(n.x, n.y), flags);
+      const step = sailingStepCost(map, { x: cx, y: cy }, n, flags);
       if (!Number.isFinite(step)) continue;
       const tentative = currentG + step;
       const nKey = keyOf(n.x, n.y);
@@ -72,7 +103,7 @@ export function findPath(
       if (prev === undefined || tentative < prev) {
         gScore.set(nKey, tentative);
         cameFrom.set(nKey, currentKey);
-        open.push(nKey, tentative + heuristic(n, goal));
+        open.push(nKey, tentative + heuristic(n, goal) * heuristicScale);
       }
     }
   }
