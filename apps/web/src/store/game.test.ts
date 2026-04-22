@@ -432,6 +432,104 @@ describe('useGameStore', () => {
     });
   });
 
+  describe('tile-work assignments', () => {
+    const sampleColony: ColonyJSON = {
+      id: 'colony-1',
+      faction: 'otk',
+      position: { x: 4, y: 4 },
+      population: 3,
+      crew: ['settler-1', 'settler-2'],
+      buildings: [],
+      stocks: { resources: {}, artifacts: [] },
+    };
+
+    beforeEach(() => {
+      useGameStore.getState().setColonies([sampleColony]);
+    });
+
+    it('starts with empty surroundings and assignments', () => {
+      expect(useGameStore.getState().colonySurroundings).toEqual({});
+      expect(useGameStore.getState().tileAssignments).toEqual({});
+    });
+
+    it('stores a colony surroundings snapshot', () => {
+      useGameStore.getState().setColonySurroundings('colony-1', [
+        { coord: { x: 3, y: 3 }, type: 'ocean' },
+        { coord: { x: 5, y: 4 }, type: 'island' },
+      ]);
+      expect(useGameStore.getState().colonySurroundings['colony-1']).toEqual([
+        { coord: { x: 3, y: 3 }, type: 'ocean' },
+        { coord: { x: 5, y: 4 }, type: 'island' },
+      ]);
+    });
+
+    it('assigns a crew to a tile', () => {
+      useGameStore.getState().assignCrewToTile('colony-1', 'settler-1', { x: 5, y: 4 });
+      expect(useGameStore.getState().tileAssignments['colony-1']).toEqual({
+        '5,4': 'settler-1',
+      });
+    });
+
+    it('ignores assignment when the crew is not part of the colony', () => {
+      useGameStore.getState().assignCrewToTile('colony-1', 'stowaway', { x: 5, y: 4 });
+      expect(useGameStore.getState().tileAssignments).toEqual({});
+    });
+
+    it('ignores assignment for an unknown colony', () => {
+      useGameStore.getState().assignCrewToTile('mystery', 'settler-1', { x: 5, y: 4 });
+      expect(useGameStore.getState().tileAssignments).toEqual({});
+    });
+
+    it('moving a crew between tiles vacates the prior tile', () => {
+      useGameStore.getState().assignCrewToTile('colony-1', 'settler-1', { x: 5, y: 4 });
+      useGameStore.getState().assignCrewToTile('colony-1', 'settler-1', { x: 3, y: 3 });
+      expect(useGameStore.getState().tileAssignments['colony-1']).toEqual({
+        '3,3': 'settler-1',
+      });
+    });
+
+    it('dropping onto an occupied tile displaces the prior occupant', () => {
+      useGameStore.getState().assignCrewToTile('colony-1', 'settler-1', { x: 5, y: 4 });
+      useGameStore.getState().assignCrewToTile('colony-1', 'settler-2', { x: 5, y: 4 });
+      expect(useGameStore.getState().tileAssignments['colony-1']).toEqual({
+        '5,4': 'settler-2',
+      });
+    });
+
+    it('unassigns a crew from a tile', () => {
+      useGameStore.getState().assignCrewToTile('colony-1', 'settler-1', { x: 5, y: 4 });
+      useGameStore.getState().unassignCrewFromTile('colony-1', { x: 5, y: 4 });
+      expect(useGameStore.getState().tileAssignments['colony-1']).toBeUndefined();
+    });
+
+    it('unassign leaves other tiles untouched', () => {
+      useGameStore.getState().assignCrewToTile('colony-1', 'settler-1', { x: 5, y: 4 });
+      useGameStore.getState().assignCrewToTile('colony-1', 'settler-2', { x: 3, y: 3 });
+      useGameStore.getState().unassignCrewFromTile('colony-1', { x: 5, y: 4 });
+      expect(useGameStore.getState().tileAssignments['colony-1']).toEqual({
+        '3,3': 'settler-2',
+      });
+    });
+
+    it('ignores unassign for an empty slot', () => {
+      useGameStore.getState().assignCrewToTile('colony-1', 'settler-1', { x: 5, y: 4 });
+      useGameStore.getState().unassignCrewFromTile('colony-1', { x: 3, y: 3 });
+      expect(useGameStore.getState().tileAssignments['colony-1']).toEqual({
+        '5,4': 'settler-1',
+      });
+    });
+
+    it('resets surroundings + assignments on reset', () => {
+      useGameStore
+        .getState()
+        .setColonySurroundings('colony-1', [{ coord: { x: 3, y: 3 }, type: 'ocean' }]);
+      useGameStore.getState().assignCrewToTile('colony-1', 'settler-1', { x: 3, y: 3 });
+      useGameStore.getState().reset();
+      expect(useGameStore.getState().colonySurroundings).toEqual({});
+      expect(useGameStore.getState().tileAssignments).toEqual({});
+    });
+  });
+
   describe('settings', () => {
     it('seeds default audio volumes matching audio-state.ts', () => {
       const { settings } = useGameStore.getState();

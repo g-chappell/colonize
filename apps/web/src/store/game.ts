@@ -5,6 +5,7 @@ import type {
   Coord,
   GameVersion,
   RumourOutcome,
+  TileType,
   TurnPhase,
   UnitJSON,
 } from '@colonize/core';
@@ -47,6 +48,24 @@ export interface CameraView {
   readonly scrollX: number;
   readonly scrollY: number;
   readonly zoom: number;
+}
+
+// One cell in a colony's 8-neighbour ring — the snapshot the colony
+// overlay renders as a work-slot. Populated by whoever discovers the
+// colony (founding action today, cloud-save reload later) via
+// `setColonySurroundings`; the overlay only reads. Kept out of
+// ColonyJSON for the same reason as `colonyQueues`: per-session UI
+// state, not save-format-bound. A future core roster task re-homes
+// tile-work into `@colonize/core` with a save-version migration.
+export interface SurroundingTile {
+  readonly coord: Coord;
+  readonly type: TileType;
+}
+
+// Stable string key for an `{x,y}` coord so we can index tile
+// assignments by a primitive. Exported for the overlay.
+export function coordKey(coord: Coord): string {
+  return `${coord.x},${coord.y}`;
 }
 
 // A proposed (but not yet committed) move for the selected unit. The
@@ -93,6 +112,17 @@ export interface GameState {
   // save-version migration. Ordering is player-controlled via
   // reorderQueueItem; the head item is the one ticking.
   colonyQueues: Readonly<Record<string, readonly ProductionQueueItem[]>>;
+  // Snapshot of each colony's 8-neighbour ring (coord + tile type)
+  // so the overlay can render work-slots without reaching into the
+  // Phaser-side GameMap. Populated per-colony; empty until the
+  // founding flow pushes a snapshot.
+  colonySurroundings: Readonly<Record<string, readonly SurroundingTile[]>>;
+  // Crew-to-tile assignment, keyed `colonyId -> coordKey -> crewId`.
+  // Each crew id appears at most once per colony; each tile holds at
+  // most one crew. Dropping a crew on an occupied tile displaces the
+  // prior occupant back to the pool; moving a crew between tiles
+  // vacates its previous tile.
+  tileAssignments: Readonly<Record<string, Readonly<Record<string, string>>>>;
   // Outcome of a rumour tile that has been resolved but not yet
   // acknowledged by the player. Non-null while the reveal modal is
   // showing; cleared on dismiss. The resolver (a future task) will
@@ -111,6 +141,9 @@ export interface GameState {
   setProposedMove: (move: ProposedMove | null) => void;
   setColonies: (colonies: readonly ColonyJSON[]) => void;
   setSelectedColony: (colonyId: string | null) => void;
+  setColonySurroundings: (colonyId: string, cells: readonly SurroundingTile[]) => void;
+  assignCrewToTile: (colonyId: string, crewId: string, coord: Coord) => void;
+  unassignCrewFromTile: (colonyId: string, coord: Coord) => void;
   enqueueBuilding: (colonyId: string, buildingId: BuildingType) => void;
   cancelQueueItem: (colonyId: string, index: number) => void;
   reorderQueueItem: (colonyId: string, index: number, direction: 'up' | 'down') => void;
@@ -158,6 +191,8 @@ const initialState = {
   colonies: [] as readonly ColonyJSON[],
   selectedColonyId: null as string | null,
   colonyQueues: {} as Readonly<Record<string, readonly ProductionQueueItem[]>>,
+  colonySurroundings: {} as Readonly<Record<string, readonly SurroundingTile[]>>,
+  tileAssignments: {} as Readonly<Record<string, Readonly<Record<string, string>>>>,
   rumourReveal: null as RumourOutcome | null,
   settings: DEFAULT_SETTINGS,
 } as const;
@@ -183,6 +218,39 @@ export const useGameStore = create<GameState>((set) => ({
   setProposedMove: (move) => set({ proposedMove: move }),
   setColonies: (colonies) => set({ colonies }),
   setSelectedColony: (colonyId) => set({ selectedColonyId: colonyId }),
+  setColonySurroundings: (colonyId, cells) =>
+    set((state) => ({
+      colonySurroundings: { ...state.colonySurroundings, [colonyId]: cells },
+    })),
+  assignCrewToTile: (colonyId, crewId, coord) =>
+    set((state) => {
+      const colony = state.colonies.find((c) => c.id === colonyId);
+      if (!colony || !colony.crew.includes(crewId)) return {};
+      const existing = state.tileAssignments[colonyId] ?? {};
+      const next: Record<string, string> = {};
+      for (const [k, v] of Object.entries(existing)) {
+        if (v !== crewId) next[k] = v;
+      }
+      next[coordKey(coord)] = crewId;
+      return { tileAssignments: { ...state.tileAssignments, [colonyId]: next } };
+    }),
+  unassignCrewFromTile: (colonyId, coord) =>
+    set((state) => {
+      const existing = state.tileAssignments[colonyId];
+      if (!existing) return {};
+      const key = coordKey(coord);
+      if (!(key in existing)) return {};
+      const next: Record<string, string> = {};
+      for (const [k, v] of Object.entries(existing)) {
+        if (k !== key) next[k] = v;
+      }
+      const updated: Record<string, Readonly<Record<string, string>>> = {
+        ...state.tileAssignments,
+      };
+      if (Object.keys(next).length === 0) delete updated[colonyId];
+      else updated[colonyId] = next;
+      return { tileAssignments: updated };
+    }),
   enqueueBuilding: (colonyId, buildingId) =>
     set((state) => {
       const colony = state.colonies.find((c) => c.id === colonyId);
