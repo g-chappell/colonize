@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { TileType, findPath, type Coord, type UnitJSON } from '@colonize/core';
+import { TileType, findPath, type ColonyJSON, type Coord, type UnitJSON } from '@colonize/core';
 import type { FactionVisibility, GameMap } from '@colonize/core';
 
 import { bus } from '../bus';
@@ -14,6 +14,7 @@ import {
   keyPanDelta,
   pointerDistance,
 } from './camera-controls';
+import { pickColonyIdAtTile } from './colony-input';
 import { FogOverlay } from './fog-overlay';
 import { decideMoveClick } from './move-intent';
 import { truncatePathResult } from './path-preview';
@@ -38,13 +39,23 @@ import {
 
 // Depth ordering: terrain tiles draw at the default depth (0),
 // the path preview sits between terrain and units (so the unit sprite
-// covers the preview dot under its own tile), units sit above the
-// preview, the selection ring sits above units, and the fog overlay
-// sits above everything so unseen units stay hidden behind the fog.
+// covers the preview dot under its own tile), colonies sit just above
+// the preview but *below* units (so a unit garrisoning a colony reads
+// as standing on top of the structure), the selection ring sits above
+// units, and the fog overlay sits above everything so unseen units
+// stay hidden behind the fog.
 export const PATH_PREVIEW_DEPTH = 30;
+export const COLONY_LAYER_DEPTH = 40;
 export const UNIT_LAYER_DEPTH = 50;
 export const SELECTION_RING_DEPTH = 60;
 export const FOG_OVERLAY_DEPTH = 100;
+
+// Colony body sized just larger than the tile-fill scale so the
+// structure reads as more permanent than a unit silhouette but doesn't
+// spill into adjacent tiles.
+const COLONY_BODY_SCALE = 0.78;
+const COLONY_FILL_COLOR = 0x6b4a2a;
+const COLONY_STROKE_COLOR = 0xd6b466;
 
 // Path preview visual tuning. Reachable tiles draw as solid gold dots,
 // beyond-reach tiles as dim dots at the same radius so the player can
@@ -99,11 +110,13 @@ export class GameScene extends Phaser.Scene {
   // store roster update — added on insert, repositioned on move,
   // destroyed on removal.
   private unitContainers = new Map<string, Phaser.GameObjects.Container>();
+  private colonyContainers = new Map<string, Phaser.GameObjects.Container>();
   private selectionRing: Phaser.GameObjects.Graphics | null = null;
   private pathPreview: Phaser.GameObjects.Graphics | null = null;
   private unsubscribeUnits: (() => void) | null = null;
   private unsubscribeSelection: (() => void) | null = null;
   private unsubscribeProposedMove: (() => void) | null = null;
+  private unsubscribeColonies: (() => void) | null = null;
   // True while a commit tween is playing. Blocks further input so the
   // player can't stack moves on a mid-flight sprite (which would race
   // the store commit that lands at tween end).
@@ -132,6 +145,7 @@ export class GameScene extends Phaser.Scene {
     this.renderTiles(map);
     this.configureCamera(map, data.cameraFocus);
     this.setupCameraControls();
+    this.setupColonyLayer();
     this.setupUnitLayer();
 
     const visibility = this.initialVisibility ?? data.visibility;
@@ -145,6 +159,8 @@ export class GameScene extends Phaser.Scene {
     // returning to the main menu) so listeners don't accumulate.
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, this.teardownUnitLayer, this);
     this.events.once(Phaser.Scenes.Events.DESTROY, this.teardownUnitLayer, this);
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, this.teardownColonyLayer, this);
+    this.events.once(Phaser.Scenes.Events.DESTROY, this.teardownColonyLayer, this);
   }
 
   private ensureOceanAnimation(): void {
@@ -311,6 +327,17 @@ export class GameScene extends Phaser.Scene {
         return;
       }
       case 'none':
+        // No unit-side action at this tile. If a colony sits here, the
+        // click opens the colony view via the bus; otherwise it's a
+        // genuine no-op. Colony-open is suppressed when a unit is
+        // selected so move-target clicks (handled above as 'propose')
+        // never compete with overlay-open intent.
+        if (state.selectedUnitId === null) {
+          const colonyId = pickColonyIdAtTile(tile, state.colonies);
+          if (colonyId !== null) {
+            bus.emit('colony:selected', { colonyId });
+          }
+        }
         return;
     }
   }
@@ -445,6 +472,67 @@ export class GameScene extends Phaser.Scene {
   // overlay. No-op when the scene has no fog overlay configured.
   syncFogOverlay(visibility: FactionVisibility): void {
     this.fogOverlay?.sync(visibility, this.time.now);
+  }
+
+  private setupColonyLayer(): void {
+    const initial = useGameStore.getState();
+    this.syncColonyContainers(initial.colonies);
+    this.unsubscribeColonies = useGameStore.subscribe((state, prev) => {
+      if (state.colonies === prev.colonies) return;
+      this.syncColonyContainers(state.colonies);
+    });
+  }
+
+  private teardownColonyLayer(): void {
+    this.unsubscribeColonies?.();
+    this.unsubscribeColonies = null;
+    for (const container of this.colonyContainers.values()) {
+      container.destroy();
+    }
+    this.colonyContainers.clear();
+  }
+
+  private syncColonyContainers(colonies: readonly ColonyJSON[]): void {
+    const presentIds = new Set(colonies.map((c) => c.id));
+    for (const [id, container] of this.colonyContainers) {
+      if (!presentIds.has(id)) {
+        container.destroy();
+        this.colonyContainers.delete(id);
+      }
+    }
+    for (const colony of colonies) {
+      const existing = this.colonyContainers.get(colony.id);
+      const { x, y } = tileCenterInWorld(colony.position.x, colony.position.y);
+      if (existing) {
+        existing.setPosition(x, y);
+        continue;
+      }
+      this.colonyContainers.set(colony.id, this.createColonyContainer(colony, x, y));
+    }
+  }
+
+  private createColonyContainer(
+    colony: ColonyJSON,
+    x: number,
+    y: number,
+  ): Phaser.GameObjects.Container {
+    const tilePx = renderedTileSize();
+    const bodyPx = tilePx * COLONY_BODY_SCALE;
+    const body = this.add.rectangle(0, 0, bodyPx, bodyPx, COLONY_FILL_COLOR);
+    body.setStrokeStyle(2, COLONY_STROKE_COLOR);
+    const initial = (colony.id[0] ?? '?').toUpperCase();
+    const label = this.add
+      .text(0, 0, initial, {
+        fontFamily: 'Georgia, "Times New Roman", serif',
+        fontSize: `${Math.round(bodyPx * 0.55)}px`,
+        color: '#f4ecd8',
+      })
+      .setOrigin(0.5, 0.5);
+    const container = this.add.container(x, y, [body, label]);
+    container.setDepth(COLONY_LAYER_DEPTH);
+    container.setSize(bodyPx, bodyPx);
+    container.setData('colonyId', colony.id);
+    return container;
   }
 
   private setupUnitLayer(): void {

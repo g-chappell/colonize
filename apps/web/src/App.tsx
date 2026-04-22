@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import './App.css';
+import { ColonyOverlay } from './colony/ColonyOverlay';
 import { GameCanvas } from './GameCanvas';
 import { Hud } from './hud/Hud';
 import { RumourRevealModal } from './hud/RumourRevealModal';
@@ -49,6 +50,7 @@ export function App() {
         <Hud />
         <RumourRevealModal />
         {screen === 'pause' && <PauseOverlay />}
+        {screen === 'colony' && <ColonyOverlay />}
       </div>
     </main>
   );

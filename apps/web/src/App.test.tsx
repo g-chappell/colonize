@@ -88,4 +88,32 @@ describe('App', () => {
       expect(received).toEqual(['pause', 'resume']);
     });
   });
+
+  describe('colony overlay', () => {
+    it('mounts the colony overlay over the game stage', () => {
+      useGameStore.getState().setColonies([
+        {
+          id: 'driftwatch',
+          faction: 'otk',
+          position: { x: 1, y: 1 },
+          population: 1,
+          crew: [],
+          buildings: [],
+          stocks: { resources: {}, artifacts: [] },
+        },
+      ]);
+      useGameStore.getState().setSelectedColony('driftwatch');
+      useGameStore.getState().setScreen('colony');
+      render(<App />);
+      expect(screen.getByTestId('hud')).toBeInTheDocument();
+      expect(screen.getByTestId('colony-overlay')).toBeInTheDocument();
+      expect(screen.getByTestId('colony-overlay-title')).toHaveTextContent('driftwatch');
+    });
+
+    it('does not mount the colony overlay outside the colony screen', () => {
+      useGameStore.getState().setScreen('game');
+      render(<App />);
+      expect(screen.queryByTestId('colony-overlay')).not.toBeInTheDocument();
+    });
+  });
 });

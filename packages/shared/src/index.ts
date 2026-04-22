@@ -24,4 +24,9 @@ export interface GameEvents {
   // wiring in one place (GameCanvas).
   'game:pause': Record<string, never>;
   'game:resume': Record<string, never>;
+  // Fired when the player clicks a colony sprite on the map. The
+  // GameCanvas host listens and routes to the colony-overlay screen
+  // via the zustand store. `colonyId` is null for an explicit clear
+  // (reserved — no current emitter).
+  'colony:selected': { colonyId: string | null };
 }
