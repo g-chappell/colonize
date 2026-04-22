@@ -40,6 +40,13 @@ export { UnitType, ALL_UNIT_TYPES, isUnitType, getUnitTypeDefinition, Unit } fro
 export type { UnitTypeDefinition, UnitJSON, UnitInit, FactionId } from './unit/index.js';
 export { CargoHold } from './cargo/index.js';
 export type { CargoHoldJSON, CargoHoldInit, ResourceId, ArtifactId } from './cargo/index.js';
+export {
+  BuildingType,
+  ALL_BUILDING_TYPES,
+  isBuildingType,
+  getBuildingDefinition,
+} from './building/index.js';
+export type { BuildingDefinition } from './building/index.js';
 export { Colony, foundColony, canFoundColonyAt, FOUNDABLE_TILE_TYPES } from './colony/index.js';
 export type {
   ColonyJSON,
