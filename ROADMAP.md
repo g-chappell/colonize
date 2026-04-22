@@ -9,9 +9,9 @@ _Created: 2026-04-20_
 ## Summary
 
 - **Total tasks:** 90
-- **Done:** 43 (48%)
+- **Done:** 44 (49%)
 - **Ready:** 46
-- **In progress:** 1
+- **In progress:** 0
 - **Blocked:** 0
 
 ---
@@ -446,7 +446,7 @@ routes. The economic backbone of the mid-game.
   > Each faction has a home-port (OTK: Port Royal; others:
   > equivalents). Player can buy/sell goods at prices that flex
   > with supply/demand.
-  - :large_orange_diamond: **TASK-047** — HomePort entity + price model  `high` `medium` _(core)_  
+  - :white_check_mark: **TASK-047** — HomePort entity + price model  `high` `medium` _(core)_ · [PR](https://github.com/g-chappell/colonize/pull/62)  
     _depends on: TASK-044_
     > HomePort with price-per-good that moves inversely to
     > volume sold. Bounded prices. Buy-back prices < sell prices
