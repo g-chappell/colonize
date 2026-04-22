@@ -918,7 +918,7 @@ epics:
             attempt_count: 1
           - id: TASK-043
             title: "Drag-assign crew to tiles in colony view"
-            status: in-progress
+            status: done
             priority: high
             complexity: medium
             workspaces: [web]
@@ -926,8 +926,8 @@ epics:
               Drag a crew tile onto a working-slot on a surrounding
               tile. Show pre/post yield deltas. Unassign returns to pool.
             depends_on: [TASK-039, TASK-042]
-            pr: null
-            completed: null
+            pr: "https://github.com/g-chappell/colonize/pull/58"
+            completed: "2026-04-22"
             blocked_reason: null
             last_attempted: "2026-04-22T00:00:00Z"
             attempt_count: 1
