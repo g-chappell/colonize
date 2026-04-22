@@ -1182,7 +1182,7 @@ epics:
         tasks:
           - id: TASK-055
             title: "Ground unit types + ground-combat resolver"
-            status: in-progress
+            status: done
             priority: high
             complexity: medium
             workspaces: [core, content]
@@ -1191,8 +1191,8 @@ epics:
               Ground resolver variant of TASK-053 with terrain modifiers.
               Embark/disembark actions on ships.
             depends_on: [TASK-053]
-            pr: null
-            completed: null
+            pr: "https://github.com/g-chappell/colonize/pull/68"
+            completed: "2026-04-22"
             blocked_reason: null
             last_attempted: "2026-04-22T10:30:00Z"
             attempt_count: 1
