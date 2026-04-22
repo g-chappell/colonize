@@ -146,3 +146,19 @@ gap-free.
 - Refinements:
   1. 8747a47 — codify scalar seams for pre-registry axis values (primitives whose numeric axis will come from a not-yet-existing registry accept the scalar as a function argument with edge-validation, keeping the signature stable across the registry upgrade — the numeric-axis half of the opaque-string-alias rule). Driven by TASK-041 `buildingEffort` + `colonyProductionValue` proxies and TASK-042 `scaleTileYield(base, multiplier)` deferring the profession-multiplier lookup to its caller.
   2. 79a3c0b — codify trimming consumer-specific fields off save-format registries (drop speculative `effect` / `unlocked` / descriptive-subtype fields when the consumer system owning their semantics doesn't yet exist; consumers read the registry id through their own lookup and attach their own behaviour). Driven by TASK-035 dropping `LegendaryShipSlot.unlocked`, TASK-040 omitting `BuildingDefinition.effect`, and TASK-042 resisting TileType expansion for fishing-waters / kelp-forest / coastal-grove — three instances in one streak.
+
+---
+
+## Review [2026-04-22 13:27] — after TASK-045 through TASK-053
+- Success streak: 5
+- Patterns identified: 5 (pure-sibling extension; multi-slice atomic set; clamp-and-skip at store boundary; integer-only arithmetic; primitive-private validation guards)
+- Proposals drafted: 3 (the latter two had only a single instance in this streak; deferred)
+- Proposals de-duplicated: 3 (all novel vs CLAUDE.md + approvals/history.md + PRs #33, #39, #45, #51, #57)
+- Refinements committed: 3
+- PR: https://github.com/g-chappell/colonize/pull/66
+- Outcome: opened
+- Files touched: CLAUDE.md (Tier 3 — one bullet appended in Testing patterns after the Phaser pure-sibling bullet; two bullets appended in Architecture notes before the "Trim consumer-specific fields" bullet; Tier 1 [lines 57–73] untouched)
+- Refinements:
+  1. 398e3ae — extend pure-sibling pattern to non-trivial React component logic (the *ergonomic* form distinct from the *strict* Phaser-isolation form; React surfaces with non-trivial pure logic — slider grids, multi-row forms, predicate gates — get a `*-math.ts` sibling tested directly with plain inputs). Driven by TASK-048 `trade-math.ts` + TASK-049 `transfer-math.ts`, both citing the existing Phaser-narrow bullet as not-quite-applicable.
+  2. 6b88aaa — codify multi-slice zustand mutations in a single `set(...)` call (store actions touching ≥ 2 slices commit them atomically so external observers never see a partial-write race). Driven by TASK-048 `commitTrade` + TASK-049 `commitCargoTransfer` — both producing one `set` for unit-cargo + faction-state slices together.
+  3. d0bd44e — codify clamp-and-skip on out-of-range qty at the zustand store boundary (per-line clamp + silent skip + continue with the rest of the cart, not throw or no-op the whole batch — the store boundary is user-input adjacent so cheap edge guards earn their keep, distinct from the Tier 1 strict-validation rule for `packages/core`). Driven by TASK-048 `commitTrade` silent-ignore on sell-exceeds-hold + TASK-049 `commitCargoTransfer` clamp on load > colonyStock — TASK-049's lesson explicitly cites TASK-048's posture.
