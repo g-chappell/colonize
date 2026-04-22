@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { TurnPhase } from '@colonize/core';
+import { BuildingType, TurnPhase, type ColonyJSON } from '@colonize/core';
 import { bus } from '../bus';
 import { useGameStore } from '../store/game';
 import { turnController } from './turn-controller';
@@ -51,6 +51,25 @@ describe('turnController', () => {
     await new Promise<void>((resolve) => queueMicrotask(resolve));
     expect(useGameStore.getState().currentTurn).toBe(1);
     expect(useGameStore.getState().phase).toBe(TurnPhase.PlayerAction);
+  });
+
+  it('ticks colony production queues once per full turn cycle', async () => {
+    const colony: ColonyJSON = {
+      id: 'colony-1',
+      faction: 'otk',
+      position: { x: 0, y: 0 },
+      population: 2,
+      crew: [],
+      buildings: [],
+      stocks: { resources: {}, artifacts: [] },
+    };
+    useGameStore.getState().setColonies([colony]);
+    useGameStore.getState().enqueueBuilding('colony-1', BuildingType.Tavern);
+    turnController.endPlayerTurn();
+    await new Promise<void>((resolve) => queueMicrotask(resolve));
+    const queue = useGameStore.getState().colonyQueues['colony-1'];
+    // population=2 → head item progress = 2 after a single cycle.
+    expect(queue![0]!.progress).toBe(2);
   });
 
   it('reset() rewinds the manager and the mirrored store state', async () => {

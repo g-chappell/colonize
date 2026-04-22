@@ -60,6 +60,12 @@ function buildController(): TurnController {
         manager.advance();
         manager.advance();
         manager.advance();
+        // Production queues tick once the cycle closes so the fresh
+        // turn number in the store and the tick-derived buildings
+        // update together. TASK-041 owns this wiring; a later roster
+        // task will re-home the tick into a phase hook on the
+        // TurnManager itself.
+        useGameStore.getState().tickColonyQueues();
         bus.emit('turn:advanced', { turn: useGameStore.getState().currentTurn });
       });
     },
