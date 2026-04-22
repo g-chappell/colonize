@@ -668,4 +668,166 @@ describe('useGameStore', () => {
       expect(useGameStore.getState().units).toBe(before);
     });
   });
+
+  describe('cargo transfer session + commitCargoTransfer', () => {
+    const colonyId = 'driftwatch';
+
+    function seedColony(stocks: Record<string, number> = {}): ColonyJSON {
+      const colony: ColonyJSON = {
+        id: colonyId,
+        faction: 'otk',
+        position: { x: 0, y: 0 },
+        population: 2,
+        crew: [],
+        buildings: [],
+        stocks: { resources: stocks, artifacts: [] },
+      };
+      useGameStore.getState().setColonies([colony]);
+      return colony;
+    }
+
+    function seedShip(resources: Record<string, number> = {}): void {
+      useGameStore.getState().setUnits([
+        {
+          id: 'ship-1',
+          faction: 'otk',
+          position: { x: 0, y: 0 },
+          type: UnitType.Sloop,
+          movement: 4,
+          cargo: { resources, artifacts: [] },
+        },
+      ]);
+    }
+
+    it('openTransferSession sets session + routes screen to transfer', () => {
+      useGameStore.getState().openTransferSession({ colonyId: colonyId, unitId: 'ship-1' });
+      const state = useGameStore.getState();
+      expect(state.screen).toBe('transfer');
+      expect(state.transferSession).toEqual({ colonyId, unitId: 'ship-1' });
+    });
+
+    it('closeTransferSession clears session + routes back to colony', () => {
+      useGameStore.getState().openTransferSession({ colonyId: colonyId, unitId: 'ship-1' });
+      useGameStore.getState().closeTransferSession();
+      const state = useGameStore.getState();
+      expect(state.screen).toBe('colony');
+      expect(state.transferSession).toBeNull();
+    });
+
+    it('load (qty > 0) moves goods from colony stocks into ship cargo', () => {
+      seedColony({ timber: 6 });
+      seedShip({});
+      useGameStore
+        .getState()
+        .commitCargoTransfer(colonyId, 'ship-1', [{ resourceId: 'timber', qty: 4 }]);
+      const state = useGameStore.getState();
+      expect(state.units[0]!.cargo.resources.timber).toBe(4);
+      expect(state.colonies[0]!.stocks.resources.timber).toBe(2);
+    });
+
+    it('unload (qty < 0) moves goods from ship cargo into colony stocks', () => {
+      seedColony({});
+      seedShip({ rum: 5 });
+      useGameStore
+        .getState()
+        .commitCargoTransfer(colonyId, 'ship-1', [{ resourceId: 'rum', qty: -3 }]);
+      const state = useGameStore.getState();
+      expect(state.units[0]!.cargo.resources.rum).toBe(2);
+      expect(state.colonies[0]!.stocks.resources.rum).toBe(3);
+    });
+
+    it('drops a resource key when its remaining qty hits zero', () => {
+      seedColony({ timber: 2 });
+      seedShip({ rum: 3 });
+      useGameStore.getState().commitCargoTransfer(colonyId, 'ship-1', [
+        { resourceId: 'timber', qty: 2 },
+        { resourceId: 'rum', qty: -3 },
+      ]);
+      const state = useGameStore.getState();
+      expect(state.colonies[0]!.stocks.resources.timber).toBeUndefined();
+      expect(state.units[0]!.cargo.resources.rum).toBeUndefined();
+      expect(state.units[0]!.cargo.resources.timber).toBe(2);
+      expect(state.colonies[0]!.stocks.resources.rum).toBe(3);
+    });
+
+    it('clamps loads exceeding colony stock to whatever is available', () => {
+      seedColony({ timber: 1 });
+      seedShip({});
+      useGameStore
+        .getState()
+        .commitCargoTransfer(colonyId, 'ship-1', [{ resourceId: 'timber', qty: 99 }]);
+      const state = useGameStore.getState();
+      expect(state.units[0]!.cargo.resources.timber).toBe(1);
+      expect(state.colonies[0]!.stocks.resources.timber).toBeUndefined();
+    });
+
+    it('clamps unloads exceeding ship cargo to whatever is held', () => {
+      seedColony({});
+      seedShip({ rum: 2 });
+      useGameStore
+        .getState()
+        .commitCargoTransfer(colonyId, 'ship-1', [{ resourceId: 'rum', qty: -99 }]);
+      const state = useGameStore.getState();
+      expect(state.units[0]!.cargo.resources.rum).toBeUndefined();
+      expect(state.colonies[0]!.stocks.resources.rum).toBe(2);
+    });
+
+    it('is a no-op when every line qty is zero', () => {
+      seedColony({ timber: 4 });
+      seedShip({});
+      const beforeUnits = useGameStore.getState().units;
+      const beforeColonies = useGameStore.getState().colonies;
+      useGameStore
+        .getState()
+        .commitCargoTransfer(colonyId, 'ship-1', [{ resourceId: 'timber', qty: 0 }]);
+      expect(useGameStore.getState().units).toBe(beforeUnits);
+      expect(useGameStore.getState().colonies).toBe(beforeColonies);
+    });
+
+    it('skips non-integer qty lines silently', () => {
+      seedColony({ timber: 4 });
+      seedShip({});
+      useGameStore
+        .getState()
+        .commitCargoTransfer(colonyId, 'ship-1', [{ resourceId: 'timber', qty: 1.5 }]);
+      const state = useGameStore.getState();
+      expect(state.colonies[0]!.stocks.resources.timber).toBe(4);
+      expect(state.units[0]!.cargo.resources.timber).toBeUndefined();
+    });
+
+    it('is a no-op when the colony or ship cannot be found', () => {
+      seedColony({ timber: 4 });
+      seedShip({});
+      const beforeUnits = useGameStore.getState().units;
+      useGameStore
+        .getState()
+        .commitCargoTransfer('ghost', 'ship-1', [{ resourceId: 'timber', qty: 1 }]);
+      expect(useGameStore.getState().units).toBe(beforeUnits);
+      useGameStore
+        .getState()
+        .commitCargoTransfer(colonyId, 'phantom-ship', [{ resourceId: 'timber', qty: 1 }]);
+      expect(useGameStore.getState().units).toBe(beforeUnits);
+    });
+
+    it('preserves colony artifacts and other resources unchanged across the transfer', () => {
+      const colony: ColonyJSON = {
+        id: colonyId,
+        faction: 'otk',
+        position: { x: 0, y: 0 },
+        population: 2,
+        crew: [],
+        buildings: [],
+        stocks: { resources: { timber: 4, fibre: 7 }, artifacts: ['kraken-totem'] },
+      };
+      useGameStore.getState().setColonies([colony]);
+      seedShip({});
+      useGameStore
+        .getState()
+        .commitCargoTransfer(colonyId, 'ship-1', [{ resourceId: 'timber', qty: 2 }]);
+      const next = useGameStore.getState().colonies[0]!;
+      expect(next.stocks.resources.timber).toBe(2);
+      expect(next.stocks.resources.fibre).toBe(7);
+      expect(next.stocks.artifacts).toEqual(['kraken-totem']);
+    });
+  });
 });

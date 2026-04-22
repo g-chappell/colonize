@@ -363,4 +363,66 @@ describe('ColonyOverlay', () => {
       expect(state.tradeSession).toEqual({ colonyId: 'driftwatch', unitId: 'ship-sloop-1' });
     });
   });
+
+  describe('cargo-transfer panel', () => {
+    function shipAt(position: { x: number; y: number }, faction = 'otk'): UnitJSON {
+      return {
+        id: 'ship-sloop-1',
+        faction,
+        position,
+        type: UnitType.Sloop,
+        movement: 4,
+        cargo: { resources: {}, artifacts: [] },
+      };
+    }
+
+    it('shows a dock-a-ship placeholder when no friendly ship is at the colony', () => {
+      render(<ColonyOverlay />);
+      expect(screen.getByTestId('colony-overlay-transfer-empty')).toBeInTheDocument();
+      expect(screen.queryByTestId('colony-overlay-transfer-open')).not.toBeInTheDocument();
+    });
+
+    it('does not require a home port — the transfer panel renders for any colony', () => {
+      render(<ColonyOverlay />);
+      expect(screen.getByTestId('colony-overlay-transfer')).toBeInTheDocument();
+    });
+
+    it('ignores ships of the wrong faction or on another tile', () => {
+      useGameStore
+        .getState()
+        .setUnits([
+          shipAt({ x: 12, y: 7 }, 'phantom'),
+          { ...shipAt({ x: 0, y: 0 }), id: 'ship-far-otk' },
+        ]);
+      render(<ColonyOverlay />);
+      expect(screen.getByTestId('colony-overlay-transfer-empty')).toBeInTheDocument();
+    });
+
+    it('ignores non-ship units even if at the colony tile', () => {
+      useGameStore
+        .getState()
+        .setUnits([{ ...shipAt({ x: 12, y: 7 }), id: 'scout-1', type: UnitType.Scout }]);
+      render(<ColonyOverlay />);
+      expect(screen.getByTestId('colony-overlay-transfer-empty')).toBeInTheDocument();
+    });
+
+    it('shows a Transfer button when a friendly ship is at the colony tile', () => {
+      useGameStore.getState().setUnits([shipAt({ x: 12, y: 7 })]);
+      render(<ColonyOverlay />);
+      const button = screen.getByTestId('colony-overlay-transfer-open');
+      expect(button).toHaveTextContent('ship-sloop-1');
+    });
+
+    it('clicking the Transfer button opens a transfer session + routes the screen', () => {
+      useGameStore.getState().setUnits([shipAt({ x: 12, y: 7 })]);
+      render(<ColonyOverlay />);
+      fireEvent.click(screen.getByTestId('colony-overlay-transfer-open'));
+      const state = useGameStore.getState();
+      expect(state.screen).toBe('transfer');
+      expect(state.transferSession).toEqual({
+        colonyId: 'driftwatch',
+        unitId: 'ship-sloop-1',
+      });
+    });
+  });
 });

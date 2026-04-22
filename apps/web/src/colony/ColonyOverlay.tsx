@@ -63,10 +63,11 @@ export function ColonyOverlay(): JSX.Element {
   const setScreen = useGameStore((s) => s.setScreen);
   const setSelectedColony = useGameStore((s) => s.setSelectedColony);
   const openTradeSession = useGameStore((s) => s.openTradeSession);
+  const openTransferSession = useGameStore((s) => s.openTransferSession);
 
   const colony = findColony(colonies, selectedColonyId);
   const queue = colony ? (colonyQueues[colony.id] ?? []) : [];
-  const tradableShip = colony ? findTradableShip(units, colony.faction, colony.position) : null;
+  const tradableShip = colony ? findFriendlyShipAt(units, colony.faction, colony.position) : null;
   const hasHomePort = colony ? homePorts[colony.faction] !== undefined : false;
 
   const handleClose = (): void => {
@@ -113,6 +114,11 @@ export function ColonyOverlay(): JSX.Element {
                 openTradeSession({ colonyId: colony.id, unitId: tradableShip.id });
               }
             }}
+            onOpenTransfer={() => {
+              if (tradableShip) {
+                openTransferSession({ colonyId: colony.id, unitId: tradableShip.id });
+              }
+            }}
           />
         ) : (
           <MissingColony onClose={handleClose} />
@@ -129,6 +135,7 @@ interface ColonyDetailsProps {
   readonly hasHomePort: boolean;
   readonly onClose: () => void;
   readonly onOpenTrade: () => void;
+  readonly onOpenTransfer: () => void;
 }
 
 function ColonyDetails({
@@ -138,6 +145,7 @@ function ColonyDetails({
   hasHomePort,
   onClose,
   onOpenTrade,
+  onOpenTransfer,
 }: ColonyDetailsProps): JSX.Element {
   const resources = Object.entries(colony.stocks.resources).filter(([, qty]) => qty > 0);
   const artifacts = colony.stocks.artifacts;
@@ -221,6 +229,8 @@ function ColonyDetails({
       <AvailableBuildingsPanel colony={colony} queue={queue} />
 
       {hasHomePort ? <TradePanel tradableShip={tradableShip} onOpenTrade={onOpenTrade} /> : null}
+
+      <TransferPanel tradableShip={tradableShip} onOpenTransfer={onOpenTransfer} />
 
       <div className={styles.actions}>
         <button
@@ -581,11 +591,11 @@ function findColony(colonies: readonly ColonyJSON[], selectedId: string | null):
   return colonies.find((c) => c.id === selectedId) ?? null;
 }
 
-// First trade-capable friendly ship sitting on the colony's own tile.
-// Ordering is roster-insertion order so a repeat trade session reopens
-// with the same ship unless the roster changes. Null when no eligible
-// ship is in port.
-function findTradableShip(
+// First friendly ship sitting on the colony's own tile. Ordering is
+// roster-insertion order so a repeat session (trade or transfer)
+// reopens with the same ship unless the roster changes. Null when no
+// eligible ship is at the colony.
+function findFriendlyShipAt(
   units: readonly UnitJSON[],
   faction: string,
   position: Coord,
@@ -620,6 +630,33 @@ function TradePanel({ tradableShip, onOpenTrade }: TradePanelProps): JSX.Element
           data-testid="colony-overlay-trade-open"
         >
           Trade with {tradableShip.id}
+        </button>
+      )}
+    </section>
+  );
+}
+
+interface TransferPanelProps {
+  readonly tradableShip: UnitJSON | null;
+  readonly onOpenTransfer: () => void;
+}
+
+function TransferPanel({ tradableShip, onOpenTransfer }: TransferPanelProps): JSX.Element {
+  return (
+    <section className={styles.section} data-testid="colony-overlay-transfer">
+      <h3 className={styles.sectionHeader}>Cargo transfer</h3>
+      {tradableShip === null ? (
+        <p className={styles.empty} data-testid="colony-overlay-transfer-empty">
+          Dock a ship here to load or unload cargo
+        </p>
+      ) : (
+        <button
+          type="button"
+          className={styles.availableButton}
+          onClick={onOpenTransfer}
+          data-testid="colony-overlay-transfer-open"
+        >
+          Transfer cargo with {tradableShip.id}
         </button>
       )}
     </section>
