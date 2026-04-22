@@ -9,8 +9,8 @@ _Created: 2026-04-20_
 ## Summary
 
 - **Total tasks:** 90
-- **Done:** 35 (39%)
-- **Ready:** 55
+- **Done:** 36 (40%)
+- **Ready:** 54
 - **In progress:** 0
 - **Blocked:** 0
 
@@ -334,7 +334,7 @@ Ship blueprints (OTK-only).
   > The six Legendary Ships of the Golden Age. OTK unlocks a
   > rebuild blueprint on discovery; other factions get a salvage
   > payout instead.
-  - :black_circle: **TASK-035** — Legendary Ship blueprint system  `med` `medium` _(core, content)_  
+  - :white_check_mark: **TASK-035** — Legendary Ship blueprint system  `med` `medium` _(core, content)_ · [PR](https://github.com/g-chappell/colonize/pull/52)  
     _depends on: TASK-027, TASK-033_
     > Six legendary ships (Queen Anne's Revenge, Black Pearl,
     > Flying Dutchman, Whydah, Ranger, Revenge) in content. Core

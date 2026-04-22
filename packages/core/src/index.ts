@@ -49,6 +49,8 @@ export type {
   FoundColonyParams,
   FoundColonyResult,
 } from './colony/index.js';
+export { LegendaryFleet } from './fleet/index.js';
+export type { LegendaryFleetJSON, LegendaryFleetInit, LegendaryShipId } from './fleet/index.js';
 export {
   RumourKind,
   ALL_RUMOUR_KINDS,
