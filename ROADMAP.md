@@ -10,8 +10,8 @@ _Created: 2026-04-20_
 
 - **Total tasks:** 90
 - **Done:** 53 (59%)
-- **Ready:** 37
-- **In progress:** 0
+- **Ready:** 36
+- **In progress:** 1
 - **Blocked:** 0
 
 ---
@@ -623,7 +623,7 @@ Fleet invasion. Victory conditions engine.
     > Chimes produced per turn per qualifying building. At each
     > threshold, trigger Council event. Events defer until
     > player returns from busy actions.
-  - :black_circle: **TASK-066** — Archive Charter pool + pick-2 UI  `high` `medium` _(web, core, content)_  
+  - :large_orange_diamond: **TASK-066** — Archive Charter pool + pick-2 UI  `high` `medium` _(web, core, content)_  
     _depends on: TASK-065_
     > ~20 charters with permanent bonuses (e.g. Pirata Codex
     > Fragment — +X morale in combat; Bloodline Writ — +Y
