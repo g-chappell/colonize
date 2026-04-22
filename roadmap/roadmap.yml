@@ -940,7 +940,7 @@ epics:
         tasks:
           - id: TASK-044
             title: "Resource types + chain definitions"
-            status: ready
+            status: done
             priority: high
             complexity: medium
             workspaces: [core, content]
@@ -949,11 +949,11 @@ epics:
               Turn tick converts queued recipes. Failure modes
               (insufficient inputs) report in colony event log.
             depends_on: [TASK-040, TASK-042]
-            pr: null
-            completed: null
+            pr: "https://github.com/g-chappell/colonize/pull/59"
+            completed: "2026-04-22T00:00:00Z"
             blocked_reason: null
-            last_attempted: null
-            attempt_count: 0
+            last_attempted: "2026-04-22T00:00:00Z"
+            attempt_count: 1
       - id: STORY-25
         title: "Crew professions"
         description: |

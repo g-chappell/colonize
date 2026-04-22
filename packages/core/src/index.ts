@@ -49,6 +49,27 @@ export {
   getBuildingDefinition,
 } from './building/index.js';
 export type { BuildingDefinition } from './building/index.js';
+export {
+  ResourceType,
+  ALL_RESOURCE_TYPES,
+  isResourceType,
+  RecipeId,
+  ALL_RECIPE_IDS,
+  ALL_RECIPE_DEFINITIONS,
+  isRecipeId,
+  getRecipeDefinition,
+  tickRecipe,
+} from './resource/index.js';
+export type {
+  RecipeDefinition,
+  RecipeIngredient,
+  RecipeTickOutcome,
+  RecipeProducedOutcome,
+  RecipeMissingBuildingOutcome,
+  RecipeInsufficientInputsOutcome,
+  RecipeConsumedIngredient,
+  RecipeMissingIngredient,
+} from './resource/index.js';
 export { Colony, foundColony, canFoundColonyAt, FOUNDABLE_TILE_TYPES } from './colony/index.js';
 export type {
   ColonyJSON,
