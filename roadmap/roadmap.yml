@@ -901,7 +901,7 @@ epics:
         tasks:
           - id: TASK-042
             title: "Tile-work model + yields"
-            status: in-progress
+            status: done
             priority: high
             complexity: medium
             workspaces: [core, content]
@@ -911,8 +911,8 @@ epics:
               grove → Timber). Assigning a crew produces yield per turn.
               Bonuses by profession (see STORY-24).
             depends_on: [TASK-038]
-            pr: null
-            completed: null
+            pr: "https://github.com/g-chappell/colonize/pull/56"
+            completed: "2026-04-22"
             blocked_reason: null
             last_attempted: "2026-04-22T00:00:00Z"
             attempt_count: 1
