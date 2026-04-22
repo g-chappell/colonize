@@ -9,9 +9,9 @@ _Created: 2026-04-20_
 ## Summary
 
 - **Total tasks:** 90
-- **Done:** 36 (40%)
+- **Done:** 37 (41%)
 - **Ready:** 53
-- **In progress:** 1
+- **In progress:** 0
 - **Blocked:** 0
 
 ---
@@ -372,7 +372,7 @@ factions).
     > Colony with id, faction, position, population, crew
     > roster, buildings, stocks. FoundColony action consumes a
     > Founding Ship unit at a valid tile. Unit tests.
-  - :large_orange_diamond: **TASK-039** — Colony view (React + Phaser inset)  `high` `large` _(web, core)_  
+  - :white_check_mark: **TASK-039** — Colony view (React + Phaser inset)  `high` `large` _(web, core)_ · [PR](https://github.com/g-chappell/colonize/pull/53)  
     _depends on: TASK-038, TASK-030_
     > Dedicated screen showing a colony's tiles, workers
     > assigned, buildings, stocks, production queue. Accessible
