@@ -66,3 +66,11 @@ export {
   type ResourceEntry,
   type ResourceEntryId,
 } from './resources.js';
+
+export {
+  PROFESSIONS,
+  getProfession,
+  isProfessionEntryId,
+  type ProfessionEntry,
+  type ProfessionEntryId,
+} from './professions.js';
