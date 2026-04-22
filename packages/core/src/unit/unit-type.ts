@@ -1,6 +1,7 @@
 export const UnitType = {
   Scout: 'scout',
   Settler: 'settler',
+  FoundingShip: 'founding-ship',
   Sloop: 'sloop',
   Brig: 'brig',
   Frigate: 'frigate',
@@ -36,6 +37,7 @@ export interface UnitTypeDefinition {
 const UNIT_TYPE_DEFINITIONS: Readonly<Record<UnitType, UnitTypeDefinition>> = {
   [UnitType.Scout]: { id: UnitType.Scout, baseMovement: 2 },
   [UnitType.Settler]: { id: UnitType.Settler, baseMovement: 1 },
+  [UnitType.FoundingShip]: { id: UnitType.FoundingShip, baseMovement: 2 },
   [UnitType.Sloop]: { id: UnitType.Sloop, baseMovement: 4 },
   [UnitType.Brig]: { id: UnitType.Brig, baseMovement: 3 },
   [UnitType.Frigate]: { id: UnitType.Frigate, baseMovement: 3 },

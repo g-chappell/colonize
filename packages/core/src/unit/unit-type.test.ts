@@ -14,6 +14,7 @@ describe('UnitType registry', () => {
       new Set([
         UnitType.Scout,
         UnitType.Settler,
+        UnitType.FoundingShip,
         UnitType.Sloop,
         UnitType.Brig,
         UnitType.Frigate,
@@ -30,6 +31,7 @@ describe('UnitType registry', () => {
   it('isUnitType narrows valid strings', () => {
     expect(isUnitType('scout')).toBe(true);
     expect(isUnitType('settler')).toBe(true);
+    expect(isUnitType('founding-ship')).toBe(true);
     expect(isUnitType('sloop')).toBe(true);
     expect(isUnitType('ship-of-the-line')).toBe(true);
   });
@@ -60,6 +62,7 @@ describe('SHIP_UNIT_TYPES', () => {
     expect(isShipUnitType(UnitType.Frigate)).toBe(true);
     expect(isShipUnitType(UnitType.Scout)).toBe(false);
     expect(isShipUnitType(UnitType.Settler)).toBe(false);
+    expect(isShipUnitType(UnitType.FoundingShip)).toBe(false);
     expect(isShipUnitType('dragoon')).toBe(false);
   });
 });

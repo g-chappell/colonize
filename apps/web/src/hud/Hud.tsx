@@ -19,6 +19,7 @@ const RESOURCE_SLOTS = [
 const UNIT_TYPE_NAMES: Readonly<Record<UnitType, string>> = {
   [UnitType.Scout]: 'Scout',
   [UnitType.Settler]: 'Settler',
+  [UnitType.FoundingShip]: 'Founding Ship',
   [UnitType.Sloop]: 'Sloop',
   [UnitType.Brig]: 'Brig',
   [UnitType.Frigate]: 'Frigate',
