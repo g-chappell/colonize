@@ -10,8 +10,8 @@ _Created: 2026-04-20_
 
 - **Total tasks:** 90
 - **Done:** 47 (52%)
-- **Ready:** 43
-- **In progress:** 0
+- **Ready:** 42
+- **In progress:** 1
 - **Blocked:** 0
 
 ---
@@ -507,7 +507,7 @@ routes, colony fortifications. The stick to the carrot of trade.
     > + damaged states. Randomness seeded for replay. Covers
     > broadsides, boarding, ramming, fleeing options. Heavy
     > unit-test coverage.
-  - :black_circle: **TASK-054** — Combat UI: cinematic resolver + log  `high` `medium` _(web)_  
+  - :large_orange_diamond: **TASK-054** — Combat UI: cinematic resolver + log  `high` `medium` _(web)_  
     _depends on: TASK-053_
     > On engagement, show a short cinematic (sprites exchanging
     > fire), then a log panel with step-by-step resolution.
