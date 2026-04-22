@@ -206,3 +206,13 @@ export {
   factionGrantsFreeSoldierPerColonyPerTurn,
 } from './faction/index.js';
 export type { PlayableFactionId, FactionBonus } from './faction/index.js';
+export {
+  CHIME_PRODUCING_BUILDINGS,
+  LIBERTY_CHIMES_THRESHOLDS,
+  buildingChimeRate,
+  chimesFromBuildings,
+  isChimeProducingBuilding,
+  isCouncilThreshold,
+  ChimesLedger,
+} from './chimes/index.js';
+export type { ChimesLedgerInit, ChimesLedgerJSON, CouncilEvent } from './chimes/index.js';
