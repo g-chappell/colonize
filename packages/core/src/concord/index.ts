@@ -12,3 +12,24 @@ export type {
   ConcordTensionMeterJSON,
   ConcordUltimatumEvent,
 } from './tension-meter.js';
+export {
+  DEFAULT_SOVEREIGNTY_TRIGGER_THRESHOLDS,
+  canDeclareSovereignty,
+  sovereigntyTriggerStatus,
+} from './sovereignty-trigger.js';
+export type {
+  SovereigntyTriggerInputs,
+  SovereigntyTriggerStatus,
+  SovereigntyTriggerThresholds,
+} from './sovereignty-trigger.js';
+export { ConcordFleetCampaign } from './concord-fleet-campaign.js';
+export type {
+  ConcordCampaignOutcome,
+  ConcordDifficultyId,
+  ConcordFleetCampaignInit,
+  ConcordFleetCampaignJSON,
+  ConcordFleetGroundUnitId,
+  ConcordFleetPendingWave,
+  ConcordFleetShipUnitId,
+  ConcordFleetWave,
+} from './concord-fleet-campaign.js';
