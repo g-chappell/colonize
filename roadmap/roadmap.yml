@@ -861,7 +861,7 @@ epics:
         tasks:
           - id: TASK-040
             title: "Building definitions + prerequisites in content"
-            status: ready
+            status: done
             priority: high
             complexity: medium
             workspaces: [content, core]
@@ -871,11 +871,11 @@ epics:
               grants Talisman blessings). Data in content/buildings.ts;
               logic in core.
             depends_on: [TASK-038]
-            pr: null
-            completed: null
+            pr: "https://github.com/g-chappell/colonize/pull/54"
+            completed: "2026-04-22"
             blocked_reason: null
-            last_attempted: null
-            attempt_count: 0
+            last_attempted: "2026-04-22T00:00:00Z"
+            attempt_count: 1
           - id: TASK-041
             title: "Building construction queue UI"
             status: ready

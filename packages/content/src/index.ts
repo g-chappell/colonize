@@ -42,3 +42,11 @@ export {
   type RumourOutcomeCategoryId,
   type RumourOutcomeFlavourEntry,
 } from './rumour-outcomes.js';
+
+export {
+  BUILDINGS,
+  getBuilding,
+  isBuildingEntryId,
+  type BuildingEntry,
+  type BuildingEntryId,
+} from './buildings.js';
