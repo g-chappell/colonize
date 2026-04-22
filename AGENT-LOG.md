@@ -37,7 +37,7 @@ gaps.
 - Files changed: packages/core/src/colony/colony.ts (new), packages/core/src/colony/colony.test.ts (new), packages/core/src/colony/found-colony.ts (new), packages/core/src/colony/found-colony.test.ts (new), packages/core/src/colony/index.ts (new), packages/core/src/unit/unit-type.ts, packages/core/src/unit/unit-type.test.ts, packages/core/src/index.ts, apps/web/src/hud/Hud.tsx, apps/web/src/game/unit-visuals.ts, roadmap/roadmap.yml, ROADMAP.md
 - Regression alert: false (core 338 → 379; all other counts steady)
 - Review proposed: <filled in Step 15 if applicable>
-- Deploy: <filled in Step 14 if applicable>
+- Deploy: success (image colonize:latest built + rolling-restarted; health ok on attempt 2; `/health` 200 at http://localhost:3000/health)
 - Lessons learned:
   - Colony stocks reuse `CargoHold` — the same primitive that backs unit cargo. This means `CargoHold.transferTo` already exists as the ship-to-colony offload primitive, so `foundColony` uses it directly to drain the founding ship's cargo into the new colony on consumption. Future delivery tasks (friendly-colony entry, export-to-ship) get the same primitive for free.
   - `UnitType.FoundingShip` appended to the save-format-bound const-object is additive and non-breaking per CLAUDE.md Tier 3 (same shape as TASK-027 ship-class append). Web-side exhaustive `Record<UnitType, …>` tables (`UNIT_VISUAL_SPECS`, `UNIT_TYPE_NAMES`) required concurrent updates — TypeScript's Record-exhaustiveness check caught this at build time, so no runtime surprises. This is the reader half of "Consume save-format const-object unions via an exhaustive switch": Records also count as exhaustive consumers.
