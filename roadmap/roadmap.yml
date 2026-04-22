@@ -1012,7 +1012,7 @@ epics:
         tasks:
           - id: TASK-047
             title: "HomePort entity + price model"
-            status: ready
+            status: done
             priority: high
             complexity: medium
             workspaces: [core]
@@ -1021,11 +1021,11 @@ epics:
               volume sold. Bounded prices. Buy-back prices < sell prices
               (spread). Per-faction starting prices in content.
             depends_on: [TASK-044]
-            pr: null
-            completed: null
+            pr: "https://github.com/g-chappell/colonize/pull/62"
+            completed: "2026-04-22"
             blocked_reason: null
-            last_attempted: null
-            attempt_count: 0
+            last_attempted: "2026-04-22T00:00:00Z"
+            attempt_count: 1
           - id: TASK-048
             title: "Home-port trade UI"
             status: ready

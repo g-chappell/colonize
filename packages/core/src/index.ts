@@ -90,6 +90,14 @@ export type {
 export { LegendaryFleet } from './fleet/index.js';
 export type { LegendaryFleetJSON, LegendaryFleetInit, LegendaryShipId } from './fleet/index.js';
 export {
+  HomePort,
+  PRICE_SPREAD,
+  MIN_MID_PRICE,
+  MAX_MID_PRICE,
+  PRICE_VOLUME_STEP,
+} from './homeport/index.js';
+export type { HomePortJSON, HomePortInit } from './homeport/index.js';
+export {
   RumourKind,
   ALL_RUMOUR_KINDS,
   isRumourKind,
