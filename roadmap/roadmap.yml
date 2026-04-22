@@ -1586,7 +1586,7 @@ epics:
         tasks:
           - id: TASK-065
             title: Liberty Chimes production + Council threshold
-            status: in-progress
+            status: done
             priority: high
             complexity: medium
             workspaces:
@@ -1598,8 +1598,8 @@ epics:
               player returns from busy actions.
             depends_on:
               - TASK-040
-            pr: null
-            completed: null
+            pr: "https://github.com/g-chappell/colonize/pull/73"
+            completed: "2026-04-22"
             blocked_reason: null
             last_attempted: "2026-04-22T00:00:00Z"
             attempt_count: 1
