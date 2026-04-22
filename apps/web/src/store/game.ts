@@ -5,6 +5,7 @@ import type {
   CharterHand,
   ColonyJSON,
   CombatOutcome,
+  ConcordFleetCampaignJSON,
   Coord,
   DiplomacyAction,
   DiplomacyAttemptOutcome,
@@ -32,6 +33,10 @@ import {
   tickProductionQueue,
   type ProductionQueueItem,
 } from '../colony/build-queue';
+import {
+  sovereigntyMilestoneCrossed,
+  type SovereigntyMilestone,
+} from '../sovereignty/sovereignty-progress';
 
 export type PlayableFaction = 'otk' | 'ironclad' | 'phantom' | 'bloodborne';
 
@@ -244,6 +249,19 @@ export interface GameState {
   // or replaced on the next attempt. Not persisted in the save format
   // (cosmetic session state only).
   lastDiplomacyOutcome: DiplomacyAttemptOutcome | null;
+  // Active Concord Fleet campaign snapshot — non-null while the
+  // Sovereignty War is ongoing. Populated by the declare-sovereignty
+  // orchestration (a future task) with a freshly-constructed
+  // ConcordFleetCampaign.toJSON(); the HUD tint + progress bar read
+  // this slice, and `tickSovereigntyWar` advances `turnsElapsed` each
+  // turn. Cleared on victory/defeat by `endSovereigntyWar`.
+  sovereigntyWar: ConcordFleetCampaignJSON | null;
+  // Most recent narrative beat milestone triggered by a Sovereignty
+  // campaign tick. Non-null while the beat modal is showing; cleared
+  // by `dismissSovereigntyBeat`. Treated as an unbidden event-modal
+  // (slice-driven self-mounting overlay per CLAUDE.md) — does not
+  // gate on a Screen literal.
+  sovereigntyBeat: SovereigntyMilestone | null;
   settings: SettingsState;
   setCurrentTurn: (turn: number) => void;
   advanceTurn: () => void;
@@ -336,6 +354,29 @@ export interface GameState {
   dismissDiplomacyOutcome: () => void;
   setAudioVolume: (bus: AudioBus, volume: number) => void;
   setAudioMuted: (muted: boolean) => void;
+  // Start a Sovereignty War campaign by installing the supplied
+  // ConcordFleetCampaignJSON snapshot. Clears any stale beat so the
+  // modal doesn't linger from a previous run. Replaces any existing
+  // campaign — callers must `endSovereigntyWar()` first if they want
+  // defence against accidental overwrite.
+  startSovereigntyWar: (campaign: ConcordFleetCampaignJSON) => void;
+  // Advance the active campaign by one turn. No-op when no campaign
+  // is active. Auto-fires a narrative beat when a 25/50/75/100%
+  // milestone is crossed on this tick; the modal component reads
+  // `sovereigntyBeat` and shows the copy. Only the highest milestone
+  // crossed by a single tick fires — a jump from 2 → 7 on a 12-turn
+  // campaign triggers the 50% beat and skips 25% so the player is not
+  // bombarded with stacked dismissals.
+  tickSovereigntyWar: () => void;
+  // End the active campaign. Clears both the campaign snapshot and
+  // any pending beat. Called by the victory/loss engine (future task)
+  // once the campaign resolves.
+  endSovereigntyWar: () => void;
+  // Manual trigger for a narrative beat — used by tests and by future
+  // orchestration that wants to re-show a milestone message without
+  // re-ticking the campaign counter.
+  showSovereigntyBeat: (milestone: SovereigntyMilestone) => void;
+  dismissSovereigntyBeat: () => void;
   reset: () => void;
 }
 
@@ -379,6 +420,8 @@ const initialState = {
   transferSession: null as TransferSession | null,
   relations: { entries: [] } as RelationsMatrixJSON,
   lastDiplomacyOutcome: null as DiplomacyAttemptOutcome | null,
+  sovereigntyWar: null as ConcordFleetCampaignJSON | null,
+  sovereigntyBeat: null as SovereigntyMilestone | null,
   settings: DEFAULT_SETTINGS,
 } as const;
 
@@ -676,5 +719,22 @@ export const useGameStore = create<GameState>((set) => ({
           : { ...state.settings, bgmVolume: clampVolume(volume) },
     })),
   setAudioMuted: (muted) => set((state) => ({ settings: { ...state.settings, muted } })),
+  startSovereigntyWar: (campaign) => set({ sovereigntyWar: campaign, sovereigntyBeat: null }),
+  tickSovereigntyWar: () =>
+    set((state) => {
+      const current = state.sovereigntyWar;
+      if (!current) return {};
+      const prevElapsed = current.turnsElapsed;
+      const nextElapsed = prevElapsed + 1;
+      const nextCampaign: ConcordFleetCampaignJSON = { ...current, turnsElapsed: nextElapsed };
+      const crossed = sovereigntyMilestoneCrossed(prevElapsed, nextElapsed, current.turnsRequired);
+      return {
+        sovereigntyWar: nextCampaign,
+        ...(crossed !== null ? { sovereigntyBeat: crossed } : {}),
+      };
+    }),
+  endSovereigntyWar: () => set({ sovereigntyWar: null, sovereigntyBeat: null }),
+  showSovereigntyBeat: (milestone) => set({ sovereigntyBeat: milestone }),
+  dismissSovereigntyBeat: () => set({ sovereigntyBeat: null }),
   reset: () => set({ ...initialState }),
 }));

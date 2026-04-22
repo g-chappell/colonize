@@ -228,4 +228,43 @@ describe('App', () => {
       expect(screen.queryByTestId('council-pick')).not.toBeInTheDocument();
     });
   });
+
+  describe('sovereignty war overlay', () => {
+    const sampleCampaign = {
+      difficulty: 'standard',
+      turnsRequired: 20,
+      turnsElapsed: 5,
+      waves: [
+        {
+          spawnTurn: 0,
+          ships: ['frigate'],
+          groundTroops: ['marines'],
+        },
+      ],
+      spawnedWaveIndices: [],
+    } as const;
+
+    it('mounts the war overlay over the game stage while a campaign is active', () => {
+      useGameStore.getState().setScreen('game');
+      useGameStore.getState().startSovereigntyWar(sampleCampaign);
+      render(<App />);
+      expect(screen.getByTestId('hud')).toBeInTheDocument();
+      expect(screen.getByTestId('sovereignty-war-overlay')).toBeInTheDocument();
+    });
+
+    it('does not mount the war overlay when no campaign is active', () => {
+      useGameStore.getState().setScreen('game');
+      render(<App />);
+      expect(screen.queryByTestId('sovereignty-war-overlay')).not.toBeInTheDocument();
+    });
+
+    it('mounts the beat modal on top of the game stage when a milestone is pending', () => {
+      useGameStore.getState().setScreen('game');
+      useGameStore.getState().startSovereigntyWar(sampleCampaign);
+      useGameStore.getState().showSovereigntyBeat(50);
+      render(<App />);
+      expect(screen.getByTestId('sovereignty-war-overlay')).toBeInTheDocument();
+      expect(screen.getByTestId('sovereignty-beat')).toBeInTheDocument();
+    });
+  });
 });
