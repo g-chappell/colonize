@@ -1724,7 +1724,7 @@ epics:
             attempt_count: 1
           - id: TASK-071
             title: Sovereignty War UI overlay + progress tracker
-            status: ready
+            status: in-progress
             priority: high
             complexity: medium
             workspaces:
@@ -1738,8 +1738,8 @@ epics:
             pr: null
             completed: null
             blocked_reason: null
-            last_attempted: null
-            attempt_count: 0
+            last_attempted: "2026-04-22T00:00:00Z"
+            attempt_count: 1
       - id: STORY-42
         title: Victory & loss conditions
         description: |

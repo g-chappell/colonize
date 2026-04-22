@@ -10,8 +10,8 @@ _Created: 2026-04-20_
 
 - **Total tasks:** 90
 - **Done:** 56 (62%)
-- **Ready:** 34
-- **In progress:** 0
+- **Ready:** 33
+- **In progress:** 1
 - **Blocked:** 0
 
 ---
@@ -665,7 +665,7 @@ Fleet invasion. Victory conditions engine.
     > charters). Spawn Concord Fleet: escalating waves of
     > surface ships + ground troops for island landings.
     > Survive T turns (configurable by difficulty).
-  - :black_circle: **TASK-071** — Sovereignty War UI overlay + progress tracker  `high` `medium` _(web)_  
+  - :large_orange_diamond: **TASK-071** — Sovereignty War UI overlay + progress tracker  `high` `medium` _(web)_  
     _depends on: TASK-070_
     > Red-tinted HUD state during Sovereignty War. Progress bar
     > toward survival goal. Concord Fleet movement visible on
