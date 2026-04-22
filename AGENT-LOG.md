@@ -29,6 +29,25 @@ gaps.
 
 ---
 
+### Run [2026-04-22 01:15]
+- Task: TASK-038 — Colony entity + founding action
+- Outcome: success
+- PR: https://github.com/g-chappell/colonize/pull/50 (auto-merge enabled)
+- Test counts: core=379 (was 338 — +41: +28 in new `colony/colony.test.ts` covering Colony construction defaults + position copy-in + crew/building de-duplicate seed + stocks seed + invalid-init rejection (empty id/faction, non-integer x, NaN y, negative/fractional population, non-array crew/buildings), adjustPopulation integer-only + below-zero guard + exact-zero drain, assignCrew/releaseCrew idempotence + absent-id throw + empty-id reject, addBuilding/removeBuilding + empty-id reject + absent-id throw, crew/buildings getters return sorted-snapshot (not live ref), and toJSON/fromJSON round-trip + lossless JSON.stringify + independence-of-source + rejection of non-array crew and missing stocks; +13 in new `colony/found-colony.test.ts` covering FOUNDABLE_TILE_TYPES = {Island, FloatingCity}, canFoundColonyAt true on Island/FloatingCity and false on Ocean/RayonPassage/RedTide/FataMorgana/OOB/fractional coords, foundColony on Island = population 1, FloatingCity = +1 bonus (population 2), ship cargo transfers to colony stocks (resources + artifacts) and unit cargo is emptied, non-FoundingShip rejected, non-foundable tile rejected on all four non-foundable types, existing colony at same position blocks, existing colonies elsewhere don't block, empty colonyId rejected, founded colony inherits faction; unit-type test suite tweaks for new FoundingShip literal), content=42, web=210, shared=2, server=8
+- Files changed: packages/core/src/colony/colony.ts (new), packages/core/src/colony/colony.test.ts (new), packages/core/src/colony/found-colony.ts (new), packages/core/src/colony/found-colony.test.ts (new), packages/core/src/colony/index.ts (new), packages/core/src/unit/unit-type.ts, packages/core/src/unit/unit-type.test.ts, packages/core/src/index.ts, apps/web/src/hud/Hud.tsx, apps/web/src/game/unit-visuals.ts, roadmap/roadmap.yml, ROADMAP.md
+- Regression alert: false (core 338 → 379; all other counts steady)
+- Review proposed: <filled in Step 15 if applicable>
+- Deploy: <filled in Step 14 if applicable>
+- Lessons learned:
+  - Colony stocks reuse `CargoHold` — the same primitive that backs unit cargo. This means `CargoHold.transferTo` already exists as the ship-to-colony offload primitive, so `foundColony` uses it directly to drain the founding ship's cargo into the new colony on consumption. Future delivery tasks (friendly-colony entry, export-to-ship) get the same primitive for free.
+  - `UnitType.FoundingShip` appended to the save-format-bound const-object is additive and non-breaking per CLAUDE.md Tier 3 (same shape as TASK-027 ship-class append). Web-side exhaustive `Record<UnitType, …>` tables (`UNIT_VISUAL_SPECS`, `UNIT_TYPE_NAMES`) required concurrent updates — TypeScript's Record-exhaustiveness check caught this at build time, so no runtime surprises. This is the reader half of "Consume save-format const-object unions via an exhaustive switch": Records also count as exhaustive consumers.
+  - `foundColony` is a pure-ish function that returns `{ colony, consumedUnitId }` rather than mutating a roster directly — following CLAUDE.md "Ship the entity's primitive; leave iteration / scheduling to the task that owns the collection." The caller (roster-owning task, not yet on the board) decides how to remove the consumed unit and insert the new colony.
+  - Colony crew / building ids are opaque strings (`CrewId = string`, `BuildingId = string`) until their registries land later in EPIC-06. This mirrors the `CargoHold` `ResourceId`/`ArtifactId` precedent and avoids a premature cross-module dependency on registries that don't exist yet.
+  - `exactOptionalPropertyTypes: true` interacted with the `makeColony` helper in the test file — spreading an optional `population` override through `{ ...base, population: maybeUndef }` wouldn't typecheck, so the helper uses a conditional spread (`{ ...base, ...(population !== undefined ? { population } : {}) }`) matching the canonical TASK-022 pattern.
+- Notes: All 379 core tests pass. Task workspaces declared `[core]` but web-side fallout (exhaustive Record tables) was unavoidable and minimal (two one-line additions). Floating-city +1 population bonus is the single gameplay choice made here — the story note "floating-city node (bonus)" leaves the mechanic open; kept it to a single-integer starting-population diff rather than inventing richer buffs that belong with the building / resource tasks.
+
+---
+
 ### Run [2026-04-20 18:30]
 - Task: TASK-001 — Scaffold root TS tooling (tsconfig.base, ESLint, Prettier)
 - Outcome: success
