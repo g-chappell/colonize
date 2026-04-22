@@ -116,3 +116,18 @@ gap-free.
 - Refinements:
   1. d60abbb — codify cross-side event bus contract + React-side listener location (GameEvents in packages/shared as wire contract, declaration-merged; React-side subscribers that touch the Phaser game instance live in `GameCanvas.useEffect`; React never holds a `Phaser.Game` ref). Driven by TASK-016 `'game:pause'` / `'game:resume'` + supporting evidence from TASK-025 `'turn:advanced'` + TASK-030 `'unit:selected'`.
   2. 57caf4c — codify terminal-vs-overlay screen sub-shapes (overlay screens render on top of the mounted game view; App.tsx dispatches game-stage children for `'game'` AND every overlay family member; overlay tests assert hud + overlay root co-mount). Driven by TASK-016 `'pause'` overlay; pre-empts STORY-20 (colony), STORY-34 (diplomacy), STORY-26 (codex).
+
+---
+
+## Review [2026-04-22T01:25Z] — after TASK-033 through TASK-038
+- Success streak: 5 (TASK-033 → TASK-023 → TASK-034 → TASK-029 → TASK-038 since PR #45 review checkpoint; crossed threshold on TASK-038)
+- Patterns identified: 2
+- Proposals drafted: 2
+- Proposals de-duplicated: 2 (both novel vs CLAUDE.md + approvals/history.md + PRs #8, #17, #23, #33, #39, #45; Jaro-Winkler threshold 0.85 via `alreadyCovered`)
+- Refinements committed: 2
+- PR: https://github.com/g-chappell/colonize/pull/51
+- Outcome: opened
+- Files touched: CLAUDE.md (Tier 3 Architecture notes, two new bullets appended after the "Ship the entity's primitive" bullet; Tier 1 [lines 57–73] untouched)
+- Refinements:
+  1. e9bd751 — codify opaque-string-alias bridge for pre-registry save-format identifiers (`type FooId = string` + mutator `assertNonEmptyString` guard, tightened to a const-object union once the registry task lands — avoids a forbidden `content → core` import edge while the registry is still in flight). Driven by TASK-034 `ResourceId` / `ArtifactId` + TASK-038 `CrewId` / `BuildingId`.
+  2. 3df426e — codify sorted-toJSON determinism for Map/Set-backed save primitives (entries must be emitted in stable sorted order so byte-parity holds across runs/machines; JS `Set` / `Map` insertion order would otherwise leak into `JSON.stringify` and break replay parity). Driven by TASK-034 CargoHold sorted toJSON + supporting evidence from TASK-029 DirectionLayer sparse row-major sort + TASK-038 Colony sorted crew/buildings; codifies the rule that FactionVisibility already followed implicitly.
