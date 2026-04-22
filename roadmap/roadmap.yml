@@ -1,14 +1,12 @@
 version: 1
-
 meta:
-  project: "Colonize"
-  created: "2026-04-20"
-  branch_prefix: "auto/"
-  task_id_format: "TASK-{seq:03d}"
-
+  project: Colonize
+  created: '2026-04-20'
+  branch_prefix: auto/
+  task_id_format: TASK-{seq:03d}
 epics:
   - id: EPIC-01
-    title: "Platform foundation"
+    title: Platform foundation
     description: |
       Web + mobile + server skeleton. TypeScript monorepo with npm workspaces,
       Vite web app, Capacitor mobile wrapper, Fastify server. Shared tooling
@@ -16,13 +14,13 @@ epics:
       the deploy pipeline from main → VPS docker compose.
     stories:
       - id: STORY-01
-        title: "Web app shell"
+        title: Web app shell
         description: |
           Scaffold apps/web as a Vite + React app that renders a placeholder
           screen. Typecheck + test + build all green locally and in CI.
         tasks:
           - id: TASK-001
-            title: "Scaffold root TS tooling (tsconfig.base, ESLint, Prettier)"
+            title: Scaffold root TS tooling (tsconfig.base, ESLint, Prettier)
             status: done
             priority: high
             complexity: small
@@ -33,135 +31,153 @@ epics:
               Install typescript, eslint, prettier, @typescript-eslint/* as
               root devDeps. Commit package-lock.json update.
             depends_on: []
-            pr: "https://github.com/g-chappell/colonize/pull/2"
-            completed: "2026-04-20T18:25:00Z"
+            pr: https://github.com/g-chappell/colonize/pull/2
+            completed: '2026-04-20T18:25:00Z'
             blocked_reason: null
-            last_attempted: "2026-04-20T18:18:00Z"
+            last_attempted: '2026-04-20T18:18:00Z'
             attempt_count: 1
           - id: TASK-002
-            title: "Scaffold apps/web with Vite + React + TS"
+            title: Scaffold apps/web with Vite + React + TS
             status: done
             priority: high
             complexity: small
-            workspaces: [web]
+            workspaces:
+              - web
             description: |
               Create apps/web with package.json (workspace name
               @colonize/web), Vite config, React 18, basic App component
               that renders "Colonize — NW 2191". Wire npm run dev / build /
               test / typecheck scripts. Verify port 5173 dev server starts.
-            depends_on: [TASK-001]
-            pr: "https://github.com/g-chappell/colonize/pull/3"
-            completed: "2026-04-20T18:40:00Z"
+            depends_on:
+              - TASK-001
+            pr: https://github.com/g-chappell/colonize/pull/3
+            completed: '2026-04-20T18:40:00Z'
             blocked_reason: null
-            last_attempted: "2026-04-20T18:35:00Z"
+            last_attempted: '2026-04-20T18:35:00Z'
             attempt_count: 1
       - id: STORY-02
-        title: "Mobile wrapper"
+        title: Mobile wrapper
         description: |
           Capacitor scaffold in apps/mobile pointing at apps/web's build
           output. iOS + Android projects generated; build verified locally.
         tasks:
           - id: TASK-003
-            title: "Scaffold apps/mobile with Capacitor + add iOS/Android"
+            title: Scaffold apps/mobile with Capacitor + add iOS/Android
             status: done
             priority: high
             complexity: medium
-            workspaces: [mobile]
+            workspaces:
+              - mobile
             description: |
               Create apps/mobile with capacitor.config.ts (appId
               dev.blacksail.colonize, webDir ../web/dist). Run npx cap add
               ios + npx cap add android. Verify npx cap sync works after a
               web build. Commit ios/ and android/ directories.
-            depends_on: [TASK-002]
-            pr: "https://github.com/g-chappell/colonize/pull/4"
-            completed: "2026-04-20T18:58:00Z"
+            depends_on:
+              - TASK-002
+            pr: https://github.com/g-chappell/colonize/pull/4
+            completed: '2026-04-20T18:58:00Z'
             blocked_reason: null
-            last_attempted: "2026-04-20T18:55:00Z"
+            last_attempted: '2026-04-20T18:55:00Z'
             attempt_count: 1
       - id: STORY-03
-        title: "Shared packages scaffold"
+        title: Shared packages scaffold
         description: |
           packages/core (pure TS game logic), packages/shared (Zod DTOs),
           packages/content (assets + lore). All typecheck clean with
           project references working end-to-end.
         tasks:
           - id: TASK-004
-            title: "Scaffold packages/core, packages/shared, packages/content"
+            title: Scaffold packages/core, packages/shared, packages/content
             status: done
             priority: high
             complexity: small
-            workspaces: [core, shared, content]
+            workspaces:
+              - core
+              - shared
+              - content
             description: |
               Create three workspaces with package.json (composite: true in
               their tsconfigs), index.ts exporting a placeholder symbol
               each. Add them to root tsconfig.json references. Verify tsc
               -b succeeds at root.
-            depends_on: [TASK-001]
-            pr: "https://github.com/g-chappell/colonize/pull/6"
-            completed: "2026-04-20T19:35:00Z"
+            depends_on:
+              - TASK-001
+            pr: https://github.com/g-chappell/colonize/pull/6
+            completed: '2026-04-20T19:35:00Z'
             blocked_reason: null
-            last_attempted: "2026-04-20T19:30:00Z"
+            last_attempted: '2026-04-20T19:30:00Z'
             attempt_count: 1
           - id: TASK-005
-            title: "Wire shared state store (Zustand) in apps/web"
+            title: Wire shared state store (Zustand) in apps/web
             status: done
             priority: high
             complexity: small
-            workspaces: [web, core]
+            workspaces:
+              - web
+              - core
             description: |
               Install zustand in apps/web. Create src/store/game.ts with a
               minimal store (slice: gameVersion, currentTurn). Import a
               type from packages/core to verify cross-workspace imports
               work via project references + paths alias.
-            depends_on: [TASK-002, TASK-004]
-            pr: "https://github.com/g-chappell/colonize/pull/7"
-            completed: "2026-04-20T20:10:00Z"
+            depends_on:
+              - TASK-002
+              - TASK-004
+            pr: https://github.com/g-chappell/colonize/pull/7
+            completed: '2026-04-20T20:10:00Z'
             blocked_reason: null
-            last_attempted: "2026-04-20T20:05:00Z"
+            last_attempted: '2026-04-20T20:05:00Z'
             attempt_count: 1
       - id: STORY-04
-        title: "Server skeleton + CI/deploy wiring"
+        title: Server skeleton + CI/deploy wiring
         description: |
           apps/server as a Fastify app with /health. Docker build from
           docker/Dockerfile succeeds locally. GitHub Actions workflow
           deploys to VPS on merge-to-main via ssh + scripts/deploy.sh.
         tasks:
           - id: TASK-006
-            title: "Scaffold apps/server with Fastify + /health endpoint"
+            title: Scaffold apps/server with Fastify + /health endpoint
             status: done
             priority: high
             complexity: small
-            workspaces: [server, shared]
+            workspaces:
+              - server
+              - shared
             description: |
               Create apps/server with Fastify, pino, tsx for dev, tsc for
               build. Expose GET /health returning { ok: true, version,
               uptime }. Add dev/build/start scripts. Bind to process.env
               APP_PORT || 3000.
-            depends_on: [TASK-004]
-            pr: "https://github.com/g-chappell/colonize/pull/10"
-            completed: "2026-04-20T20:40:00Z"
+            depends_on:
+              - TASK-004
+            pr: https://github.com/g-chappell/colonize/pull/10
+            completed: '2026-04-20T20:40:00Z'
             blocked_reason: null
-            last_attempted: "2026-04-20T19:25:00Z"
+            last_attempted: '2026-04-20T19:25:00Z'
             attempt_count: 1
           - id: TASK-007
-            title: "Wire apps/server to serve apps/web static build"
+            title: Wire apps/server to serve apps/web static build
             status: done
             priority: high
             complexity: small
-            workspaces: [server, web]
+            workspaces:
+              - server
+              - web
             description: |
               Add @fastify/static to apps/server. In production, serve
               apps/web/dist as root and fall through unknown routes to
               index.html for SPA routing. Verify the Dockerfile artifact
               copies both dist trees.
-            depends_on: [TASK-006]
-            pr: "https://github.com/g-chappell/colonize/pull/12"
-            completed: "2026-04-20T21:30:00Z"
+            depends_on:
+              - TASK-006
+            pr: https://github.com/g-chappell/colonize/pull/12
+            completed: '2026-04-20T21:30:00Z'
             blocked_reason: null
-            last_attempted: "2026-04-20T21:25:00Z"
+            last_attempted: '2026-04-20T21:25:00Z'
             attempt_count: 1
           - id: TASK-008
-            title: "Add GitHub Actions deploy workflow (main → VPS)"
+            title: Add GitHub Actions deploy workflow (main → VPS)
             status: done
             priority: high
             complexity: medium
@@ -173,33 +189,34 @@ epics:
               scripts/deploy.sh. Requires SSH_PRIVATE_KEY + SSH_HOST
               secrets configured in repo settings. Document the secret
               names in the PR.
-            depends_on: [TASK-007]
-            pr: "https://github.com/g-chappell/colonize/pull/14"
-            completed: "2026-04-20"
+            depends_on:
+              - TASK-007
+            pr: https://github.com/g-chappell/colonize/pull/14
+            completed: '2026-04-20'
             blocked_reason: null
-            last_attempted: "2026-04-20T00:00:00Z"
+            last_attempted: '2026-04-20T00:00:00Z'
             attempt_count: 1
-
   - id: EPIC-02
-    title: "Retro art pipeline & UI shell"
+    title: Retro art pipeline & UI shell
     description: |
       The look-and-feel layer: pixel-art tile atlas pipeline, HUD chrome,
       screen navigation, and audio hooks. Separates React DOM chrome from
       Phaser canvas with a shared event bus.
     stories:
       - id: STORY-05
-        title: "Tile atlas pipeline"
+        title: Tile atlas pipeline
         description: |
           Pipeline for converting loose PNGs into packed atlases + JSON
           metadata, consumed by Phaser at runtime. Includes palette
           definition for retro consistency.
         tasks:
           - id: TASK-009
-            title: "Define OTK retro palette + pipeline script"
+            title: Define OTK retro palette + pipeline script
             status: done
             priority: high
             complexity: medium
-            workspaces: [content]
+            workspaces:
+              - content
             description: |
               Pick a constrained retro palette (32–64 colours) appropriate
               to the three tonal registers (salt-and-rum warm, eldritch
@@ -207,152 +224,171 @@ epics:
               packages/content/scripts/pack-atlas.mjs (wraps
               free-tex-packer or similar) producing spritesheet.png +
               spritesheet.json. Document in packages/content/README.md.
-            depends_on: [TASK-004]
-            pr: "https://github.com/g-chappell/colonize/pull/15"
-            completed: "2026-04-20"
+            depends_on:
+              - TASK-004
+            pr: https://github.com/g-chappell/colonize/pull/15
+            completed: '2026-04-20'
             blocked_reason: null
-            last_attempted: "2026-04-20T22:00:00Z"
+            last_attempted: '2026-04-20T22:00:00Z'
             attempt_count: 1
           - id: TASK-010
-            title: "Load placeholder atlas in Phaser boot scene"
+            title: Load placeholder atlas in Phaser boot scene
             status: done
             priority: high
             complexity: small
-            workspaces: [web, content]
+            workspaces:
+              - web
+              - content
             description: |
               Add Phaser 3 to apps/web. Create a BootScene that loads the
               packaged atlas + shows a loading bar. On load complete,
               transition to a MainMenuScene placeholder.
-            depends_on: [TASK-002, TASK-009]
-            pr: "https://github.com/g-chappell/colonize/pull/16"
-            completed: "2026-04-21"
+            depends_on:
+              - TASK-002
+              - TASK-009
+            pr: https://github.com/g-chappell/colonize/pull/16
+            completed: '2026-04-21'
             blocked_reason: null
-            last_attempted: "2026-04-21T00:00:00Z"
+            last_attempted: '2026-04-21T00:00:00Z'
             attempt_count: 1
       - id: STORY-06
-        title: "HUD chrome"
+        title: HUD chrome
         description: |
           React-based HUD overlay: resource bar, minimap placeholder,
           end-turn button, year/era display. Communicates with Phaser via
           a shared event bus.
         tasks:
           - id: TASK-011
-            title: "Create event bus in apps/web/src/bus.ts"
+            title: Create event bus in apps/web/src/bus.ts
             status: done
             priority: high
             complexity: small
-            workspaces: [web]
+            workspaces:
+              - web
             description: |
               Simple typed pub/sub (mitt or hand-rolled). Events typed via
               packages/shared. Used by React HUD and Phaser scenes to
               communicate without tight coupling.
-            depends_on: [TASK-010]
-            pr: "https://github.com/g-chappell/colonize/pull/18"
-            completed: "2026-04-21"
+            depends_on:
+              - TASK-010
+            pr: https://github.com/g-chappell/colonize/pull/18
+            completed: '2026-04-21'
             blocked_reason: null
-            last_attempted: "2026-04-21T00:00:00Z"
+            last_attempted: '2026-04-21T00:00:00Z'
             attempt_count: 1
           - id: TASK-012
-            title: "Build HUD components (resource bar, year, end-turn)"
+            title: Build HUD components (resource bar, year, end-turn)
             status: done
             priority: high
             complexity: medium
-            workspaces: [web]
+            workspaces:
+              - web
             description: |
               React components rendering on top of the Phaser canvas via
               CSS absolute positioning. Read from game store
               (TASK-005). Include NW year display, faction chip,
               resource-bar placeholders, end-turn button. Tailwind or CSS
               modules — pick and document.
-            depends_on: [TASK-011]
-            pr: "https://github.com/g-chappell/colonize/pull/19"
-            completed: "2026-04-21T02:10:00Z"
+            depends_on:
+              - TASK-011
+            pr: https://github.com/g-chappell/colonize/pull/19
+            completed: '2026-04-21T02:10:00Z'
             blocked_reason: null
-            last_attempted: "2026-04-21T00:00:00Z"
+            last_attempted: '2026-04-21T00:00:00Z'
             attempt_count: 1
       - id: STORY-07
-        title: "Screen navigation"
+        title: Screen navigation
         description: |
           Top-level app flow between screens: Splash → Main Menu → Faction
           Select → In-Game → Pause overlay. Implemented as Phaser scene
           transitions for canvas states + React routes for menu states.
         tasks:
           - id: TASK-013
-            title: "Main menu screen (React)"
+            title: Main menu screen (React)
             status: done
             priority: high
             complexity: small
-            workspaces: [web]
+            workspaces:
+              - web
             description: |
               React page with New Game / Continue / Settings / Codex /
               Quit buttons. Style with OTK heraldry (paired dragons, hic
               sunt dracones motto). Wire New Game to go to faction select.
-            depends_on: [TASK-012]
-            pr: "https://github.com/g-chappell/colonize/pull/20"
-            completed: "2026-04-21T03:15:00Z"
+            depends_on:
+              - TASK-012
+            pr: https://github.com/g-chappell/colonize/pull/20
+            completed: '2026-04-21T03:15:00Z'
             blocked_reason: null
-            last_attempted: "2026-04-21T00:00:00Z"
+            last_attempted: '2026-04-21T00:00:00Z'
             attempt_count: 1
           - id: TASK-014
-            title: "Faction select screen"
+            title: Faction select screen
             status: done
             priority: high
             complexity: medium
-            workspaces: [web, content]
+            workspaces:
+              - web
+              - content
             description: |
               Four-panel select: OTK / Ironclad / Phantom / Bloodborne.
               Each panel shows faction crest, 2-sentence lore blurb, and
               a one-line bonus description. Pick → start new game.
               Content strings in packages/content/factions.ts.
-            depends_on: [TASK-013]
-            pr: "https://github.com/g-chappell/colonize/pull/21"
-            completed: "2026-04-21T04:12:00Z"
+            depends_on:
+              - TASK-013
+            pr: https://github.com/g-chappell/colonize/pull/21
+            completed: '2026-04-21T04:12:00Z'
             blocked_reason: null
-            last_attempted: "2026-04-21T12:00:00Z"
+            last_attempted: '2026-04-21T12:00:00Z'
             attempt_count: 1
       - id: STORY-08
-        title: "Audio hooks"
+        title: Audio hooks
         description: |
           Phaser audio manager wired through an SFX bus and a BGM bus.
           Priming tap for iOS autoplay restrictions. BGM stems by mood
           (sea / tavern / combat / event).
         tasks:
           - id: TASK-015
-            title: "Audio manager with SFX + BGM buses"
+            title: Audio manager with SFX + BGM buses
             status: done
             priority: med
             complexity: medium
-            workspaces: [web, content]
+            workspaces:
+              - web
+              - content
             description: |
               Wrap Phaser.Sound with typed play()/playBgm()/stopBgm().
               Prime audio on first user interaction (critical for iOS).
               Placeholder stems in packages/content/audio/ — can be
               silent/short for now; real composition is later.
-            depends_on: [TASK-010]
-            pr: "https://github.com/g-chappell/colonize/pull/41"
-            completed: "2026-04-21T17:17:04.187Z"
+            depends_on:
+              - TASK-010
+            pr: https://github.com/g-chappell/colonize/pull/41
+            completed: '2026-04-21T17:17:04.187Z'
             blocked_reason: null
-            last_attempted: "2026-04-21T17:03:01.270Z"
+            last_attempted: '2026-04-21T17:03:01.270Z'
             attempt_count: 1
           - id: TASK-016
-            title: "Pause overlay (React) + resume"
+            title: Pause overlay (React) + resume
             status: done
             priority: med
             complexity: small
-            workspaces: [web]
+            workspaces:
+              - web
             description: |
               Esc / menu-icon opens pause overlay: Resume, Settings, Save,
               Quit-to-menu. Calls phaser.scene.pause() while open.
               Settings include audio bus volumes (writes to store).
-            depends_on: [TASK-013, TASK-015]
-            pr: "https://github.com/g-chappell/colonize/pull/44"
-            completed: "2026-04-21T17:25:00Z"
+            depends_on:
+              - TASK-013
+              - TASK-015
+            pr: https://github.com/g-chappell/colonize/pull/44
+            completed: '2026-04-21T17:25:00Z'
             blocked_reason: null
-            last_attempted: "2026-04-21T17:15:00Z"
+            last_attempted: '2026-04-21T17:15:00Z'
             attempt_count: 1
-
   - id: EPIC-03
-    title: "World & map"
+    title: World & map
     description: |
       The game world: procedural generation of the ocean map, Rayon
       Passage, floating-city nodes, islands, Red Tide zones, and Fata
@@ -360,319 +396,359 @@ epics:
       touch. All tiles fixed at map-gen; no island-emergence.
     stories:
       - id: STORY-09
-        title: "Map data model"
+        title: Map data model
         description: |
           Framework-free representation of the map in packages/core:
           tile types, coords, neighbours. Serializable.
         tasks:
           - id: TASK-017
-            title: "Tile type enum + Map model in packages/core"
+            title: Tile type enum + Map model in packages/core
             status: done
             priority: high
             complexity: medium
-            workspaces: [core]
+            workspaces:
+              - core
             description: |
               Define TileType (Ocean, RayonPassage, Island, FloatingCity,
               RedTide, FataMorgana). Map class with get(x,y), neighbours,
               toJSON/fromJSON. Unit tests for coord math and
               serialization.
-            depends_on: [TASK-004]
-            pr: "https://github.com/g-chappell/colonize/pull/22"
-            completed: "2026-04-21T12:45:00Z"
+            depends_on:
+              - TASK-004
+            pr: https://github.com/g-chappell/colonize/pull/22
+            completed: '2026-04-21T12:45:00Z'
             blocked_reason: null
-            last_attempted: "2026-04-21T12:30:00Z"
+            last_attempted: '2026-04-21T12:30:00Z'
             attempt_count: 1
           - id: TASK-018
-            title: "Procedural map generator"
+            title: Procedural map generator
             status: done
             priority: high
             complexity: large
-            workspaces: [core]
+            workspaces:
+              - core
             description: |
               Seedable generator: places a central Rayon Passage corridor
               with 5–8 floating-city nodes, scatters 8–15 islands of
               varied sizes, 1–3 Red Tide zones, a handful of Fata Morgana
               tiles. Parameters: seed, size, faction-start positions.
               Deterministic for same seed.
-            depends_on: [TASK-017]
-            pr: "https://github.com/g-chappell/colonize/pull/24"
-            completed: "2026-04-21"
+            depends_on:
+              - TASK-017
+            pr: https://github.com/g-chappell/colonize/pull/24
+            completed: '2026-04-21'
             blocked_reason: null
-            last_attempted: "2026-04-21T06:00:00Z"
+            last_attempted: '2026-04-21T06:00:00Z'
             attempt_count: 1
       - id: STORY-10
-        title: "Map rendering"
+        title: Map rendering
         description: |
           Phaser tilemap renderer fed by the core Map model. Tiles use
           the art-pipeline atlas. Smooth performance on low-end mobile
           targets.
         tasks:
           - id: TASK-019
-            title: "Phaser GameScene + tile renderer"
+            title: Phaser GameScene + tile renderer
             status: done
             priority: high
             complexity: large
-            workspaces: [web, core, content]
+            workspaces:
+              - web
+              - core
+              - content
             description: |
               GameScene loads a Map from core, renders each tile via the
               atlas. Supports variable tile sizes (animated water
               frames). Camera follows a target; uses culling for
               off-screen tiles.
-            depends_on: [TASK-010, TASK-018]
-            pr: "https://github.com/g-chappell/colonize/pull/25"
-            completed: "2026-04-21"
+            depends_on:
+              - TASK-010
+              - TASK-018
+            pr: https://github.com/g-chappell/colonize/pull/25
+            completed: '2026-04-21'
             blocked_reason: null
-            last_attempted: "2026-04-21T13:00:00Z"
+            last_attempted: '2026-04-21T13:00:00Z'
             attempt_count: 1
           - id: TASK-020
-            title: "Camera controls: pan / zoom / mobile touch"
+            title: 'Camera controls: pan / zoom / mobile touch'
             status: done
             priority: high
             complexity: medium
-            workspaces: [web]
+            workspaces:
+              - web
             description: |
               Mouse drag to pan, wheel to zoom, arrow keys to pan on
               desktop. Single-finger drag pan + pinch zoom on mobile.
               Clamp zoom to sensible min/max. Remember last camera
               position per game.
-            depends_on: [TASK-019]
-            pr: "https://github.com/g-chappell/colonize/pull/26"
-            completed: "2026-04-21T00:00:00Z"
+            depends_on:
+              - TASK-019
+            pr: https://github.com/g-chappell/colonize/pull/26
+            completed: '2026-04-21T00:00:00Z'
             blocked_reason: null
-            last_attempted: "2026-04-21T00:00:00Z"
+            last_attempted: '2026-04-21T00:00:00Z'
             attempt_count: 1
       - id: STORY-11
-        title: "Fog of war"
+        title: Fog of war
         description: |
           Per-faction visibility: unexplored tiles are hidden; previously
           explored tiles are dimmed ("last seen" snapshot). Line of
           sight from units + colonies.
         tasks:
           - id: TASK-021
-            title: "Visibility model in core (unseen / seen / visible)"
+            title: Visibility model in core (unseen / seen / visible)
             status: done
             priority: high
             complexity: medium
-            workspaces: [core]
+            workspaces:
+              - core
             description: |
               Per-faction 2D grid with state: unseen (hidden), seen (last
               observed snapshot, dimmed), visible (currently in LoS).
               Update on unit move / colony placement. Serializable.
-            depends_on: [TASK-017]
-            pr: "https://github.com/g-chappell/colonize/pull/31"
-            completed: "2026-04-21T00:00:00Z"
+            depends_on:
+              - TASK-017
+            pr: https://github.com/g-chappell/colonize/pull/31
+            completed: '2026-04-21T00:00:00Z'
             blocked_reason: null
-            last_attempted: "2026-04-21T00:00:00Z"
+            last_attempted: '2026-04-21T00:00:00Z'
             attempt_count: 1
           - id: TASK-022
-            title: "Fog overlay in GameScene renderer"
+            title: Fog overlay in GameScene renderer
             status: done
             priority: high
             complexity: medium
-            workspaces: [web]
+            workspaces:
+              - web
             description: |
               Phaser overlay layer darkens seen tiles and hides unseen.
               Animated reveal when a tile transitions unseen→seen.
               Performance-conscious: use a single render-texture mask
               rather than per-tile sprites.
-            depends_on: [TASK-019, TASK-021]
-            pr: "https://github.com/g-chappell/colonize/pull/32"
-            completed: "2026-04-21T00:00:00Z"
+            depends_on:
+              - TASK-019
+              - TASK-021
+            pr: https://github.com/g-chappell/colonize/pull/32
+            completed: '2026-04-21T00:00:00Z'
             blocked_reason: null
-            last_attempted: "2026-04-21T00:00:00Z"
+            last_attempted: '2026-04-21T00:00:00Z'
             attempt_count: 1
       - id: STORY-12
-        title: "Rayon Passage start region"
+        title: Rayon Passage start region
         description: |
           Always-revealed known-sea corridor at game start, representing
           the existing spine of civilisation. Player starts with Rayon
           Passage visible; frontier + islands are fog-of-war.
         tasks:
           - id: TASK-023
-            title: "Mark Rayon Passage tiles as 'seen' at game start"
+            title: Mark Rayon Passage tiles as 'seen' at game start
             status: done
             priority: med
             complexity: small
-            workspaces: [core]
+            workspaces:
+              - core
             description: |
               Initial visibility state: every Rayon Passage tile +
               floating-city node is at least 'seen' at turn 0 for all
               factions. Everything else starts 'unseen'. Covered by
               visibility unit tests.
-            depends_on: [TASK-021]
-            pr: "https://github.com/g-chappell/colonize/pull/47"
-            completed: "2026-04-21"
+            depends_on:
+              - TASK-021
+            pr: https://github.com/g-chappell/colonize/pull/47
+            completed: '2026-04-21'
             blocked_reason: null
-            last_attempted: "2026-04-21T00:00:00Z"
+            last_attempted: '2026-04-21T00:00:00Z'
             attempt_count: 1
-
   - id: EPIC-04
-    title: "Turn engine, units & movement"
+    title: Turn engine, units & movement
     description: |
       The heart of a 4X game loop: player turn → AI turns → events →
       next year. Unit entities, ship classes, pathfinding, sailing
       rules including wind, currents, and Red Tide impassability.
     stories:
       - id: STORY-13
-        title: "Turn loop"
+        title: Turn loop
         description: |
           Turn state machine: ActivePlayer → AIPlayers[] → WorldEvents
           → Year+1. Yearly calendar matches NW dates (starting at NW
           2191). End-turn button advances.
         tasks:
           - id: TASK-024
-            title: "Turn state machine in packages/core"
+            title: Turn state machine in packages/core
             status: done
             priority: high
             complexity: medium
-            workspaces: [core]
+            workspaces:
+              - core
             description: |
               TurnManager with phases: Start → PlayerAction → AI →
               WorldEvents → End. Hooks for phase-enter/exit. Deterministic
               given same state + inputs. Unit tests for phase
               transitions.
-            depends_on: [TASK-017]
-            pr: "https://github.com/g-chappell/colonize/pull/34"
-            completed: "2026-04-21"
+            depends_on:
+              - TASK-017
+            pr: https://github.com/g-chappell/colonize/pull/34
+            completed: '2026-04-21'
             blocked_reason: null
-            last_attempted: "2026-04-21T00:00:00Z"
+            last_attempted: '2026-04-21T00:00:00Z'
             attempt_count: 1
           - id: TASK-025
-            title: "End-turn button wiring + year display"
+            title: End-turn button wiring + year display
             status: done
             priority: high
             complexity: small
-            workspaces: [web, core]
+            workspaces:
+              - web
+              - core
             description: |
               HUD end-turn button dispatches to TurnManager. Year display
               shows current NW year (start 2191). Show "AI thinking…"
               indicator during AI phases.
-            depends_on: [TASK-012, TASK-024]
-            pr: "https://github.com/g-chappell/colonize/pull/35"
-            completed: "2026-04-21"
+            depends_on:
+              - TASK-012
+              - TASK-024
+            pr: https://github.com/g-chappell/colonize/pull/35
+            completed: '2026-04-21'
             blocked_reason: null
-            last_attempted: "2026-04-21T12:07:25Z"
+            last_attempted: '2026-04-21T12:07:25Z'
             attempt_count: 1
       - id: STORY-14
-        title: "Unit entities & stats"
+        title: Unit entities & stats
         description: |
           Unit model: id, faction, position, type, stats (crew,
           supplies, condition). Movement points regenerate per turn.
           Serializable.
         tasks:
           - id: TASK-026
-            title: "Unit model + movement points"
+            title: Unit model + movement points
             status: done
             priority: high
             complexity: medium
-            workspaces: [core]
+            workspaces:
+              - core
             description: |
               Unit class: id, faction, pos, type, stats. Movement points
               set at turn start per unit type. Deduct on move. Unit
               tests.
-            depends_on: [TASK-017]
-            pr: "https://github.com/g-chappell/colonize/pull/36"
-            completed: "2026-04-21"
+            depends_on:
+              - TASK-017
+            pr: https://github.com/g-chappell/colonize/pull/36
+            completed: '2026-04-21'
             blocked_reason: null
-            last_attempted: "2026-04-21T00:00:00Z"
+            last_attempted: '2026-04-21T00:00:00Z'
             attempt_count: 1
           - id: TASK-027
-            title: "Ship classes (Sloop, Brig, Frigate, ShipOfTheLine, Privateer)"
+            title: Ship classes (Sloop, Brig, Frigate, ShipOfTheLine, Privateer)
             status: done
             priority: high
             complexity: small
-            workspaces: [core, content]
+            workspaces:
+              - core
+              - content
             description: |
               UnitType definitions for base ship classes with distinct
               stats (hull, guns, crew capacity, base move). Placeholder
               for OTK Legendary Ship slots (unlocked later). Data in
               packages/content/units.ts.
-            depends_on: [TASK-026]
-            pr: "https://github.com/g-chappell/colonize/pull/37"
-            completed: "2026-04-21"
+            depends_on:
+              - TASK-026
+            pr: https://github.com/g-chappell/colonize/pull/37
+            completed: '2026-04-21'
             blocked_reason: null
-            last_attempted: "2026-04-21T00:00:00Z"
+            last_attempted: '2026-04-21T00:00:00Z'
             attempt_count: 1
       - id: STORY-15
-        title: "Pathfinding + sailing rules"
+        title: Pathfinding + sailing rules
         description: |
           A* pathfinding on the ocean map. Wind zones give +/- move-cost
           modifiers. Red Tide tiles impassable without Kraken Talisman.
         tasks:
           - id: TASK-028
-            title: "A* pathfinding with tile cost modifiers"
+            title: A* pathfinding with tile cost modifiers
             status: done
             priority: high
             complexity: medium
-            workspaces: [core]
+            workspaces:
+              - core
             description: |
               Pathfinder returning tile-by-tile path + total cost. Per-
               tile cost from map (ocean = 1, Red Tide = ∞ unless unit
               has RedTideImmunity flag). Unit tests with a small map.
-            depends_on: [TASK-017, TASK-026]
-            pr: "https://github.com/g-chappell/colonize/pull/38"
-            completed: "2026-04-21"
+            depends_on:
+              - TASK-017
+              - TASK-026
+            pr: https://github.com/g-chappell/colonize/pull/38
+            completed: '2026-04-21'
             blocked_reason: null
-            last_attempted: "2026-04-21T00:00:00Z"
+            last_attempted: '2026-04-21T00:00:00Z'
             attempt_count: 1
           - id: TASK-029
-            title: "Wind / current zones"
+            title: Wind / current zones
             status: done
             priority: med
             complexity: medium
-            workspaces: [core]
+            workspaces:
+              - core
             description: |
               Add optional WindZone + CurrentZone layers to the map
               (seeded at gen). Modify sailing move-cost by direction
               travelled vs wind direction. Tested on a small map.
-            depends_on: [TASK-028]
-            pr: "https://github.com/g-chappell/colonize/pull/49"
-            completed: "2026-04-22"
+            depends_on:
+              - TASK-028
+            pr: https://github.com/g-chappell/colonize/pull/49
+            completed: '2026-04-22'
             blocked_reason: null
-            last_attempted: "2026-04-22T00:00:00Z"
+            last_attempted: '2026-04-22T00:00:00Z'
             attempt_count: 1
       - id: STORY-16
-        title: "Unit interaction in GameScene"
+        title: Unit interaction in GameScene
         description: |
           Click to select unit; click destination to move. Path preview
           highlights route. Animation moves sprite along path at
           reasonable speed.
         tasks:
           - id: TASK-030
-            title: "Unit sprite rendering + click-to-select"
+            title: Unit sprite rendering + click-to-select
             status: done
             priority: high
             complexity: medium
-            workspaces: [web, core]
+            workspaces:
+              - web
+              - core
             description: |
               GameScene renders units from store. Click selects (emits
               event via bus); selection highlights sprite + shows stats
               panel in HUD.
-            depends_on: [TASK-019, TASK-026]
-            pr: "https://github.com/g-chappell/colonize/pull/40"
-            completed: "2026-04-21"
+            depends_on:
+              - TASK-019
+              - TASK-026
+            pr: https://github.com/g-chappell/colonize/pull/40
+            completed: '2026-04-21'
             blocked_reason: null
-            last_attempted: "2026-04-21T00:00:00.000Z"
+            last_attempted: '2026-04-21T00:00:00.000Z'
             attempt_count: 1
           - id: TASK-031
-            title: "Click-to-move with path preview + animation"
+            title: Click-to-move with path preview + animation
             status: done
             priority: high
             complexity: medium
-            workspaces: [web, core]
+            workspaces:
+              - web
+              - core
             description: |
               Second click proposes path (via TASK-028); confirm commits
               move. Sprite tweens along path; camera can follow. Handles
               partial moves when path cost > remaining MP.
-            depends_on: [TASK-030, TASK-028]
-            pr: "https://github.com/g-chappell/colonize/pull/42"
-            completed: "2026-04-21"
+            depends_on:
+              - TASK-030
+              - TASK-028
+            pr: https://github.com/g-chappell/colonize/pull/42
+            completed: '2026-04-21'
             blocked_reason: null
-            last_attempted: "2026-04-21T00:00:00.000Z"
+            last_attempted: '2026-04-21T00:00:00.000Z'
             attempt_count: 1
-
   - id: EPIC-05
-    title: "Exploration & discoveries"
+    title: Exploration & discoveries
     description: |
       What there is to find on the frontier: Archive caches, legendary
       shipwrecks, Kraken shrines, Fata Morgana outcomes. Rewards:
@@ -680,133 +756,151 @@ epics:
       Ship blueprints (OTK-only).
     stories:
       - id: STORY-17
-        title: "Rumour-tile mechanic"
+        title: Rumour-tile mechanic
         description: |
           Hidden contents on certain tiles. Revealed when a unit enters.
           Outcomes pull from a weighted table per tile-type.
         tasks:
           - id: TASK-032
-            title: "Rumour-tile entity in core + generator integration"
+            title: Rumour-tile entity in core + generator integration
             status: done
             priority: high
             complexity: medium
-            workspaces: [core]
+            workspaces:
+              - core
             description: |
               RumourTile associated with a map position. Map generator
               sprinkles them in unexplored regions. On entry, resolve()
               returns a typed RumourOutcome.
-            depends_on: [TASK-018, TASK-026]
-            pr: "https://github.com/g-chappell/colonize/pull/43"
-            completed: "2026-04-21T00:00:00Z"
+            depends_on:
+              - TASK-018
+              - TASK-026
+            pr: https://github.com/g-chappell/colonize/pull/43
+            completed: '2026-04-21T00:00:00Z'
             blocked_reason: null
-            last_attempted: "2026-04-21T00:00:00Z"
+            last_attempted: '2026-04-21T00:00:00Z'
             attempt_count: 1
           - id: TASK-033
-            title: "Rumour outcome table + UI reveal modal"
+            title: Rumour outcome table + UI reveal modal
             status: done
             priority: high
             complexity: medium
-            workspaces: [core, web, content]
+            workspaces:
+              - core
+              - web
+              - content
             description: |
               Outcome types: ArchiveCache (Liberty Chimes), LegendaryWreck
               (Legendary blueprint for OTK, salvage for others),
               KrakenShrine (reputation w/ Kraken faction-stance shifts),
               FataMorganaMirage (nothing / bonus / hazard). React modal
               shows flavour text + rewards. Text in packages/content.
-            depends_on: [TASK-032]
-            pr: "https://github.com/g-chappell/colonize/pull/46"
-            completed: "2026-04-21"
+            depends_on:
+              - TASK-032
+            pr: https://github.com/g-chappell/colonize/pull/46
+            completed: '2026-04-21'
             blocked_reason: null
-            last_attempted: "2026-04-21T12:30:00Z"
+            last_attempted: '2026-04-21T12:30:00Z'
             attempt_count: 1
       - id: STORY-18
-        title: "Treasures as carried items"
+        title: Treasures as carried items
         description: |
           Salvage tech + Abyssal materia as transportable resources that
           convert to in-colony benefits when delivered.
         tasks:
           - id: TASK-034
-            title: "Carried-cargo model on units + delivery flow"
+            title: Carried-cargo model on units + delivery flow
             status: done
             priority: high
             complexity: medium
-            workspaces: [core]
+            workspaces:
+              - core
             description: |
               Units have a CargoHold (typed map of resource→qty + unique
               artifacts). Transfer happens when entering a friendly
               colony. Unique artifacts produce permanent colony bonuses.
-            depends_on: [TASK-026]
-            pr: "https://github.com/g-chappell/colonize/pull/48"
-            completed: "2026-04-21"
+            depends_on:
+              - TASK-026
+            pr: https://github.com/g-chappell/colonize/pull/48
+            completed: '2026-04-21'
             blocked_reason: null
-            last_attempted: "2026-04-21T00:00:00Z"
+            last_attempted: '2026-04-21T00:00:00Z'
             attempt_count: 1
       - id: STORY-19
-        title: "Legendary shipwrecks → blueprint unlocks"
+        title: Legendary shipwrecks → blueprint unlocks
         description: |
           The six Legendary Ships of the Golden Age. OTK unlocks a
           rebuild blueprint on discovery; other factions get a salvage
           payout instead.
         tasks:
           - id: TASK-035
-            title: "Legendary Ship blueprint system"
+            title: Legendary Ship blueprint system
             status: done
             priority: med
             complexity: medium
-            workspaces: [core, content]
+            workspaces:
+              - core
+              - content
             description: |
               Six legendary ships (Queen Anne's Revenge, Black Pearl,
               Flying Dutchman, Whydah, Ranger, Revenge) in content. Core
               tracks which are discovered + which blueprints have been
               redeemed (OTK only). Post-redeem: the class becomes
               buildable in OTK shipyards with the legendary stats.
-            depends_on: [TASK-027, TASK-033]
-            pr: "https://github.com/g-chappell/colonize/pull/52"
-            completed: "2026-04-22T12:10:00Z"
+            depends_on:
+              - TASK-027
+              - TASK-033
+            pr: https://github.com/g-chappell/colonize/pull/52
+            completed: '2026-04-22T12:10:00Z'
             blocked_reason: null
-            last_attempted: "2026-04-22T12:00:00Z"
+            last_attempted: '2026-04-22T12:00:00Z'
             attempt_count: 1
       - id: STORY-20
-        title: "Scouting unit types"
+        title: Scouting unit types
         description: |
           Cartographer + Explorer: longer sight range, higher movement,
           weaker combat. Essential for early exploration.
         tasks:
           - id: TASK-036
-            title: "Cartographer + Explorer unit types"
+            title: Cartographer + Explorer unit types
             status: ready
             priority: med
             complexity: small
-            workspaces: [core, content]
+            workspaces:
+              - core
+              - content
             description: |
               Two new UnitTypes with sight radius 2× normal, higher MP,
               minimal guns. Recruitable from tavern in a starting
               colony. Flavour text references Sparrow's diary voice.
-            depends_on: [TASK-027]
+            depends_on:
+              - TASK-027
             pr: null
             completed: null
             blocked_reason: null
             last_attempted: null
             attempt_count: 0
           - id: TASK-037
-            title: "Map-edge cue: 'hic sunt dracones' tile-edge motif"
+            title: 'Map-edge cue: ''hic sunt dracones'' tile-edge motif'
             status: ready
             priority: low
             complexity: small
-            workspaces: [web, content]
+            workspaces:
+              - web
+              - content
             description: |
               On map tiles at the edge of explored territory, occasionally
               render a subtle dragon sigil + motto in the fog. Flavour
               only; no mechanical effect. Pulls from content palette.
-            depends_on: [TASK-022]
+            depends_on:
+              - TASK-022
             pr: null
             completed: null
             blocked_reason: null
             last_attempted: null
             attempt_count: 0
-
   - id: EPIC-06
-    title: "Colonies, resources & professions"
+    title: Colonies, resources & professions
     description: |
       The colony layer: founding floating cities vs island settlements,
       building trees, tile-work assignment, resource chains, the crew
@@ -814,148 +908,171 @@ epics:
       factions).
     stories:
       - id: STORY-21
-        title: "Colony founding"
+        title: Colony founding
         description: |
           Found a colony at a floating-city node (bonus) or on an
           island tile (requires dedicated founding unit). Colony has a
           population, treasury, production queue.
         tasks:
           - id: TASK-038
-            title: "Colony entity + founding action"
+            title: Colony entity + founding action
             status: done
             priority: high
             complexity: medium
-            workspaces: [core]
+            workspaces:
+              - core
             description: |
               Colony with id, faction, position, population, crew
               roster, buildings, stocks. FoundColony action consumes a
               Founding Ship unit at a valid tile. Unit tests.
-            depends_on: [TASK-017, TASK-026]
-            pr: "https://github.com/g-chappell/colonize/pull/50"
-            completed: "2026-04-22"
+            depends_on:
+              - TASK-017
+              - TASK-026
+            pr: https://github.com/g-chappell/colonize/pull/50
+            completed: '2026-04-22'
             blocked_reason: null
-            last_attempted: "2026-04-22T00:00:00Z"
+            last_attempted: '2026-04-22T00:00:00Z'
             attempt_count: 1
           - id: TASK-039
-            title: "Colony view (React + Phaser inset)"
+            title: Colony view (React + Phaser inset)
             status: done
             priority: high
             complexity: large
-            workspaces: [web, core]
+            workspaces:
+              - web
+              - core
             description: |
               Dedicated screen showing a colony's tiles, workers
               assigned, buildings, stocks, production queue. Accessible
               by clicking a colony sprite on the main map.
-            depends_on: [TASK-038, TASK-030]
-            pr: "https://github.com/g-chappell/colonize/pull/53"
-            completed: "2026-04-22"
+            depends_on:
+              - TASK-038
+              - TASK-030
+            pr: https://github.com/g-chappell/colonize/pull/53
+            completed: '2026-04-22'
             blocked_reason: null
-            last_attempted: "2026-04-22T00:00:00Z"
+            last_attempted: '2026-04-22T00:00:00Z'
             attempt_count: 1
       - id: STORY-22
-        title: "Building tree"
+        title: Building tree
         description: |
           Buildings unlock production: Tavern, Shipyard, Forge, Archive-
           study Hall, Chapel-of-Kraken, Distillery, Gun Deck, Warehouse,
           Rope-walk, etc. Prerequisites + costs in content.
         tasks:
           - id: TASK-040
-            title: "Building definitions + prerequisites in content"
+            title: Building definitions + prerequisites in content
             status: done
             priority: high
             complexity: medium
-            workspaces: [content, core]
+            workspaces:
+              - content
+              - core
             description: |
               Define ~15 starter buildings with cost, prereq, effect
               (e.g. Shipyard enables ship construction; Chapel-of-Kraken
               grants Talisman blessings). Data in content/buildings.ts;
               logic in core.
-            depends_on: [TASK-038]
-            pr: "https://github.com/g-chappell/colonize/pull/54"
-            completed: "2026-04-22"
+            depends_on:
+              - TASK-038
+            pr: https://github.com/g-chappell/colonize/pull/54
+            completed: '2026-04-22'
             blocked_reason: null
-            last_attempted: "2026-04-22T00:00:00Z"
+            last_attempted: '2026-04-22T00:00:00Z'
             attempt_count: 1
           - id: TASK-041
-            title: "Building construction queue UI"
+            title: Building construction queue UI
             status: done
             priority: high
             complexity: medium
-            workspaces: [web]
+            workspaces:
+              - web
             description: |
               In colony view, allow queuing buildings. Show progress,
               allow cancel/reorder. Turn-over ticks queue forward by
               colony production value.
-            depends_on: [TASK-039, TASK-040]
-            pr: "https://github.com/g-chappell/colonize/pull/55"
-            completed: "2026-04-22"
+            depends_on:
+              - TASK-039
+              - TASK-040
+            pr: https://github.com/g-chappell/colonize/pull/55
+            completed: '2026-04-22'
             blocked_reason: null
-            last_attempted: "2026-04-22T00:00:00Z"
+            last_attempted: '2026-04-22T00:00:00Z'
             attempt_count: 1
       - id: STORY-23
-        title: "Tile-work assignment"
+        title: Tile-work assignment
         description: |
           Crew members can be assigned to work on surrounding ocean /
           land / coast tiles, producing base resources (Provisions,
           Timber, Shot-and-Powder, Salvage, etc.).
         tasks:
           - id: TASK-042
-            title: "Tile-work model + yields"
+            title: Tile-work model + yields
             status: done
             priority: high
             complexity: medium
-            workspaces: [core, content]
+            workspaces:
+              - core
+              - content
             description: |
               Each tile type has a base yield vector (fishing waters →
               Provisions; kelp forest → Fibre; shoals → Salvage; coastal
               grove → Timber). Assigning a crew produces yield per turn.
               Bonuses by profession (see STORY-24).
-            depends_on: [TASK-038]
-            pr: "https://github.com/g-chappell/colonize/pull/56"
-            completed: "2026-04-22"
+            depends_on:
+              - TASK-038
+            pr: https://github.com/g-chappell/colonize/pull/56
+            completed: '2026-04-22'
             blocked_reason: null
-            last_attempted: "2026-04-22T00:00:00Z"
+            last_attempted: '2026-04-22T00:00:00Z'
             attempt_count: 1
           - id: TASK-043
-            title: "Drag-assign crew to tiles in colony view"
+            title: Drag-assign crew to tiles in colony view
             status: done
             priority: high
             complexity: medium
-            workspaces: [web]
+            workspaces:
+              - web
             description: |
               Drag a crew tile onto a working-slot on a surrounding
               tile. Show pre/post yield deltas. Unassign returns to pool.
-            depends_on: [TASK-039, TASK-042]
-            pr: "https://github.com/g-chappell/colonize/pull/58"
-            completed: "2026-04-22"
+            depends_on:
+              - TASK-039
+              - TASK-042
+            pr: https://github.com/g-chappell/colonize/pull/58
+            completed: '2026-04-22'
             blocked_reason: null
-            last_attempted: "2026-04-22T00:00:00Z"
+            last_attempted: '2026-04-22T00:00:00Z'
             attempt_count: 1
       - id: STORY-24
-        title: "Resource chains"
+        title: Resource chains
         description: |
           Raw → processed → finished goods. Timber → Planks → Ship
           components; Provisions + Sugar → Rum (trade good); Salvage +
           Forgework → Forgework items; Abyssal materia (risk/reward).
         tasks:
           - id: TASK-044
-            title: "Resource types + chain definitions"
+            title: Resource types + chain definitions
             status: done
             priority: high
             complexity: medium
-            workspaces: [core, content]
+            workspaces:
+              - core
+              - content
             description: |
               Resource enum + recipe table (inputs + building + output).
               Turn tick converts queued recipes. Failure modes
               (insufficient inputs) report in colony event log.
-            depends_on: [TASK-040, TASK-042]
-            pr: "https://github.com/g-chappell/colonize/pull/59"
-            completed: "2026-04-22T00:00:00Z"
+            depends_on:
+              - TASK-040
+              - TASK-042
+            pr: https://github.com/g-chappell/colonize/pull/59
+            completed: '2026-04-22T00:00:00Z'
             blocked_reason: null
-            last_attempted: "2026-04-22T00:00:00Z"
+            last_attempted: '2026-04-22T00:00:00Z'
             attempt_count: 1
       - id: STORY-25
-        title: "Crew professions"
+        title: Crew professions
         description: |
           Crew members have a profession: Deckhand (generic),
           Shipwright, Gunner, Cartographer, Scholar, Quartermaster,
@@ -963,286 +1080,321 @@ epics:
           tiles. Trainable via schools or Archive pilgrimages.
         tasks:
           - id: TASK-045
-            title: "Profession model + yield multipliers"
+            title: Profession model + yield multipliers
             status: done
             priority: high
             complexity: medium
-            workspaces: [core, content]
+            workspaces:
+              - core
+              - content
             description: |
               Profession enum. Each profession has +X% bonus to specific
               yield or building. Crew has current profession; can have
               training-in-progress.
-            depends_on: [TASK-042, TASK-044]
-            pr: "https://github.com/g-chappell/colonize/pull/61"
-            completed: "2026-04-22"
+            depends_on:
+              - TASK-042
+              - TASK-044
+            pr: https://github.com/g-chappell/colonize/pull/61
+            completed: '2026-04-22'
             blocked_reason: null
-            last_attempted: "2026-04-22T00:00:00Z"
+            last_attempted: '2026-04-22T00:00:00Z'
             attempt_count: 1
           - id: TASK-046
-            title: "Training buildings (School, Archive-study Hall)"
+            title: Training buildings (School, Archive-study Hall)
             status: ready
             priority: med
             complexity: medium
-            workspaces: [core, content]
+            workspaces:
+              - core
+              - content
             description: |
               School trains generic Deckhand → chosen profession over N
               turns. Archive-study Hall trains rarer Scholar /
               Loremaster. Captured crew can be "learned from" — 1-shot
               conversion.
-            depends_on: [TASK-045]
+            depends_on:
+              - TASK-045
             pr: null
             completed: null
             blocked_reason: null
             last_attempted: null
             attempt_count: 0
-
   - id: EPIC-07
-    title: "Trade"
+    title: Trade
     description: |
       Inter-colony cargo hauling, home-port trading (faction-specific
       "Old World" equivalents), price dynamics, automated merchant
       routes. The economic backbone of the mid-game.
     stories:
       - id: STORY-26
-        title: "Home-port trade screen"
+        title: Home-port trade screen
         description: |
           Each faction has a home-port (OTK: Port Royal; others:
           equivalents). Player can buy/sell goods at prices that flex
           with supply/demand.
         tasks:
           - id: TASK-047
-            title: "HomePort entity + price model"
+            title: HomePort entity + price model
             status: done
             priority: high
             complexity: medium
-            workspaces: [core]
+            workspaces:
+              - core
             description: |
               HomePort with price-per-good that moves inversely to
               volume sold. Bounded prices. Buy-back prices < sell prices
               (spread). Per-faction starting prices in content.
-            depends_on: [TASK-044]
-            pr: "https://github.com/g-chappell/colonize/pull/62"
-            completed: "2026-04-22"
+            depends_on:
+              - TASK-044
+            pr: https://github.com/g-chappell/colonize/pull/62
+            completed: '2026-04-22'
             blocked_reason: null
-            last_attempted: "2026-04-22T00:00:00Z"
+            last_attempted: '2026-04-22T00:00:00Z'
             attempt_count: 1
           - id: TASK-048
-            title: "Home-port trade UI"
+            title: Home-port trade UI
             status: done
             priority: high
             complexity: medium
-            workspaces: [web]
+            workspaces:
+              - web
             description: |
               Trade screen accessible when a trade-capable ship is in a
               home-port colony. Show all tradable goods with current
               prices, buy/sell sliders, running profit.
-            depends_on: [TASK-047, TASK-039]
-            pr: "https://github.com/g-chappell/colonize/pull/63"
-            completed: "2026-04-22"
+            depends_on:
+              - TASK-047
+              - TASK-039
+            pr: https://github.com/g-chappell/colonize/pull/63
+            completed: '2026-04-22'
             blocked_reason: null
-            last_attempted: "2026-04-22T00:00:00Z"
+            last_attempted: '2026-04-22T00:00:00Z'
             attempt_count: 1
       - id: STORY-27
-        title: "Inter-colony hauling"
+        title: Inter-colony hauling
         description: |
           Load cargo at one colony, move to another, unload — the
           default gameplay loop for growing the economy.
         tasks:
           - id: TASK-049
-            title: "Manual load/unload actions in colony view"
+            title: Manual load/unload actions in colony view
             status: done
             priority: high
             complexity: medium
-            workspaces: [web, core]
+            workspaces:
+              - web
+              - core
             description: |
               With a ship in a colony, open cargo transfer panel.
               Move goods colony ↔ ship. Sail to another colony, open
               same panel, transfer off. Uses CargoHold from TASK-034.
-            depends_on: [TASK-039, TASK-034]
-            pr: "https://github.com/g-chappell/colonize/pull/64"
-            completed: "2026-04-22"
+            depends_on:
+              - TASK-039
+              - TASK-034
+            pr: https://github.com/g-chappell/colonize/pull/64
+            completed: '2026-04-22'
             blocked_reason: null
-            last_attempted: "2026-04-22T12:00:00Z"
+            last_attempted: '2026-04-22T12:00:00Z'
             attempt_count: 1
       - id: STORY-28
-        title: "Automated merchant routes"
+        title: Automated merchant routes
         description: |
           Save a multi-stop route (loadA → unloadA → ... → loadN →
           unloadN → repeat); ship runs it on autopilot every turn until
           told to stop.
         tasks:
           - id: TASK-050
-            title: "Merchant route data model + turn executor"
+            title: Merchant route data model + turn executor
             status: ready
             priority: med
             complexity: medium
-            workspaces: [core]
+            workspaces:
+              - core
             description: |
               Route = ordered stops, each with load/unload actions.
               Ship's AutoRoute state ticks forward each turn. Breaks if
               the route becomes invalid (colony destroyed, ship
               captured).
-            depends_on: [TASK-049, TASK-028]
+            depends_on:
+              - TASK-049
+              - TASK-028
             pr: null
             completed: null
             blocked_reason: null
             last_attempted: null
             attempt_count: 0
           - id: TASK-051
-            title: "Route-builder UI"
+            title: Route-builder UI
             status: ready
             priority: med
             complexity: medium
-            workspaces: [web]
+            workspaces:
+              - web
             description: |
               Pick colonies, configure per-stop actions, save/name
               route, assign to ship. Edit/duplicate routes. Visualize
               route on map with connecting lines.
-            depends_on: [TASK-050]
+            depends_on:
+              - TASK-050
             pr: null
             completed: null
             blocked_reason: null
             last_attempted: null
             attempt_count: 0
       - id: STORY-29
-        title: "Price dynamics & market events"
+        title: Price dynamics & market events
         description: |
           Home-port prices drift with volume and occasional shock events
           (news of Red Tide ruins Silver trade; Kraken sighting spikes
           demand for charms, etc.).
         tasks:
           - id: TASK-052
-            title: "Price-drift tick + event-triggered shocks"
+            title: Price-drift tick + event-triggered shocks
             status: ready
             priority: med
             complexity: medium
-            workspaces: [core, content]
+            workspaces:
+              - core
+              - content
             description: |
               Slow drift each turn toward baseline; shock events move a
               single good's price sharply with a flavour message. Event
               table in content.
-            depends_on: [TASK-047]
+            depends_on:
+              - TASK-047
             pr: null
             completed: null
             blocked_reason: null
             last_attempted: null
             attempt_count: 0
-
   - id: EPIC-08
-    title: "Combat & warfare"
+    title: Combat & warfare
     description: |
       Ship-vs-ship naval combat, island-ground combat, raiding trade
       routes, colony fortifications. The stick to the carrot of trade.
     stories:
       - id: STORY-30
-        title: "Ship combat resolver"
+        title: Ship combat resolver
         description: |
           Two ships on adjacent tiles can engage. Resolver considers
           hull, guns, crew, morale. Outcomes: sunk, captured, crippled,
           fled.
         tasks:
           - id: TASK-053
-            title: "Combat resolver in packages/core"
+            title: Combat resolver in packages/core
             status: done
             priority: high
             complexity: large
-            workspaces: [core]
+            workspaces:
+              - core
             description: |
               Pure-function takes attacker + defender + context → outcome
               + damaged states. Randomness seeded for replay. Covers
               broadsides, boarding, ramming, fleeing options. Heavy
               unit-test coverage.
-            depends_on: [TASK-027]
-            pr: "https://github.com/g-chappell/colonize/pull/65"
-            completed: "2026-04-22"
+            depends_on:
+              - TASK-027
+            pr: https://github.com/g-chappell/colonize/pull/65
+            completed: '2026-04-22'
             blocked_reason: null
-            last_attempted: "2026-04-22T09:25:00Z"
+            last_attempted: '2026-04-22T09:25:00Z'
             attempt_count: 1
           - id: TASK-054
-            title: "Combat UI: cinematic resolver + log"
+            title: 'Combat UI: cinematic resolver + log'
             status: done
             priority: high
             complexity: medium
-            workspaces: [web]
+            workspaces:
+              - web
             description: |
               On engagement, show a short cinematic (sprites exchanging
               fire), then a log panel with step-by-step resolution.
               "Skip" option fast-forwards.
-            depends_on: [TASK-053]
-            pr: "https://github.com/g-chappell/colonize/pull/67"
-            completed: "2026-04-22"
+            depends_on:
+              - TASK-053
+            pr: https://github.com/g-chappell/colonize/pull/67
+            completed: '2026-04-22'
             blocked_reason: null
-            last_attempted: "2026-04-22T13:00:00Z"
+            last_attempted: '2026-04-22T13:00:00Z'
             attempt_count: 1
       - id: STORY-31
-        title: "Ground combat on islands"
+        title: Ground combat on islands
         description: |
           Marine / Dragoon-analog / Cannon units disembark to capture
           island settlements. Smaller-scale ground resolver.
         tasks:
           - id: TASK-055
-            title: "Ground unit types + ground-combat resolver"
+            title: Ground unit types + ground-combat resolver
             status: done
             priority: high
             complexity: medium
-            workspaces: [core, content]
+            workspaces:
+              - core
+              - content
             description: |
               Three ground types with rock-paper-scissors balance.
               Ground resolver variant of TASK-053 with terrain modifiers.
               Embark/disembark actions on ships.
-            depends_on: [TASK-053]
-            pr: "https://github.com/g-chappell/colonize/pull/68"
-            completed: "2026-04-22"
+            depends_on:
+              - TASK-053
+            pr: https://github.com/g-chappell/colonize/pull/68
+            completed: '2026-04-22'
             blocked_reason: null
-            last_attempted: "2026-04-22T10:30:00Z"
+            last_attempted: '2026-04-22T10:30:00Z'
             attempt_count: 1
       - id: STORY-32
-        title: "Raiding trade routes"
+        title: Raiding trade routes
         description: |
           Privateer units can intercept merchant routes, stealing cargo
           without a full combat if intercept is unopposed.
         tasks:
           - id: TASK-056
-            title: "Privateer raid action + merchant-route vulnerability"
+            title: Privateer raid action + merchant-route vulnerability
             status: ready
             priority: med
             complexity: medium
-            workspaces: [core]
+            workspaces:
+              - core
             description: |
               Privateer can ambush a tile; merchant ships passing
               through are raided (cargo stolen, ship undamaged if no
               escort). Phantom Corsairs faction gets a bonus here.
-            depends_on: [TASK-050, TASK-053]
+            depends_on:
+              - TASK-050
+              - TASK-053
             pr: null
             completed: null
             blocked_reason: null
             last_attempted: null
             attempt_count: 0
       - id: STORY-33
-        title: "Fortifications"
+        title: Fortifications
         description: |
           Colonies can build walls, harbour booms, and coastal batteries.
           Modify defender stats in combat resolvers.
         tasks:
           - id: TASK-057
-            title: "Fortification buildings + combat modifiers"
+            title: Fortification buildings + combat modifiers
             status: ready
             priority: med
             complexity: medium
-            workspaces: [core, content]
+            workspaces:
+              - core
+              - content
             description: |
               Three fortification buildings with ascending defense
               bonuses. Modify defender stats when colony is attacked.
               Visually reflected on colony sprite.
-            depends_on: [TASK-040, TASK-053]
+            depends_on:
+              - TASK-040
+              - TASK-053
             pr: null
             completed: null
             blocked_reason: null
             last_attempted: null
             attempt_count: 0
-
   - id: EPIC-09
-    title: "Diplomacy & faction stances"
+    title: Diplomacy & faction stances
     description: |
       Relations with rival playable factions + stances toward Abyssal
       sites. NPC-only factions appear as encounters (Pale Watch,
@@ -1250,46 +1402,50 @@ epics:
       Collective).
     stories:
       - id: STORY-34
-        title: "Rival diplomacy"
+        title: Rival diplomacy
         description: |
           War, peace, alliance, trade pact, tribute. Each has
           consequences and cooldowns. Basic AI accepts/declines based
           on relations and standing.
         tasks:
           - id: TASK-058
-            title: "Diplomacy actions + relations matrix"
-            status: ready
+            title: Diplomacy actions + relations matrix
+            status: done
             priority: high
             complexity: medium
-            workspaces: [core]
+            workspaces:
+              - core
             description: |
               Per-faction-pair relations score [-100, 100]. Actions
               shift score + lock cooldowns. Basic decision rules for
               AI's accept/decline.
-            depends_on: [TASK-024]
-            pr: null
-            completed: null
+            depends_on:
+              - TASK-024
+            pr: https://github.com/g-chappell/colonize/pull/69
+            completed: '2026-04-22T16:18:13Z'
             blocked_reason: null
-            last_attempted: null
-            attempt_count: 0
+            last_attempted: '2026-04-22T16:05:10Z'
+            attempt_count: 1
           - id: TASK-059
-            title: "Diplomacy screen (React)"
+            title: Diplomacy screen (React)
             status: ready
             priority: high
             complexity: medium
-            workspaces: [web]
+            workspaces:
+              - web
             description: |
               Per-faction panels: current relations, last action, offer
               new pact. Modal confirms with relevant costs/gifts.
               Flavour text per action in content.
-            depends_on: [TASK-058]
+            depends_on:
+              - TASK-058
             pr: null
             completed: null
             blocked_reason: null
             last_attempted: null
             attempt_count: 0
       - id: STORY-35
-        title: "Abyssal-site stance"
+        title: Abyssal-site stance
         description: |
           Each player faction has a default stance toward Abyssal sites
           (OTK venerates, Sons of Scylla venerates Scylla specifically,
@@ -1297,24 +1453,27 @@ epics:
           interactions.
         tasks:
           - id: TASK-060
-            title: "Abyssal stance system + event triggers"
+            title: Abyssal stance system + event triggers
             status: ready
             priority: med
             complexity: medium
-            workspaces: [core, content]
+            workspaces:
+              - core
+              - content
             description: |
               Per-faction stance: Venerate / Tolerate / Plunder / Guard.
               Actions at Abyssal tiles shift stance. Stance affects
               event outcomes (Kraken-stir probability, Pale Watch
               aggression).
-            depends_on: [TASK-017]
+            depends_on:
+              - TASK-017
             pr: null
             completed: null
             blocked_reason: null
             last_attempted: null
             attempt_count: 0
       - id: STORY-36
-        title: "NPC encounter factions"
+        title: NPC encounter factions
         description: |
           Pale Watch patrols near Abyssal sites; Abyssal Brotherhood
           cultists raid; Sons of Scylla ambush; Scarlet Forge shows up
@@ -1322,80 +1481,95 @@ epics:
           vendor in Tortuga.
         tasks:
           - id: TASK-061
-            title: "NPC faction templates + encounter rules"
+            title: NPC faction templates + encounter rules
             status: ready
             priority: med
             complexity: medium
-            workspaces: [core, content]
+            workspaces:
+              - core
+              - content
             description: |
               Each NPC faction has a spawn rule, encounter behaviour,
               and flavour text. Minimal AI — fixed behaviours. Not
               diplomatic entities (can't sign treaties).
-            depends_on: [TASK-058, TASK-060]
+            depends_on:
+              - TASK-058
+              - TASK-060
             pr: null
             completed: null
             blocked_reason: null
             last_attempted: null
             attempt_count: 0
           - id: TASK-062
-            title: "Tortuga black-market vendor UI"
+            title: Tortuga black-market vendor UI
             status: ready
             priority: med
             complexity: small
-            workspaces: [web, content]
+            workspaces:
+              - web
+              - content
             description: |
               In Tortuga colony, Blackwater Collective vendor offers
               rare-good buy/sell at odd prices + occasional Kraken
               Talisman at high cost. Flavour-heavy text.
-            depends_on: [TASK-061, TASK-048]
+            depends_on:
+              - TASK-061
+              - TASK-048
             pr: null
             completed: null
             blocked_reason: null
             last_attempted: null
             attempt_count: 0
       - id: STORY-37
-        title: "Faction-unique bonuses"
+        title: Faction-unique bonuses
         description: |
           Each of the four playables has mechanical identity: OTK
           (bloodline/legendary), Ironclad (production), Phantom (raid
           stealth), Bloodborne (combat/recruit).
         tasks:
           - id: TASK-063
-            title: "Implement per-faction bonus hooks"
+            title: Implement per-faction bonus hooks
             status: ready
             priority: high
             complexity: medium
-            workspaces: [core, content]
+            workspaces:
+              - core
+              - content
             description: |
               Bonus application points in economy, combat, and map
               systems. OTK: Red Tide traversal + Legendary blueprints.
               Ironclad: +production, cheaper shipyards. Phantom:
               stealth on open ocean, raid bonus. Bloodborne: +combat,
               free soldier/turn per colony.
-            depends_on: [TASK-038, TASK-053]
+            depends_on:
+              - TASK-038
+              - TASK-053
             pr: null
             completed: null
             blocked_reason: null
             last_attempted: null
             attempt_count: 0
           - id: TASK-064
-            title: "Faction-select bonus tooltip polish"
+            title: Faction-select bonus tooltip polish
             status: ready
             priority: low
             complexity: small
-            workspaces: [web, content]
+            workspaces:
+              - web
+              - content
             description: |
               Tooltip hover on faction-select cards enumerates the
               specific bonuses. Flavour quote from canon beneath each.
-            depends_on: [TASK-014, TASK-063]
+            depends_on:
+              - TASK-014
+              - TASK-063
             pr: null
             completed: null
             blocked_reason: null
             last_attempted: null
             attempt_count: 0
-
   - id: EPIC-10
-    title: "Concord meta-layer & Sovereignty endgame"
+    title: Concord meta-layer & Sovereignty endgame
     description: |
       The meta-game shape: Liberty Chimes → Elders Council → Archive
       Charters; Rayon Concord tithes with rising escalation; Tidewater
@@ -1403,7 +1577,7 @@ epics:
       Fleet invasion. Victory conditions engine.
     stories:
       - id: STORY-38
-        title: "Liberty Chimes → Archive Charters"
+        title: Liberty Chimes → Archive Charters
         description: |
           Colony Chapel-of-Kraken / equivalent building produces Liberty
           Chimes (Liberty-Bells analog). Accumulate Chimes to trigger
@@ -1411,142 +1585,163 @@ epics:
           pick.
         tasks:
           - id: TASK-065
-            title: "Liberty Chimes production + Council threshold"
+            title: Liberty Chimes production + Council threshold
             status: ready
             priority: high
             complexity: medium
-            workspaces: [core, content]
+            workspaces:
+              - core
+              - content
             description: |
               Chimes produced per turn per qualifying building. At each
               threshold, trigger Council event. Events defer until
               player returns from busy actions.
-            depends_on: [TASK-040]
+            depends_on:
+              - TASK-040
             pr: null
             completed: null
             blocked_reason: null
             last_attempted: null
             attempt_count: 0
           - id: TASK-066
-            title: "Archive Charter pool + pick-2 UI"
+            title: Archive Charter pool + pick-2 UI
             status: ready
             priority: high
             complexity: medium
-            workspaces: [web, core, content]
+            workspaces:
+              - web
+              - core
+              - content
             description: |
               ~20 charters with permanent bonuses (e.g. Pirata Codex
               Fragment — +X morale in combat; Bloodline Writ — +Y
               recruitment speed). Council UI offers two drawn from
               pool; pick one, removed from draw.
-            depends_on: [TASK-065]
+            depends_on:
+              - TASK-065
             pr: null
             completed: null
             blocked_reason: null
             last_attempted: null
             attempt_count: 0
       - id: STORY-39
-        title: "Concord tithes"
+        title: Concord tithes
         description: |
           Per-turn passive drain on player treasury, scaling with
           empire size. Represents Rayon Concord authority; thematically
           pressures player toward the Sovereignty endgame.
         tasks:
           - id: TASK-067
-            title: "Tithe calculator + tension meter"
+            title: Tithe calculator + tension meter
             status: ready
             priority: high
             complexity: medium
-            workspaces: [core]
+            workspaces:
+              - core
             description: |
               Per-turn tithe = f(total colony population + revenue).
               Scale up over game years. Refusing to pay (via boycott)
               raises a tension meter which eventually triggers Concord
               ultimatum.
-            depends_on: [TASK-044]
+            depends_on:
+              - TASK-044
             pr: null
             completed: null
             blocked_reason: null
             last_attempted: null
             attempt_count: 0
           - id: TASK-068
-            title: "Tithe notification + payment UI"
+            title: Tithe notification + payment UI
             status: ready
             priority: med
             complexity: small
-            workspaces: [web]
+            workspaces:
+              - web
             description: |
               Per-turn notification shows tithe due, pay/boycott
               choice. Tension meter in HUD. Boycott flavour text from
               content.
-            depends_on: [TASK-067]
+            depends_on:
+              - TASK-067
             pr: null
             completed: null
             blocked_reason: null
             last_attempted: null
             attempt_count: 0
       - id: STORY-40
-        title: "Tidewater Party boycott event"
+        title: Tidewater Party boycott event
         description: |
           Discrete scripted event: player dumps cargo to reset tension
           briefly at a cost; adds lore beat.
         tasks:
           - id: TASK-069
-            title: "Tidewater Party event flow"
+            title: Tidewater Party event flow
             status: ready
             priority: med
             complexity: small
-            workspaces: [core, web, content]
+            workspaces:
+              - core
+              - web
+              - content
             description: |
               Modal event — confirm dump of N cargo of a chosen good.
               Tension drops to 0 for M turns; Concord ire rises
               permanently. Flavour: "Tidewater Party at Barataria Bay."
-            depends_on: [TASK-067]
+            depends_on:
+              - TASK-067
             pr: null
             completed: null
             blocked_reason: null
             last_attempted: null
             attempt_count: 0
       - id: STORY-41
-        title: "Declaration of Sovereignty + Concord Fleet"
+        title: Declaration of Sovereignty + Concord Fleet
         description: |
           Player triggers Sovereignty at will once ready. Concord Fleet
           (REF-analog, surface-only) spawns at map edge and invades.
           Defeat or survive long enough = victory.
         tasks:
           - id: TASK-070
-            title: "Sovereignty trigger + Concord Fleet spawn"
+            title: Sovereignty trigger + Concord Fleet spawn
             status: ready
             priority: high
             complexity: large
-            workspaces: [core, content]
+            workspaces:
+              - core
+              - content
             description: |
               Trigger action (requires minimum year + tension or
               charters). Spawn Concord Fleet: escalating waves of
               surface ships + ground troops for island landings.
               Survive T turns (configurable by difficulty).
-            depends_on: [TASK-055, TASK-063]
+            depends_on:
+              - TASK-055
+              - TASK-063
             pr: null
             completed: null
             blocked_reason: null
             last_attempted: null
             attempt_count: 0
           - id: TASK-071
-            title: "Sovereignty War UI overlay + progress tracker"
+            title: Sovereignty War UI overlay + progress tracker
             status: ready
             priority: high
             complexity: medium
-            workspaces: [web]
+            workspaces:
+              - web
             description: |
               Red-tinted HUD state during Sovereignty War. Progress bar
               toward survival goal. Concord Fleet movement visible on
               map. Narrative beats at 25/50/75/100% progress.
-            depends_on: [TASK-070]
+            depends_on:
+              - TASK-070
             pr: null
             completed: null
             blocked_reason: null
             last_attempted: null
             attempt_count: 0
       - id: STORY-42
-        title: "Victory & loss conditions"
+        title: Victory & loss conditions
         description: |
           Four victory paths (Prosperity, Discovery, Sovereignty,
           Conquest). Loss states (treasury bankrupt, fleet eliminated,
@@ -1554,40 +1749,48 @@ epics:
           flavour.
         tasks:
           - id: TASK-072
-            title: "Victory/loss engine + game-over screen"
+            title: Victory/loss engine + game-over screen
             status: ready
             priority: high
             complexity: medium
-            workspaces: [core, web, content]
+            workspaces:
+              - core
+              - web
+              - content
             description: |
               Check conditions per turn. When hit, freeze play + show
               game-over screen with stats, faction-appropriate epilogue
               text, and replay option.
-            depends_on: [TASK-024, TASK-066, TASK-070]
+            depends_on:
+              - TASK-024
+              - TASK-066
+              - TASK-070
             pr: null
             completed: null
             blocked_reason: null
             last_attempted: null
             attempt_count: 0
           - id: TASK-073
-            title: "Balance pass: tune thresholds for all 4 victory paths"
+            title: 'Balance pass: tune thresholds for all 4 victory paths'
             status: ready
             priority: med
             complexity: medium
-            workspaces: [core, content]
+            workspaces:
+              - core
+              - content
             description: |
               Play-test all four paths at target difficulty; adjust
               thresholds so each is reachable but none trivial. Document
               target win-times in content/balance.md.
-            depends_on: [TASK-072]
+            depends_on:
+              - TASK-072
             pr: null
             completed: null
             blocked_reason: null
             last_attempted: null
             attempt_count: 0
-
   - id: EPIC-11
-    title: "Narrative, tutorial & flavour integration"
+    title: Narrative, tutorial & flavour integration
     description: |
       The soul of the game: Sparrow's Diary prologue, tavern rumour
       system, in-game Codex, onboarding tutorial campaign, and the
@@ -1595,108 +1798,125 @@ epics:
       salvaged-futurism).
     stories:
       - id: STORY-43
-        title: "Sparrow prologue"
+        title: Sparrow prologue
         description: |
           Static/cinematic opener set in NW 2191: Sparrow's Diary
           entries framing the Endeavour's return and the player's
           assumption of the successor role.
         tasks:
           - id: TASK-074
-            title: "Prologue scene + pageable diary UI"
+            title: Prologue scene + pageable diary UI
             status: ready
             priority: high
             complexity: medium
-            workspaces: [web, content]
+            workspaces:
+              - web
+              - content
             description: |
               Page-by-page diary presentation with period typography,
               parchment background, subtle audio. Skip button present.
               Text assembled from canon (16 diary entries excerpted).
-            depends_on: [TASK-013]
+            depends_on:
+              - TASK-013
             pr: null
             completed: null
             blocked_reason: null
             last_attempted: null
             attempt_count: 0
       - id: STORY-44
-        title: "Tavern rumour system"
+        title: Tavern rumour system
         description: |
           When the player visits a colony tavern, surface a mix of
           hand-authored and procedural rumours. Some are pure flavour;
           some are hints toward Archive caches or faction opportunities.
         tasks:
           - id: TASK-075
-            title: "Tavern encounter UI + rumour data model"
+            title: Tavern encounter UI + rumour data model
             status: ready
             priority: med
             complexity: medium
-            workspaces: [web, core, content]
+            workspaces:
+              - web
+              - core
+              - content
             description: |
               "Visit Tavern" action in colony view opens a scene with
               3 rumours + flavour ambience. Rumour table in content
               with triggers (town, year, faction, random).
-            depends_on: [TASK-040]
+            depends_on:
+              - TASK-040
             pr: null
             completed: null
             blocked_reason: null
             last_attempted: null
             attempt_count: 0
           - id: TASK-076
-            title: "Rumour → map-marker hint pipeline"
+            title: Rumour → map-marker hint pipeline
             status: ready
             priority: med
             complexity: small
-            workspaces: [core, web]
+            workspaces:
+              - core
+              - web
             description: |
               Some rumours drop a subtle map marker pointing roughly
               toward an Archive cache or wreck. Marker is directional,
               not exact. Pays off on exploration.
-            depends_on: [TASK-075, TASK-032]
+            depends_on:
+              - TASK-075
+              - TASK-032
             pr: null
             completed: null
             blocked_reason: null
             last_attempted: null
             attempt_count: 0
       - id: STORY-45
-        title: "Codex / in-game lore browser"
+        title: Codex / in-game lore browser
         description: |
           Browsable encyclopedia of OTK Universe Reference entries.
           Unlocked over time as the player discovers related content.
           [OPEN] items surfaced as "fragmentary" with blurred text.
         tasks:
           - id: TASK-077
-            title: "Codex viewer + entry unlock hooks"
+            title: Codex viewer + entry unlock hooks
             status: ready
             priority: med
             complexity: medium
-            workspaces: [web, content]
+            workspaces:
+              - web
+              - content
             description: |
               Side-drawer Codex. Entries grouped by section (Factions,
               Abyssal Horrors, Legendary Ships, Locations, Bloodlines,
               etc.). Unlock triggers hooked into game events.
-            depends_on: [TASK-013]
+            depends_on:
+              - TASK-013
             pr: null
             completed: null
             blocked_reason: null
             last_attempted: null
             attempt_count: 0
           - id: TASK-078
-            title: "Render [OPEN] entries as 'fragmentary' placeholders"
+            title: Render [OPEN] entries as 'fragmentary' placeholders
             status: ready
             priority: low
             complexity: small
-            workspaces: [web, content]
+            workspaces:
+              - web
+              - content
             description: |
               Any Codex entry marked [OPEN] renders with a torn-
               parchment visual + partial blurred text. Flags to the
               player that canon is deliberately unresolved here.
-            depends_on: [TASK-077]
+            depends_on:
+              - TASK-077
             pr: null
             completed: null
             blocked_reason: null
             last_attempted: null
             attempt_count: 0
       - id: STORY-46
-        title: "Tutorial campaign"
+        title: Tutorial campaign
         description: |
           First ~20 turns walks the player through core systems:
           colony founding, trade, exploration, a first combat, an
@@ -1704,63 +1924,70 @@ epics:
           can be skipped on new game.
         tasks:
           - id: TASK-079
-            title: "Tutorial campaign trigger + step engine"
+            title: Tutorial campaign trigger + step engine
             status: ready
             priority: high
             complexity: medium
-            workspaces: [core, web]
+            workspaces:
+              - core
+              - web
             description: |
               New-game option 'Tutorial'. Scripted events fire at turn
               X, triggering highlight arrows + instructional modals.
               Player can skip at any step.
-            depends_on: [TASK-025, TASK-072]
+            depends_on:
+              - TASK-025
+              - TASK-072
             pr: null
             completed: null
             blocked_reason: null
             last_attempted: null
             attempt_count: 0
           - id: TASK-080
-            title: "Tutorial step authoring (12–15 steps)"
+            title: Tutorial step authoring (12–15 steps)
             status: ready
             priority: med
             complexity: large
-            workspaces: [content]
+            workspaces:
+              - content
             description: |
               Author step content: what to do, what it teaches, brief
               narrative framing (Mr Jackson from the Endeavour's crew as
               tutor voice — diary canon). Each step <50 words.
-            depends_on: [TASK-079]
+            depends_on:
+              - TASK-079
             pr: null
             completed: null
             blocked_reason: null
             last_attempted: null
             attempt_count: 0
       - id: STORY-47
-        title: "Three-register flavour-text pipeline"
+        title: Three-register flavour-text pipeline
         description: |
           Tag every UI surface with an appropriate tonal register
           (salt-and-rum / eldritch / salvaged-futurism) so future
           content authoring stays coherent.
         tasks:
           - id: TASK-081
-            title: "Content register-tagging infra + lint rule"
+            title: Content register-tagging infra + lint rule
             status: ready
             priority: low
             complexity: small
-            workspaces: [content]
+            workspaces:
+              - content
             description: |
               Content strings carry a `register` tag. Lint check
               ensures every user-visible string is tagged. Documented
               voice guide in packages/content/VOICE.md.
-            depends_on: [TASK-004]
+            depends_on:
+              - TASK-004
             pr: null
             completed: null
             blocked_reason: null
             last_attempted: null
             attempt_count: 0
-
   - id: EPIC-12
-    title: "Monetization, accounts, cloud save, store release"
+    title: Monetization, accounts, cloud save, store release
     description: |
       Turn the game into a shippable product: account system, cross-
       device cloud save, non-invasive ads with IAP to remove, store
@@ -1768,168 +1995,196 @@ epics:
       site.
     stories:
       - id: STORY-48
-        title: "Account + cloud save"
+        title: Account + cloud save
         description: |
           Optional account (email magic-link or OAuth). When signed in,
           saves sync across web + mobile. Offline play still works.
         tasks:
           - id: TASK-082
-            title: "Account + session endpoints in apps/server"
+            title: Account + session endpoints in apps/server
             status: ready
             priority: high
             complexity: medium
-            workspaces: [server, shared]
+            workspaces:
+              - server
+              - shared
             description: |
               /auth/magic-link + /auth/verify + /me endpoints. Session
               cookie. Schema in shared. Postgres-backed users table
               with Drizzle or Kysely (pick in PR).
-            depends_on: [TASK-006]
+            depends_on:
+              - TASK-006
             pr: null
             completed: null
             blocked_reason: null
             last_attempted: null
             attempt_count: 0
           - id: TASK-083
-            title: "Cloud save endpoints + client sync"
+            title: Cloud save endpoints + client sync
             status: ready
             priority: high
             complexity: medium
-            workspaces: [server, web, shared, core]
+            workspaces:
+              - server
+              - web
+              - shared
+              - core
             description: |
               PUT/GET /saves/:slot. Client syncs after each turn (debounced).
               Merge strategy: last-writer-wins with a version counter.
               Offline edits replayed on reconnect.
-            depends_on: [TASK-082]
+            depends_on:
+              - TASK-082
             pr: null
             completed: null
             blocked_reason: null
             last_attempted: null
             attempt_count: 0
       - id: STORY-49
-        title: "Ad integration"
+        title: Ad integration
         description: |
           Interstitial every N turns (configurable). Never during
           Sovereignty War or narrative beats. AdMob on mobile, Google
           Ad Manager on web.
         tasks:
           - id: TASK-084
-            title: "Ad manager abstraction in apps/web + Capacitor plugin wire-up"
+            title: Ad manager abstraction in apps/web + Capacitor plugin wire-up
             status: ready
             priority: med
             complexity: medium
-            workspaces: [web, mobile]
+            workspaces:
+              - web
+              - mobile
             description: |
               Single AdManager interface. Web backend (Ad Manager) +
               mobile backend (@capacitor-community/admob). Respect the
               "no ads during war/narrative" rule via a guard flag.
-            depends_on: [TASK-003]
+            depends_on:
+              - TASK-003
             pr: null
             completed: null
             blocked_reason: null
             last_attempted: null
             attempt_count: 0
           - id: TASK-085
-            title: "Per-N-turn interstitial + cooldown"
+            title: Per-N-turn interstitial + cooldown
             status: ready
             priority: med
             complexity: small
-            workspaces: [core, web]
+            workspaces:
+              - core
+              - web
             description: |
               End-of-turn hook: if N turns since last ad + no guard
               flag active, show interstitial. Adjust N per game-length
               (default 10).
-            depends_on: [TASK-084]
+            depends_on:
+              - TASK-084
             pr: null
             completed: null
             blocked_reason: null
             last_attempted: null
             attempt_count: 0
       - id: STORY-50
-        title: "IAP — Remove Ads + cosmetics"
+        title: IAP — Remove Ads + cosmetics
         description: |
           One-time IAP for 'Remove Ads'. Additional cosmetics-only IAPs
           (ship skins, palette variants). No pay-to-win.
         tasks:
           - id: TASK-086
-            title: "IAP flow (web + mobile) + server-side receipt validation"
+            title: IAP flow (web + mobile) + server-side receipt validation
             status: ready
             priority: med
             complexity: large
-            workspaces: [web, mobile, server, shared]
+            workspaces:
+              - web
+              - mobile
+              - server
+              - shared
             description: |
               Configure products in App Store Connect + Play Console.
               Client purchase → server receipt validation → user entitlement
               flag set. 'Remove Ads' entitlement suppresses AdManager.
-            depends_on: [TASK-082, TASK-084]
+            depends_on:
+              - TASK-082
+              - TASK-084
             pr: null
             completed: null
             blocked_reason: null
             last_attempted: null
             attempt_count: 0
       - id: STORY-51
-        title: "Marketing site"
+        title: Marketing site
         description: |
           Landing page at colonize.blacksail.dev root (before game
           loads) with launch trailer, screenshots, store links, press
           kit, privacy policy, terms.
         tasks:
           - id: TASK-087
-            title: "Marketing landing route in apps/web"
+            title: Marketing landing route in apps/web
             status: ready
             priority: med
             complexity: medium
-            workspaces: [web, content]
+            workspaces:
+              - web
+              - content
             description: |
               / renders landing (marketing), /play renders the game.
               Hero trailer video, screenshot carousel, store badges,
               call-to-action.
-            depends_on: [TASK-014]
+            depends_on:
+              - TASK-014
             pr: null
             completed: null
             blocked_reason: null
             last_attempted: null
             attempt_count: 0
           - id: TASK-088
-            title: "Privacy policy + terms pages"
+            title: Privacy policy + terms pages
             status: ready
             priority: med
             complexity: small
-            workspaces: [web, content]
+            workspaces:
+              - web
+              - content
             description: |
               Two static pages. Privacy: what we collect (email on opt-
               in; ad metrics). Terms: standard game ToS. Link from
               landing footer. Draft content in content/legal.md.
-            depends_on: [TASK-087]
+            depends_on:
+              - TASK-087
             pr: null
             completed: null
             blocked_reason: null
             last_attempted: null
             attempt_count: 0
       - id: STORY-52
-        title: "Store submission"
+        title: Store submission
         description: |
           Prepare + submit App Store and Play Store builds. Screenshots,
           metadata, age rating, review responses. Requires human
           intervention (Apple / Google accounts).
         tasks:
           - id: TASK-089
-            title: "Screenshots + store metadata pack"
+            title: Screenshots + store metadata pack
             status: ready
             priority: low
             complexity: medium
-            workspaces: [content]
+            workspaces:
+              - content
             description: |
               Generate required screenshot sets for all device sizes.
               Write short + long descriptions, keywords, age rating
               answers. All in content/store/.
-            depends_on: [TASK-087]
+            depends_on:
+              - TASK-087
             pr: null
             completed: null
             blocked_reason: null
             last_attempted: null
             attempt_count: 0
           - id: TASK-090
-            title: "Build + submission runbook"
+            title: Build + submission runbook
             status: ready
             priority: low
             complexity: medium
@@ -1938,7 +2193,9 @@ epics:
               docs/RELEASE.md: exact steps to produce signed
               iOS/Android builds and submit. Includes required Apple /
               Google account steps. Last task before shipping.
-            depends_on: [TASK-086, TASK-089]
+            depends_on:
+              - TASK-086
+              - TASK-089
             pr: null
             completed: null
             blocked_reason: null
