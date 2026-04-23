@@ -11,6 +11,7 @@ import { GameOverScreen } from './gameover/GameOverScreen';
 import { MainMenu } from './menu/MainMenu';
 import { FactionSelect } from './menu/FactionSelect';
 import { PauseOverlay } from './pause/PauseOverlay';
+import { Prologue } from './prologue/Prologue';
 import { SovereigntyBeatModal } from './sovereignty/SovereigntyBeatModal';
 import { SovereigntyWarOverlay } from './sovereignty/SovereigntyWarOverlay';
 import { TradeScreen } from './trade/TradeScreen';
@@ -42,6 +43,10 @@ export function App() {
 
   if (screen === 'menu') {
     return <MainMenu />;
+  }
+
+  if (screen === 'prologue') {
+    return <Prologue />;
   }
 
   if (screen === 'faction-select') {

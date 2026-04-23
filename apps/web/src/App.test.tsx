@@ -27,6 +27,14 @@ describe('App', () => {
     expect(screen.getByTestId('faction-card-otk')).toBeInTheDocument();
   });
 
+  it('shows the prologue screen when screen is prologue', () => {
+    useGameStore.getState().setScreen('prologue');
+    render(<App />);
+    expect(screen.getByTestId('prologue')).toBeInTheDocument();
+    expect(screen.queryByTestId('main-menu')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('hud')).not.toBeInTheDocument();
+  });
+
   it('mounts the HUD over the game stage once the game starts', () => {
     useGameStore.getState().setScreen('game');
     render(<App />);

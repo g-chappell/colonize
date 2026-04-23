@@ -50,6 +50,7 @@ export const FACTION_NAMES: Record<PlayableFaction, string> = {
 
 export type Screen =
   | 'menu'
+  | 'prologue'
   | 'faction-select'
   | 'game'
   | 'pause'

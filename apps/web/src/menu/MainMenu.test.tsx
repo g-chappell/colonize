@@ -35,10 +35,10 @@ describe('MainMenu', () => {
     expect(screen.getByTestId('main-menu-continue')).toBeDisabled();
   });
 
-  it('advances to faction-select when New Game is clicked', () => {
+  it('advances to the prologue when New Game is clicked', () => {
     render(<MainMenu />);
     expect(useGameStore.getState().screen).toBe('menu');
     fireEvent.click(screen.getByTestId('main-menu-new-game'));
-    expect(useGameStore.getState().screen).toBe('faction-select');
+    expect(useGameStore.getState().screen).toBe('prologue');
   });
 });
