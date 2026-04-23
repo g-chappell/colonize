@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { TUTORIAL_STEPS } from '@colonize/content';
 import './App.css';
 import { ColonyOverlay } from './colony/ColonyOverlay';
 import { CombatOverlay } from './combat/CombatOverlay';
@@ -16,11 +17,18 @@ import { SovereigntyBeatModal } from './sovereignty/SovereigntyBeatModal';
 import { SovereigntyWarOverlay } from './sovereignty/SovereigntyWarOverlay';
 import { TradeScreen } from './trade/TradeScreen';
 import { CargoTransferScreen } from './transfer/CargoTransferScreen';
+import { TutorialStepModal } from './tutorial/TutorialStepModal';
+import { nextTutorialStep } from './tutorial/tutorial-trigger';
 import { useGameStore } from './store/game';
 
 export function App() {
   const screen = useGameStore((s) => s.screen);
   const setScreen = useGameStore((s) => s.setScreen);
+  const currentTurn = useGameStore((s) => s.currentTurn);
+  const tutorialEnabled = useGameStore((s) => s.tutorialEnabled);
+  const tutorialStep = useGameStore((s) => s.tutorialStep);
+  const firedTutorialSteps = useGameStore((s) => s.firedTutorialSteps);
+  const showTutorialStep = useGameStore((s) => s.showTutorialStep);
 
   // Global Esc-key shortcut: toggles between 'game' and 'pause'. Other
   // screens (menu, faction-select) ignore Esc — they have their own
@@ -40,6 +48,25 @@ export function App() {
     document.addEventListener('keydown', handler);
     return () => document.removeEventListener('keydown', handler);
   }, [screen, setScreen]);
+
+  // Tutorial trigger orchestrator. `currentTurn` in the store is
+  // 0-indexed relative to TurnManager (ctx.turn - 1), so the 1-indexed
+  // tutorial step triggerTurns map to `currentTurn + 1`. Fires on:
+  //   - game-stage mount (screen becomes 'game' while tutorialEnabled)
+  //   - each turn advance (currentTurn changes)
+  // Guarded on `tutorialStep === null` so a re-render mid-modal does
+  // not re-enqueue the same step; the pure sibling's fired-set rule
+  // prevents re-fire across turns. Only the 'game' screen fires — the
+  // menu/faction-select/prologue screens don't mount the HUD the
+  // callouts point at.
+  useEffect(() => {
+    if (!tutorialEnabled) return;
+    if (tutorialStep !== null) return;
+    if (screen !== 'game') return;
+    const fired = new Set(firedTutorialSteps);
+    const step = nextTutorialStep(currentTurn + 1, fired, TUTORIAL_STEPS);
+    if (step) showTutorialStep(step.id);
+  }, [screen, currentTurn, tutorialEnabled, tutorialStep, firedTutorialSteps, showTutorialStep]);
 
   if (screen === 'menu') {
     return <MainMenu />;
@@ -70,6 +97,7 @@ export function App() {
         <CombatOverlay />
         <CouncilPickModal />
         <SovereigntyBeatModal />
+        <TutorialStepModal />
         {screen === 'pause' && <PauseOverlay />}
         {screen === 'colony' && <ColonyOverlay />}
         {screen === 'trade' && <TradeScreen />}

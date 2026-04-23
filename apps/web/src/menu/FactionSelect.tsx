@@ -5,6 +5,8 @@ import styles from './FactionSelect.module.css';
 export function FactionSelect(): JSX.Element {
   const setFaction = useGameStore((s) => s.setFaction);
   const setScreen = useGameStore((s) => s.setScreen);
+  const tutorialEnabled = useGameStore((s) => s.tutorialEnabled);
+  const setTutorialEnabled = useGameStore((s) => s.setTutorialEnabled);
 
   const select = (id: PlayableFactionId): void => {
     setFaction(id);
@@ -33,6 +35,18 @@ export function FactionSelect(): JSX.Element {
           </li>
         ))}
       </ul>
+      <label className={styles.tutorialToggle} data-testid="faction-select-tutorial-toggle">
+        <input
+          type="checkbox"
+          checked={tutorialEnabled}
+          onChange={(e) => setTutorialEnabled(e.target.checked)}
+          data-testid="faction-select-tutorial-checkbox"
+        />
+        Enable tutorial guidance
+      </label>
+      <p className={styles.tutorialToggleHint}>
+        Scripted callouts for the first few turns. Skip any time.
+      </p>
       <button
         type="button"
         className={styles.back}

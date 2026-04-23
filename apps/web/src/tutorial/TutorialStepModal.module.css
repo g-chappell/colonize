@@ -1,0 +1,124 @@
+.root {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 70;
+  font-family: 'Georgia', 'Times New Roman', serif;
+  color: #e8d8b8;
+}
+
+.highlight {
+  position: absolute;
+  border: 2px solid #d6b466;
+  border-radius: 6px;
+  box-shadow:
+    0 0 0 2px rgba(214, 180, 102, 0.35),
+    0 0 20px rgba(214, 180, 102, 0.55);
+  animation: pulse 1.6s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.arrow {
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  color: #d6b466;
+  filter: drop-shadow(0 0 6px rgba(214, 180, 102, 0.6));
+  animation: bob 1.2s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.panel {
+  position: absolute;
+  left: 50%;
+  bottom: 1.5rem;
+  transform: translateX(-50%);
+  max-width: min(440px, 86vw);
+  padding: 1.1rem 1.4rem;
+  background: rgba(12, 30, 43, 0.95);
+  border: 1px solid #d6b466;
+  box-shadow: 0 0 24px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  text-align: center;
+  pointer-events: auto;
+}
+
+.title {
+  margin: 0;
+  color: #d6b466;
+  font-size: 1.15rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.body {
+  margin: 0;
+  font-style: italic;
+  font-size: 0.95rem;
+  line-height: 1.45;
+  color: #e8d8b8;
+}
+
+.actions {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 0.25rem;
+}
+
+.button {
+  min-width: 7rem;
+  padding: 0.55rem 1.1rem;
+  background: rgba(12, 30, 43, 0.85);
+  border: 1px solid #d6b466;
+  color: #d6b466;
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: bold;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    background 120ms ease,
+    color 120ms ease;
+}
+
+.button:hover {
+  background: #d6b466;
+  color: #0c1e2b;
+}
+
+.button:focus-visible {
+  outline: 2px solid #e6c477;
+  outline-offset: 2px;
+}
+
+.skip {
+  opacity: 0.75;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 2px rgba(214, 180, 102, 0.35),
+      0 0 20px rgba(214, 180, 102, 0.4);
+  }
+  50% {
+    box-shadow:
+      0 0 0 3px rgba(214, 180, 102, 0.55),
+      0 0 28px rgba(214, 180, 102, 0.8);
+  }
+}
+
+@keyframes bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(4px);
+  }
+}
