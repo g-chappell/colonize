@@ -2002,7 +2002,7 @@ epics:
         tasks:
           - id: TASK-082
             title: Account + session endpoints in apps/server
-            status: ready
+            status: in-progress
             priority: high
             complexity: medium
             workspaces:
@@ -2017,8 +2017,8 @@ epics:
             pr: null
             completed: null
             blocked_reason: null
-            last_attempted: null
-            attempt_count: 0
+            last_attempted: "2026-04-23T04:08:00Z"
+            attempt_count: 1
           - id: TASK-083
             title: Cloud save endpoints + client sync
             status: ready
