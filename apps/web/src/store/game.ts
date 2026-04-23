@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { TutorialStepId } from '@colonize/content';
+import type { BlackMarketOffering, TutorialStepId } from '@colonize/content';
 import type {
   ArchiveCharterId,
   AutoRouteJSON,
@@ -104,6 +104,20 @@ export interface TransferSession {
 export interface TransferCommitLine {
   readonly resourceId: ResourceId;
   readonly qty: number;
+}
+
+// Tortuga black-market vendor snapshot — the modal data for a single
+// Blackwater Collective visit. Non-null while the vendor modal is
+// mounted; cleared by `dismissBlackMarketEncounter`. The encounter is
+// treated as an unbidden event-modal (slice-driven self-mounting
+// overlay per CLAUDE.md) rather than a `Screen` literal: the player
+// was mid-something (exploring, on a route) when the stall surfaced,
+// and walking away from it returns them to exactly where they stood.
+// The offerings snapshot is a concrete subset the Blackwater roller
+// will pick from `BLACK_MARKET_OFFERINGS`; here the slice just holds
+// whatever list the opener passed in.
+export interface BlackMarketEncounter {
+  readonly offerings: readonly BlackMarketOffering[];
 }
 
 // Active Council pick session — the modal data for a two-charter draw
@@ -262,6 +276,12 @@ export interface GameState {
   // Active Council pick-2 session. Non-null while the Council modal
   // should be mounted. See `CouncilPickSession` above for the shape.
   councilPick: CouncilPickSession | null;
+  // Active Blackwater-Collective black-market stall. Non-null while
+  // the Tortuga vendor modal is mounted; filled by
+  // `showBlackMarketEncounter` (the encounter orchestrator, a future
+  // task) and cleared by `dismissBlackMarketEncounter` when the
+  // player walks away.
+  blackMarketEncounter: BlackMarketEncounter | null;
   // Per-faction-pair relations + cooldowns, plain JSON for zustand
   // round-trip compatibility. Gameplay code reconstitutes a
   // RelationsMatrix instance via `RelationsMatrix.fromJSON` when it
@@ -352,6 +372,8 @@ export interface GameState {
   selectCharter: (charterId: ArchiveCharterId) => void;
   showRumourReveal: (outcome: RumourOutcome) => void;
   dismissRumourReveal: () => void;
+  showBlackMarketEncounter: (encounter: BlackMarketEncounter) => void;
+  dismissBlackMarketEncounter: () => void;
   showCombatOutcome: (outcome: CombatOutcome) => void;
   dismissCombatOutcome: () => void;
   setHomePort: (factionId: string, port: HomePortJSON) => void;
@@ -505,6 +527,7 @@ const initialState = {
   combatOutcome: null as CombatOutcome | null,
   factionCharters: {} as Readonly<Record<string, FactionChartersJSON>>,
   councilPick: null as CouncilPickSession | null,
+  blackMarketEncounter: null as BlackMarketEncounter | null,
   homePorts: {} as Readonly<Record<string, HomePortJSON>>,
   tradeSession: null as TradeSession | null,
   transferSession: null as TransferSession | null,
@@ -699,6 +722,8 @@ export const useGameStore = create<GameState>((set) => ({
     }),
   showRumourReveal: (outcome) => set({ rumourReveal: outcome }),
   dismissRumourReveal: () => set({ rumourReveal: null }),
+  showBlackMarketEncounter: (encounter) => set({ blackMarketEncounter: encounter }),
+  dismissBlackMarketEncounter: () => set({ blackMarketEncounter: null }),
   showCombatOutcome: (outcome) => set({ combatOutcome: outcome }),
   dismissCombatOutcome: () => set({ combatOutcome: null }),
   setHomePort: (factionId, port) =>

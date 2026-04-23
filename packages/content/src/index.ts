@@ -166,3 +166,17 @@ export {
   type NpcFactionFlavourEntry,
   type NpcFactionId,
 } from './npc-factions.js';
+
+export {
+  BLACK_MARKET_OFFERINGS,
+  BLACK_MARKET_BUY_CHIMES_PER_UNIT_FLOOR,
+  BLACK_MARKET_SELL_CHIMES_PER_UNIT_CEILING,
+  getBlackMarketOffering,
+  isBlackMarketOfferingId,
+  isBlackMarketTalismanOffer,
+  type BlackMarketBuyOffer,
+  type BlackMarketOffering,
+  type BlackMarketOfferingId,
+  type BlackMarketSellOffer,
+  type BlackMarketTalismanOffer,
+} from './black-market.js';
