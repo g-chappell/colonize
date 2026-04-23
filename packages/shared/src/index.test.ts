@@ -1,10 +1,14 @@
 import { describe, it, expect } from 'vitest';
 import {
   ErrorResponse,
+  GetSaveResponse,
   HealthResponse,
   MagicLinkRequest,
   MagicLinkResponse,
   MeResponse,
+  PutSaveRequest,
+  PutSaveResponse,
+  SaveSlotId,
   SHARED_SCHEMA_VERSION,
   User,
   VerifyRequest,
@@ -71,5 +75,50 @@ describe('@colonize/shared auth schemas', () => {
 
   it('rejects ErrorResponse missing fields', () => {
     expect(() => ErrorResponse.parse({ error: '' })).toThrow();
+  });
+});
+
+describe('@colonize/shared save schemas', () => {
+  it('accepts a well-formed slot id', () => {
+    expect(SaveSlotId.parse('auto')).toBe('auto');
+    expect(SaveSlotId.parse('slot-1')).toBe('slot-1');
+    expect(SaveSlotId.parse('quick_save_2')).toBe('quick_save_2');
+  });
+
+  it('rejects a slot id with invalid characters or length', () => {
+    expect(() => SaveSlotId.parse('Auto')).toThrow();
+    expect(() => SaveSlotId.parse('slot 1')).toThrow();
+    expect(() => SaveSlotId.parse('')).toThrow();
+    expect(() => SaveSlotId.parse('x'.repeat(33))).toThrow();
+  });
+
+  it('round-trips a PutSaveRequest with an opaque payload', () => {
+    const req = { version: 1, payload: { turn: 5, factions: ['otk'] } };
+    expect(PutSaveRequest.parse(req)).toEqual(req);
+  });
+
+  it('rejects a PutSaveRequest with non-positive or non-integer version', () => {
+    expect(() => PutSaveRequest.parse({ version: 0, payload: {} })).toThrow();
+    expect(() => PutSaveRequest.parse({ version: -1, payload: {} })).toThrow();
+    expect(() => PutSaveRequest.parse({ version: 1.5, payload: {} })).toThrow();
+  });
+
+  it('round-trips a PutSaveResponse', () => {
+    const res = {
+      slot: 'auto',
+      version: 3,
+      updatedAt: '2026-04-23T05:00:00.000Z',
+    };
+    expect(PutSaveResponse.parse(res)).toEqual(res);
+  });
+
+  it('round-trips a GetSaveResponse', () => {
+    const res = {
+      slot: 'auto',
+      version: 7,
+      updatedAt: '2026-04-23T05:00:00.000Z',
+      payload: { anything: 'goes' },
+    };
+    expect(GetSaveResponse.parse(res)).toEqual(res);
   });
 });

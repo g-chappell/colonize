@@ -6,6 +6,7 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { HealthResponse } from '@colonize/shared';
 import { registerAuthRoutes, type AuthRoutesOptions } from './auth/routes.js';
+import { registerSaveRoutes, type SaveRoutesOptions } from './saves/routes.js';
 
 export const SERVER_VERSION = '0.0.0';
 export const DEFAULT_SESSION_COOKIE_NAME = 'colonize_session';
@@ -46,6 +47,14 @@ export interface BuildAppOptions {
         | 'newToken'
       >
     >;
+  /**
+   * Cloud-save wiring. When provided, PUT /saves/:slot and GET /saves/:slot
+   * are registered against the supplied SaveRepository. Requires `auth`
+   * to be supplied as well — save endpoints gate on the session cookie
+   * issued by the auth plugin, and the SaveRepository shares the
+   * AuthRepository's session-lookup path.
+   */
+  saves?: Pick<SaveRoutesOptions, 'saves'> & Partial<Pick<SaveRoutesOptions, 'now'>>;
 }
 
 function resolveDefaultStaticRoot(): string | null {
@@ -73,13 +82,14 @@ export function buildApp(options: BuildAppOptions = {}): FastifyInstance {
 
   if (options.auth) {
     const auth = options.auth;
+    const sessionCookieName = auth.sessionCookieName ?? DEFAULT_SESSION_COOKIE_NAME;
     app.register(fastifyCookie);
     app.register(async (scope) => {
       const routeOpts: AuthRoutesOptions = {
         repository: auth.repository,
         sender: auth.sender,
         magicLinkBaseUrl: auth.magicLinkBaseUrl,
-        sessionCookieName: auth.sessionCookieName ?? DEFAULT_SESSION_COOKIE_NAME,
+        sessionCookieName,
         sessionCookieSecure: auth.sessionCookieSecure ?? process.env.NODE_ENV === 'production',
         sessionTtlMs: auth.sessionTtlMs ?? DEFAULT_SESSION_TTL_MS,
         magicLinkTtlMs: auth.magicLinkTtlMs ?? DEFAULT_MAGIC_LINK_TTL_MS,
@@ -88,6 +98,16 @@ export function buildApp(options: BuildAppOptions = {}): FastifyInstance {
         ...(auth.newToken !== undefined ? { newToken: auth.newToken } : {}),
       };
       await registerAuthRoutes(scope, routeOpts);
+
+      if (options.saves) {
+        const saveOpts: SaveRoutesOptions = {
+          saves: options.saves.saves,
+          auth: auth.repository,
+          sessionCookieName,
+          ...(options.saves.now !== undefined ? { now: options.saves.now } : {}),
+        };
+        await registerSaveRoutes(scope, saveOpts);
+      }
     });
   }
 
