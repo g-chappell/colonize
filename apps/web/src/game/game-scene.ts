@@ -14,6 +14,7 @@ import {
   keyPanDelta,
   pointerDistance,
 } from './camera-controls';
+import { getColonyFortificationVisual } from './colony-fortification';
 import { pickColonyIdAtTile } from './colony-input';
 import { FogOverlay } from './fog-overlay';
 import { decideMoveClick } from './move-intent';
@@ -65,7 +66,6 @@ export const ROUTE_LINE_ALPHA = 0.55;
 // spill into adjacent tiles.
 const COLONY_BODY_SCALE = 0.78;
 const COLONY_FILL_COLOR = 0x6b4a2a;
-const COLONY_STROKE_COLOR = 0xd6b466;
 
 // Path preview visual tuning. Reachable tiles draw as solid gold dots,
 // beyond-reach tiles as dim dots at the same radius so the player can
@@ -560,6 +560,7 @@ export class GameScene extends Phaser.Scene {
       const { x, y } = tileCenterInWorld(colony.position.x, colony.position.y);
       if (existing) {
         existing.setPosition(x, y);
+        this.applyColonyFortificationStyle(existing, colony);
         continue;
       }
       this.colonyContainers.set(colony.id, this.createColonyContainer(colony, x, y));
@@ -574,7 +575,6 @@ export class GameScene extends Phaser.Scene {
     const tilePx = renderedTileSize();
     const bodyPx = tilePx * COLONY_BODY_SCALE;
     const body = this.add.rectangle(0, 0, bodyPx, bodyPx, COLONY_FILL_COLOR);
-    body.setStrokeStyle(2, COLONY_STROKE_COLOR);
     const initial = (colony.id[0] ?? '?').toUpperCase();
     const label = this.add
       .text(0, 0, initial, {
@@ -587,7 +587,20 @@ export class GameScene extends Phaser.Scene {
     container.setDepth(COLONY_LAYER_DEPTH);
     container.setSize(bodyPx, bodyPx);
     container.setData('colonyId', colony.id);
+    container.setData('body', body);
+    this.applyColonyFortificationStyle(container, colony);
     return container;
+  }
+
+  private applyColonyFortificationStyle(
+    container: Phaser.GameObjects.Container,
+    colony: ColonyJSON,
+  ): void {
+    const body = container.getData('body') as Phaser.GameObjects.Rectangle | undefined;
+    if (!body) return;
+    const visual = getColonyFortificationVisual(colony);
+    body.setStrokeStyle(visual.strokeWidth, visual.strokeColor);
+    container.setData('fortificationTier', visual.tier);
   }
 
   private setupUnitLayer(): void {

@@ -67,6 +67,9 @@ function durationTable(
     case BuildingType.Forge:
     case BuildingType.Shipyard:
     case BuildingType.GunDeck:
+    case BuildingType.Stockade:
+    case BuildingType.Bastion:
+    case BuildingType.Citadel:
       return undefined;
   }
 }

@@ -343,6 +343,116 @@ describe('resolveGroundCombat — fleeing', () => {
   });
 });
 
+describe('resolveGroundCombat — fortification modifier', () => {
+  it('omitted defenderFortificationBonus defaults to 1.0 on the outcome', () => {
+    const outcome = resolveGroundCombat(marines(), pikemen(), {
+      action: GroundCombatActionType.Engage,
+      terrain: TileType.Island,
+      rng: rngFromSequence([0.5, 0.5]),
+    });
+    expect(outcome.defenderFortificationBonus).toBe(1);
+  });
+
+  it('a fortification bonus reduces attacker damage vs the same-terrain baseline', () => {
+    const baseline = resolveGroundCombat(marines(), pikemen(), {
+      action: GroundCombatActionType.Engage,
+      terrain: TileType.Island,
+      rng: rngFromSequence([0.7, 0.7]),
+    });
+    const fortified = resolveGroundCombat(marines(), pikemen(), {
+      action: GroundCombatActionType.Engage,
+      terrain: TileType.Island,
+      rng: rngFromSequence([0.7, 0.7]),
+      defenderFortificationBonus: 1.5,
+    });
+    const baselineVolley = baseline.events[0];
+    const fortifiedVolley = fortified.events[0];
+    if (baselineVolley?.kind !== 'ground-volley' || fortifiedVolley?.kind !== 'ground-volley') {
+      throw new Error('expected ground-volley events');
+    }
+    expect(fortifiedVolley.damage).toBeLessThan(baselineVolley.damage);
+  });
+
+  it('exposes the supplied bonus on the outcome verbatim', () => {
+    const outcome = resolveGroundCombat(marines(), pikemen(), {
+      action: GroundCombatActionType.Engage,
+      terrain: TileType.Island,
+      rng: rngFromSequence([0.5, 0.5]),
+      defenderFortificationBonus: 1.65,
+    });
+    expect(outcome.defenderFortificationBonus).toBe(1.65);
+  });
+
+  it('a higher fortification bonus reduces damage further than a lower one', () => {
+    const stockade = resolveGroundCombat(marines(), pikemen(), {
+      action: GroundCombatActionType.Engage,
+      terrain: TileType.Island,
+      rng: rngFromSequence([0.7, 0.7]),
+      defenderFortificationBonus: 1.2,
+    });
+    const citadel = resolveGroundCombat(marines(), pikemen(), {
+      action: GroundCombatActionType.Engage,
+      terrain: TileType.Island,
+      rng: rngFromSequence([0.7, 0.7]),
+      defenderFortificationBonus: 1.65,
+    });
+    const stockadeVolley = stockade.events[0];
+    const citadelVolley = citadel.events[0];
+    if (stockadeVolley?.kind !== 'ground-volley' || citadelVolley?.kind !== 'ground-volley') {
+      throw new Error('expected ground-volley events');
+    }
+    expect(citadelVolley.damage).toBeLessThan(stockadeVolley.damage);
+  });
+
+  it('rejects a non-positive fortification bonus', () => {
+    expect(() =>
+      resolveGroundCombat(marines(), pikemen(), {
+        action: GroundCombatActionType.Engage,
+        terrain: TileType.Island,
+        rng: () => 0.5,
+        defenderFortificationBonus: 0,
+      }),
+    ).toThrow(RangeError);
+    expect(() =>
+      resolveGroundCombat(marines(), pikemen(), {
+        action: GroundCombatActionType.Engage,
+        terrain: TileType.Island,
+        rng: () => 0.5,
+        defenderFortificationBonus: -1,
+      }),
+    ).toThrow(RangeError);
+  });
+
+  it('rejects a non-finite fortification bonus', () => {
+    expect(() =>
+      resolveGroundCombat(marines(), pikemen(), {
+        action: GroundCombatActionType.Engage,
+        terrain: TileType.Island,
+        rng: () => 0.5,
+        defenderFortificationBonus: Infinity,
+      }),
+    ).toThrow(RangeError);
+    expect(() =>
+      resolveGroundCombat(marines(), pikemen(), {
+        action: GroundCombatActionType.Engage,
+        terrain: TileType.Island,
+        rng: () => 0.5,
+        defenderFortificationBonus: NaN,
+      }),
+    ).toThrow(RangeError);
+  });
+
+  it('flee action also exposes the supplied fortification bonus on the outcome', () => {
+    const outcome = resolveGroundCombat(dragoons(), pikemen(), {
+      action: GroundCombatActionType.Flee,
+      terrain: TileType.Island,
+      rng: rngFromSequence([0.0, 0.0]),
+      defenderFortificationBonus: 1.4,
+    });
+    expect(outcome.defenderFortificationBonus).toBe(1.4);
+  });
+});
+
 describe('resolveGroundCombat — replay determinism', () => {
   it('produces identical outcomes for identical RNG sequences across both actions', () => {
     const seq = [0.31, 0.62, 0.18, 0.94, 0.55];

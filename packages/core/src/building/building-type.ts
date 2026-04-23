@@ -17,6 +17,9 @@ export const BuildingType = {
   StudyHall: 'study-hall',
   Shipyard: 'shipyard',
   GunDeck: 'gun-deck',
+  Stockade: 'stockade',
+  Bastion: 'bastion',
+  Citadel: 'citadel',
 } as const;
 
 export type BuildingType = (typeof BuildingType)[keyof typeof BuildingType];
@@ -113,6 +116,21 @@ const BUILDING_DEFINITIONS: Readonly<Record<BuildingType, BuildingDefinition>> =
     id: BuildingType.GunDeck,
     cost: { planks: 20, forgework: 30 },
     prerequisites: [BuildingType.Forge],
+  },
+  [BuildingType.Stockade]: {
+    id: BuildingType.Stockade,
+    cost: { timber: 20, fibre: 5 },
+    prerequisites: [],
+  },
+  [BuildingType.Bastion]: {
+    id: BuildingType.Bastion,
+    cost: { timber: 25, planks: 15, salvage: 10 },
+    prerequisites: [BuildingType.Stockade],
+  },
+  [BuildingType.Citadel]: {
+    id: BuildingType.Citadel,
+    cost: { planks: 30, forgework: 25, salvage: 15 },
+    prerequisites: [BuildingType.Bastion, BuildingType.Forge],
   },
 };
 
