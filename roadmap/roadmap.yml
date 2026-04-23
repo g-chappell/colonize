@@ -1205,7 +1205,7 @@ epics:
         tasks:
           - id: TASK-050
             title: Merchant route data model + turn executor
-            status: in-progress
+            status: done
             priority: med
             complexity: medium
             workspaces:
@@ -1218,8 +1218,8 @@ epics:
             depends_on:
               - TASK-049
               - TASK-028
-            pr: null
-            completed: null
+            pr: "https://github.com/g-chappell/colonize/pull/87"
+            completed: "2026-04-23"
             blocked_reason: null
             last_attempted: "2026-04-23T00:00:00Z"
             attempt_count: 1
