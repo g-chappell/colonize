@@ -9,8 +9,8 @@ _Created: 2026-04-20_
 ## Summary
 
 - **Total tasks:** 90
-- **Done:** 61 (68%)
-- **Ready:** 29
+- **Done:** 62 (69%)
+- **Ready:** 28
 - **In progress:** 0
 - **Blocked:** 0
 
@@ -770,7 +770,7 @@ site.
 - **STORY-48** — Account + cloud save
   > Optional account (email magic-link or OAuth). When signed in,
   > saves sync across web + mobile. Offline play still works.
-  - :black_circle: **TASK-082** — Account + session endpoints in apps/server  `high` `medium` _(server, shared)_  
+  - :white_check_mark: **TASK-082** — Account + session endpoints in apps/server  `high` `medium` _(server, shared)_ · [PR](https://github.com/g-chappell/colonize/pull/83)  
     _depends on: TASK-006_
     > /auth/magic-link + /auth/verify + /me endpoints. Session
     > cookie. Schema in shared. Postgres-backed users table

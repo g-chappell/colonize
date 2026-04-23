@@ -2002,7 +2002,7 @@ epics:
         tasks:
           - id: TASK-082
             title: Account + session endpoints in apps/server
-            status: ready
+            status: done
             priority: high
             complexity: medium
             workspaces:
@@ -2014,11 +2014,11 @@ epics:
               with Drizzle or Kysely (pick in PR).
             depends_on:
               - TASK-006
-            pr: null
-            completed: null
+            pr: https://github.com/g-chappell/colonize/pull/83
+            completed: "2026-04-23"
             blocked_reason: null
-            last_attempted: null
-            attempt_count: 0
+            last_attempted: "2026-04-23T04:08:00Z"
+            attempt_count: 1
           - id: TASK-083
             title: Cloud save endpoints + client sync
             status: ready

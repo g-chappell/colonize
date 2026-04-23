@@ -10,6 +10,54 @@ export const HealthResponse = z.object({
 
 export type HealthResponse = z.infer<typeof HealthResponse>;
 
+// --- Auth & account (server endpoints in apps/server) ---
+
+// Public-facing user shape returned by /me and /auth/verify. Never carries
+// credentials, magic-link tokens, or session tokens.
+export const User = z.object({
+  id: z.string().min(1),
+  email: z.string().email(),
+  createdAt: z.string().datetime(),
+});
+
+export type User = z.infer<typeof User>;
+
+// POST /auth/magic-link
+export const MagicLinkRequest = z.object({
+  email: z.string().email(),
+});
+export type MagicLinkRequest = z.infer<typeof MagicLinkRequest>;
+
+export const MagicLinkResponse = z.object({
+  ok: z.literal(true),
+});
+export type MagicLinkResponse = z.infer<typeof MagicLinkResponse>;
+
+// POST /auth/verify
+export const VerifyRequest = z.object({
+  token: z.string().min(1),
+});
+export type VerifyRequest = z.infer<typeof VerifyRequest>;
+
+export const VerifyResponse = z.object({
+  user: User,
+});
+export type VerifyResponse = z.infer<typeof VerifyResponse>;
+
+// GET /me
+export const MeResponse = z.object({
+  user: User,
+});
+export type MeResponse = z.infer<typeof MeResponse>;
+
+// Generic error envelope used by the auth endpoints (and reusable for any
+// future endpoint that wants a typed failure shape on the wire).
+export const ErrorResponse = z.object({
+  error: z.string().min(1),
+  message: z.string().min(1),
+});
+export type ErrorResponse = z.infer<typeof ErrorResponse>;
+
 // Event payloads for the web client's pub/sub bus (apps/web/src/bus.ts).
 // Extend via declaration merging as HUD↔Phaser events are introduced.
 export interface GameEvents {
