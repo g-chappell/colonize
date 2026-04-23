@@ -319,23 +319,6 @@ gaps.
 
 ---
 
-### Run [2026-04-21 09:04]
-- Task: N/A — cycle skipped before selection
-- Outcome: skipped
-- PR: N/A
-- Test counts: N/A — no validation run
-- Files changed: AGENT-LOG.md (this entry)
-- Regression alert: false
-- Review proposed: false
-- Deploy: n/a
-- Lessons learned:
-  - Step 2 precheck halted the run: `git status --porcelain` reported `M scripts/notify-cycle.sh` — an uncommitted edit in the working tree (adds a PR-body "## Summary" blurb and a condensed "Outcome · Deploy" header line to the ntfy.sh payload). The diff pre-dates this cycle; treating it as in-progress user work per the skill's "never discard dirty tree" contract.
-  - Also cleaned up post-merge: fast-forwarded local main over 8caeead (PR #27 merge — `.github/workflows/deploy.yml` deletion from chore/remove-deploy-workflow). The now-merged feature branch is left in place for the user to delete; `git branch -d` on a branch still holding the HEAD we came from would refuse anyway, and the Step 3 cleanup only runs on clean runs.
-  - Action required: either commit or stash `scripts/notify-cycle.sh` and re-fire `/autonomous-run` (next scheduled fire is top-of-hour via `claude-colonize.timer`). The edit itself looks intentional and mergeable — a short commit on a dedicated branch would unblock the queue.
-- Notes: Eighteenth autonomous-run cycle — **skipped**, not counted toward the 5-success streak. Prior streak still at 3 (TASK-018 → TASK-019 → TASK-020) since the PR #23 review checkpoint; the streak resumes on the next successful cycle without needing to restart.
-
----
-
 ### Run [2026-04-21 08:10]
 - Task: TASK-020 — Camera controls: pan / zoom / mobile touch
 - Outcome: success
@@ -351,6 +334,23 @@ gaps.
   - Cursor-anchored wheel zoom (the world point under the pointer stays under the pointer) makes the wheel feel native — without it, zooming in zooms toward the screen centre and the player loses their bearing. The math is straightforward (compute world coord under pointer pre-zoom, set new zoom, re-pan to keep that world coord under pointer) and self-contained inside `handleWheel`.
   - Per-game camera memory persists in the zustand store (`cameraView: { scrollX, scrollY, zoom } | null`) rather than localStorage. Reset clears it so a new game starts at the default focus; persistence across browser reloads will fall out for free if/when EPIC-08's save system serialises the store. No new dependencies required.
 - Notes: Seventeenth autonomous-run cycle. Streak=3 since PR #23 review checkpoint (TASK-018 → TASK-019 → TASK-020); two more consecutive successes to re-hit successThreshold=5.
+
+---
+
+### Run [2026-04-21 09:04]
+- Task: N/A — cycle skipped before selection
+- Outcome: skipped
+- PR: N/A
+- Test counts: N/A — no validation run
+- Files changed: AGENT-LOG.md (this entry)
+- Regression alert: false
+- Review proposed: false
+- Deploy: n/a
+- Lessons learned:
+  - Step 2 precheck halted the run: `git status --porcelain` reported `M scripts/notify-cycle.sh` — an uncommitted edit in the working tree (adds a PR-body "## Summary" blurb and a condensed "Outcome · Deploy" header line to the ntfy.sh payload). The diff pre-dates this cycle; treating it as in-progress user work per the skill's "never discard dirty tree" contract.
+  - Also cleaned up post-merge: fast-forwarded local main over 8caeead (PR #27 merge — `.github/workflows/deploy.yml` deletion from chore/remove-deploy-workflow). The now-merged feature branch is left in place for the user to delete; `git branch -d` on a branch still holding the HEAD we came from would refuse anyway, and the Step 3 cleanup only runs on clean runs.
+  - Action required: either commit or stash `scripts/notify-cycle.sh` and re-fire `/autonomous-run` (next scheduled fire is top-of-hour via `claude-colonize.timer`). The edit itself looks intentional and mergeable — a short commit on a dedicated branch would unblock the queue.
+- Notes: Eighteenth autonomous-run cycle — **skipped**, not counted toward the 5-success streak. Prior streak still at 3 (TASK-018 → TASK-019 → TASK-020) since the PR #23 review checkpoint; the streak resumes on the next successful cycle without needing to restart.
 
 ---
 
@@ -1231,7 +1231,6 @@ gaps.
 
 ---
 
-
 ### Run [2026-04-23 04:30]
 - Task: TASK-082 — Account + session endpoints in apps/server
 - Outcome: success
@@ -1312,6 +1311,30 @@ gaps.
   - `MerchantRouteActionKind` is a save-format const-object union ('load' | 'unload') — not an ergonomic `type X = 'load' | 'unload'` alias. Per CLAUDE.md "String-literal const-objects for save-format-bound kinds" the const-object + derived type alias + `ALL_MERCHANT_ROUTE_ACTION_KINDS` array + `isMerchantRouteActionKind` narrowing guard is the canonical shape for any union whose values round-trip through the save format. `fromJSON` uses the guard to validate untrusted input; adding a future action kind (`wait`, `drop-off-passenger`) shows up as a red squiggle at every exhaustive-switch consumer via the `Kind` exhaustive switch in the executor.
   - Movement along the path rounds fractional `sailingStepCost` results up via `Math.max(1, Math.ceil(step))`. Reason: without wind/current flags, every ocean step is cost 1; with flags, costs can be 0.25–2.25 thanks to `MIN_SAILING_STEP_COST`, but `Unit.spendMovement` is integer-only (`Number.isInteger(cost)` assertion). Rounding up is conservative — it ensures movement budget is never over-spent — and matches the design-intent that "favourable wind = more tiles per turn, headwind = fewer" rather than introducing a fractional movement ledger. The round-up affects only fractional-cost cases; default ocean step stays at 1. A future task that introduces per-ship fractional movement (floating-point movement points, partial-tile commits) would change this line, but that work is not in scope for TASK-050.
   - The route executor validates `autoRoute.unitId === unit.id` and `autoRoute.routeId === route.id` at the top and THROWS on mismatch (not marks-broken). Reason: those two invariants are internal contracts between the orchestrator and the executor — "you promised this AutoRoute belongs to this ship following this route". A mismatch is a bug in the caller, not a game-state event the player should recover from. markBroken is for *game-state* invalidation (ship captured, colony destroyed) where a reasonable player response exists; mismatched ids are never reachable through normal gameplay and silently marking broken would hide the orchestrator bug. Per CLAUDE.md "Trust internal code and framework guarantees. Only validate at system boundaries" — but the route executor IS the system boundary between orchestrator and primitive, so the id-match check belongs here with the throwing shape.
+
+---
+
+### Run [2026-04-23 08:02]
+- Task: N/A — cycle skipped at precheck
+- Outcome: skipped
+- PR: N/A
+- Test counts: N/A — no validation run
+- Files changed: AGENT-LOG.md (this entry)
+- Regression alert: false
+- Review proposed: false
+- Deploy: n/a
+- Lessons learned:
+  - Step 2 halted: working tree dirty with in-progress self-improvement work — `M .claude/skills/autonomous-run/SKILL.md`, `M AGENT-LOG.md`, `M scripts/notify-cycle.sh`, plus untracked `scripts/append-agent-log.sh` (new helper) and `AGENT-LOG.md.bak`. Treating as user-owned work per the skill's never-discard-dirty-tree contract.
+  - Action required: commit or stash the in-progress edits (they appear to be a coherent agent-infrastructure refinement: new helper + skill update + notify-cycle update + AGENT-LOG normalization) and re-fire `/autonomous-run`. Next scheduled fire is top-of-hour via `claude-colonize.timer`.
+- Notes: Skipped cycle is not counted toward the 5-success streak. Prior streak resumes on the next successful run.
+
+---
+
+### Run [2026-04-23 09:04]
+- Task: (none selected)
+- Outcome: skipped
+- Reason: dirty_tree
+- Notes: Working tree had uncommitted infrastructure changes from prior session on branch `feat/roadmap-public-viewer` (modified .claude/skills/autonomous-run/SKILL.md, AGENT-LOG.md, scripts/notify-cycle.sh; untracked scripts/append-agent-log.sh). Per Step 2 protocol, skipped rather than risk discarding in-progress work. User action required: review, commit, and merge the infra changes (or stash/discard) before the next cycle can pick up a task.
 
 ---
 

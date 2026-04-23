@@ -206,15 +206,19 @@ gh pr merge <num> --auto --squash --delete-branch
 
 ## Step 10 — LOG CYCLE
 
-Append to `AGENT-LOG.md` **at the end of the file** — after the last
-existing `### Run` block and its trailing `---` separator. The file is
-chronologically ordered; `scripts/notify-cycle.sh` and any human reader
-scanning the tail both rely on the newest entry being the last one. Do
-NOT insert near the top beneath the `## Run History` header — that is
-the start marker, not an insertion point.
+Append to `AGENT-LOG.md` via the helper script
+`scripts/append-agent-log.sh`. The helper stamps a canonical
+`YYYY-MM-DD HH:MM` UTC timestamp, appends after the last existing
+`### Run` block, and normalises the trailing `---` separator — all the
+invariants `scripts/notify-cycle.sh`'s selector depends on. **Do not
+write the heading line by hand or use `Edit` / `Write` to prepend near
+the top of the file** — format drift there silently breaks
+notifications.
 
-```markdown
-### Run [<ISO timestamp>]
+Feed the entry body (everything below the heading) via stdin:
+
+```bash
+scripts/append-agent-log.sh <<'EOF'
 - Task: <TASK-ID> — <title>
 - Outcome: success
 - PR: <url>
@@ -224,7 +228,12 @@ the start marker, not an insertion point.
 - Review proposed: <filled in Step 15 if applicable>
 - Deploy: <filled in Step 14 if applicable>
 - Lessons learned: <optional free text>
+EOF
 ```
+
+The helper prints the heading it used (e.g. `### Run [2026-04-23 07:30]`)
+on stdout — capture it if Steps 14 / 15 need to amend this entry in
+place with `Edit`.
 
 **Regression check:** compare each workspace's test count to the previous
 `success` entry in AGENT-LOG. If any decreased, set `regression_alert: true`
