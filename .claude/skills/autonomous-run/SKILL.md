@@ -237,9 +237,19 @@ The helper prints the heading it used (e.g. `### Run [2026-04-23 07:30]`)
 on stdout — capture it if Steps 14 / 15 need to amend this entry in
 place with `Edit`.
 
-**Regression check:** compare each workspace's test count to the previous
-`success` entry in AGENT-LOG. If any decreased, set `regression_alert: true`
-and outcome → `success_with_warning`.
+**Regression check:** run `scripts/regression-check.mjs` with the current
+test counts; it parses the previous `success` entry's counts from
+AGENT-LOG and compares per workspace.
+
+```bash
+node scripts/regression-check.mjs 'core=938, content=181, web=551, server=48, shared=18'
+```
+
+The script emits JSON `{regressed, workspaces: {name: {prev, curr, delta}}, missingInCurrent}`
+and exits 1 on regression, 0 on clean, 2 on unreadable prior entry.
+If exit=1, set `regression_alert: true` and outcome →
+`success_with_warning`. If exit=2, treat the comparison as not-applicable
+(first run of the cycle, fresh log) and leave `regression_alert: false`.
 
 **Do NOT push the log entry to main yet.** Strict branch protection with
 required status checks means any commit pushed to main *between* enabling
