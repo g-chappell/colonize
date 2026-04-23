@@ -10,8 +10,8 @@ _Created: 2026-04-20_
 
 - **Total tasks:** 90
 - **Done:** 60 (67%)
-- **Ready:** 30
-- **In progress:** 0
+- **Ready:** 29
+- **In progress:** 1
 - **Blocked:** 0
 
 ---
@@ -739,7 +739,7 @@ salvaged-futurism).
   > colony founding, trade, exploration, a first combat, an
   > Archive recovery, and a taste of the tithe tension. Tutorial
   > can be skipped on new game.
-  - :black_circle: **TASK-079** — Tutorial campaign trigger + step engine  `high` `medium` _(core, web)_  
+  - :large_orange_diamond: **TASK-079** — Tutorial campaign trigger + step engine  `high` `medium` _(core, web)_  
     _depends on: TASK-025, TASK-072_
     > New-game option 'Tutorial'. Scripted events fire at turn
     > X, triggering highlight arrows + instructional modals.
