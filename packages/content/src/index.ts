@@ -133,3 +133,11 @@ export {
 } from './epilogues.js';
 
 export { SPARROW_DIARY, SPARROW_EPILOGUE, type DiaryEntry } from './prologue.js';
+
+export {
+  TUTORIAL_STEPS,
+  getTutorialStep,
+  isTutorialStepId,
+  type TutorialStep,
+  type TutorialStepId,
+} from './tutorial-steps.js';

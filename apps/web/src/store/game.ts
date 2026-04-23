@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import type { TutorialStepId } from '@colonize/content';
 import type {
   ArchiveCharterId,
   BuildingType,
@@ -272,6 +273,17 @@ export interface GameState {
   // literal and this slice travel together — setting one without the
   // other is a bug — so `declareEndgame` flips both in a single set.
   endgame: EndgameOutcome | null;
+  // Tutorial engine state. `tutorialEnabled` is flipped on at new-game
+  // time from the FactionSelect toggle; `tutorialStep` is the currently
+  // mounted instructional modal (slice-driven self-mounting per
+  // CLAUDE.md — not a Screen literal, because tutorial callouts fire
+  // during whatever the player was doing); `firedTutorialSteps` is the
+  // fired-ledger that prevents the same scripted event from re-firing
+  // every turn. The trigger policy (which step fires when) is the pure
+  // `nextTutorialStep` sibling in apps/web/src/tutorial/tutorial-trigger.ts.
+  tutorialEnabled: boolean;
+  tutorialStep: TutorialStepId | null;
+  firedTutorialSteps: readonly TutorialStepId[];
   settings: SettingsState;
   setCurrentTurn: (turn: number) => void;
   advanceTurn: () => void;
@@ -394,6 +406,23 @@ export interface GameState {
   // wins (a subsequent tick that would also resolve never replaces the
   // original outcome).
   declareEndgame: (outcome: EndgameOutcome) => void;
+  // Enable or disable the tutorial engine. Flipping on clears the
+  // fired-ledger so a fresh tutorial run starts from step one; flipping
+  // off also dismisses any currently mounted step so the callout
+  // disappears immediately.
+  setTutorialEnabled: (enabled: boolean) => void;
+  // Mount the step with the given id. Records the id in the fired
+  // ledger so the same step never re-fires. No-op when another step is
+  // already mounted (the orchestrator should drain the current modal
+  // before opening the next).
+  showTutorialStep: (id: TutorialStepId) => void;
+  // Clear the currently mounted step without touching the fired ledger
+  // (player dismissed the single callout, tutorial continues).
+  dismissTutorialStep: () => void;
+  // Player chose to skip the rest of the tutorial. Disables the engine
+  // AND clears the currently mounted step; the fired ledger is left in
+  // place so re-enabling mid-game resumes from where it stopped.
+  skipTutorial: () => void;
   reset: () => void;
 }
 
@@ -440,6 +469,9 @@ const initialState = {
   sovereigntyWar: null as ConcordFleetCampaignJSON | null,
   sovereigntyBeat: null as SovereigntyMilestone | null,
   endgame: null as EndgameOutcome | null,
+  tutorialEnabled: false,
+  tutorialStep: null as TutorialStepId | null,
+  firedTutorialSteps: [] as readonly TutorialStepId[],
   settings: DEFAULT_SETTINGS,
 } as const;
 
@@ -759,5 +791,24 @@ export const useGameStore = create<GameState>((set) => ({
       if (state.endgame !== null) return {};
       return { endgame: outcome, screen: 'game-over' as Screen };
     }),
+  setTutorialEnabled: (enabled) =>
+    set(
+      enabled
+        ? { tutorialEnabled: true, firedTutorialSteps: [], tutorialStep: null }
+        : { tutorialEnabled: false, tutorialStep: null },
+    ),
+  showTutorialStep: (id) =>
+    set((state) => {
+      if (state.tutorialStep !== null) return {};
+      if (state.firedTutorialSteps.includes(id)) {
+        return { tutorialStep: id };
+      }
+      return {
+        tutorialStep: id,
+        firedTutorialSteps: [...state.firedTutorialSteps, id],
+      };
+    }),
+  dismissTutorialStep: () => set({ tutorialStep: null }),
+  skipTutorial: () => set({ tutorialEnabled: false, tutorialStep: null }),
   reset: () => set({ ...initialState }),
 }));

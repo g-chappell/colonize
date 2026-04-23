@@ -1,5 +1,5 @@
 import { afterEach, describe, it, expect, beforeEach } from 'vitest';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
 import { CombatActionType, CombatResult, type CombatOutcome } from '@colonize/core';
 import { App } from './App';
 import { bus } from './bus';
@@ -287,6 +287,88 @@ describe('App', () => {
       expect(screen.getByTestId('game-over-screen')).toBeInTheDocument();
       expect(screen.queryByTestId('hud')).not.toBeInTheDocument();
       expect(screen.queryByTestId('main-menu')).not.toBeInTheDocument();
+    });
+  });
+
+  describe('tutorial engine', () => {
+    it('fires the welcome step on the first game render when the tutorial is enabled', () => {
+      useGameStore.getState().setTutorialEnabled(true);
+      useGameStore.getState().setScreen('game');
+      render(<App />);
+      expect(screen.getByTestId('tutorial-step')).toBeInTheDocument();
+      expect(screen.getByTestId('tutorial-step-title')).toHaveTextContent('Welcome aboard');
+      expect(useGameStore.getState().tutorialStep).toBe('welcome');
+      expect(useGameStore.getState().firedTutorialSteps).toEqual(['welcome']);
+    });
+
+    it('does not mount the tutorial modal when tutorial is disabled', () => {
+      useGameStore.getState().setScreen('game');
+      render(<App />);
+      expect(screen.queryByTestId('tutorial-step')).not.toBeInTheDocument();
+    });
+
+    it('does not fire tutorial steps while the player is on the main menu', () => {
+      useGameStore.getState().setTutorialEnabled(true);
+      useGameStore.getState().setScreen('menu');
+      render(<App />);
+      expect(screen.queryByTestId('tutorial-step')).not.toBeInTheDocument();
+      expect(useGameStore.getState().tutorialStep).toBeNull();
+    });
+
+    it('dismissing a step advances to the next pending step after the turn ticks', () => {
+      useGameStore.getState().setTutorialEnabled(true);
+      useGameStore.getState().setScreen('game');
+      render(<App />);
+      expect(screen.getByTestId('tutorial-step-title')).toHaveTextContent('Welcome aboard');
+      fireEvent.click(screen.getByTestId('tutorial-step-next'));
+      expect(useGameStore.getState().tutorialStep).toBeNull();
+      act(() => {
+        useGameStore.getState().setCurrentTurn(1);
+      });
+      expect(useGameStore.getState().tutorialStep).toBe('end-turn');
+      expect(screen.getByTestId('tutorial-step-title')).toHaveTextContent('Ending a turn');
+    });
+
+    it('does not re-fire an already-fired step', () => {
+      useGameStore.getState().setTutorialEnabled(true);
+      useGameStore.getState().setScreen('game');
+      render(<App />);
+      fireEvent.click(screen.getByTestId('tutorial-step-next'));
+      expect(useGameStore.getState().tutorialStep).toBeNull();
+      act(() => {
+        useGameStore.setState({ currentTurn: 0 });
+      });
+      expect(useGameStore.getState().tutorialStep).toBeNull();
+    });
+
+    it('the skip button disables the tutorial and hides the modal', () => {
+      useGameStore.getState().setTutorialEnabled(true);
+      useGameStore.getState().setScreen('game');
+      render(<App />);
+      fireEvent.click(screen.getByTestId('tutorial-step-skip'));
+      expect(useGameStore.getState().tutorialEnabled).toBe(false);
+      expect(useGameStore.getState().tutorialStep).toBeNull();
+      expect(screen.queryByTestId('tutorial-step')).not.toBeInTheDocument();
+    });
+
+    it('renders the highlight arrow when a step has a targetTestId', () => {
+      useGameStore.getState().setTutorialEnabled(true);
+      useGameStore.getState().setScreen('game');
+      render(<App />);
+      fireEvent.click(screen.getByTestId('tutorial-step-next'));
+      act(() => {
+        useGameStore.getState().setCurrentTurn(1);
+      });
+      expect(screen.getByTestId('tutorial-step-highlight')).toBeInTheDocument();
+      expect(screen.getByTestId('tutorial-step-arrow')).toBeInTheDocument();
+    });
+
+    it('does not render the highlight for steps without a targetTestId', () => {
+      useGameStore.getState().setTutorialEnabled(true);
+      useGameStore.getState().setScreen('game');
+      render(<App />);
+      expect(screen.getByTestId('tutorial-step-title')).toHaveTextContent('Welcome aboard');
+      expect(screen.queryByTestId('tutorial-step-highlight')).not.toBeInTheDocument();
     });
   });
 });
