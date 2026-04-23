@@ -1250,7 +1250,7 @@ epics:
         tasks:
           - id: TASK-052
             title: Price-drift tick + event-triggered shocks
-            status: ready
+            status: in-progress
             priority: med
             complexity: medium
             workspaces:
@@ -1265,8 +1265,8 @@ epics:
             pr: null
             completed: null
             blocked_reason: null
-            last_attempted: null
-            attempt_count: 0
+            last_attempted: '2026-04-23T11:15:00Z'
+            attempt_count: 1
   - id: EPIC-08
     title: Combat & warfare
     description: |
