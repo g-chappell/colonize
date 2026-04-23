@@ -1652,7 +1652,7 @@ epics:
             attempt_count: 1
           - id: TASK-068
             title: Tithe notification + payment UI
-            status: ready
+            status: in-progress
             priority: med
             complexity: small
             workspaces:
@@ -1666,8 +1666,8 @@ epics:
             pr: null
             completed: null
             blocked_reason: null
-            last_attempted: null
-            attempt_count: 0
+            last_attempted: 2026-04-23T22:30:00Z
+            attempt_count: 1
       - id: STORY-40
         title: Tidewater Party boycott event
         description: |
