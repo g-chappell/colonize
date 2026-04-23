@@ -25,6 +25,18 @@
     ]
   },
   "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/hooks/pretool-safety.mjs",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
     "PostToolUse": [
       {
         "matcher": "Write|Edit",
@@ -34,6 +46,44 @@
             "command": "node .claude/hooks/post-edit.mjs",
             "timeout": 30,
             "statusMessage": "Running hooks..."
+          },
+          {
+            "type": "command",
+            "command": "node .claude/hooks/posttool-roadmap-render.mjs",
+            "timeout": 15
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/hooks/userprompt-cycle-guard.mjs",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/hooks/stop-format-check.mjs",
+            "timeout": 45
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/hooks/session-start-brief.mjs",
+            "timeout": 5
           }
         ]
       }
