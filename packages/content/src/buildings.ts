@@ -22,7 +22,10 @@ export type BuildingEntryId =
   | 'school'
   | 'study-hall'
   | 'shipyard'
-  | 'gun-deck';
+  | 'gun-deck'
+  | 'stockade'
+  | 'bastion'
+  | 'citadel';
 
 export interface BuildingEntry {
   readonly id: BuildingEntryId;
@@ -177,6 +180,33 @@ export const BUILDINGS: readonly BuildingEntry[] = [
       'Sand-moulds, bronze pours, a foreman who counts every swab. Without this house, your hulls sail light and your battery stays dumb.',
     cost: { planks: 20, forgework: 30 },
     prerequisites: ['forge'],
+  },
+  {
+    id: 'stockade',
+    name: 'Stockade',
+    summary: 'Sharpened-timber palisade — first line of cover when raiders land.',
+    description:
+      'A ringwall of pitched-pine stakes lashed at the head, dug deep against the surf-blown sand. Cheap, ugly, and the difference between a defended porch and an open beach when a Phantom press-gang comes ashore.',
+    cost: { timber: 20, fibre: 5 },
+    prerequisites: [],
+  },
+  {
+    id: 'bastion',
+    name: 'Bastion',
+    summary: 'Earth-and-plank bulwarks with reinforced firing steps.',
+    description:
+      'Stockade upgraded with rammed-earth bulwarks, a covered firing step, and salvage-iron facings keyed into the stake-line. Defenders shoot from cover; attackers wade through the killing-ground first.',
+    cost: { timber: 25, planks: 15, salvage: 10 },
+    prerequisites: ['stockade'],
+  },
+  {
+    id: 'citadel',
+    name: 'Citadel',
+    summary: 'Fortified keep with cast-iron plating and a forge-built sally-port.',
+    description:
+      'Bastion crowned with a Kraken-iron keep — forge-cast plates, salvage-bronze hinges, a sally-port the master-gunner can lock from the inside. The kind of work the Concord audits twice and never quite manages to outlaw.',
+    cost: { planks: 30, forgework: 25, salvage: 15 },
+    prerequisites: ['bastion'],
   },
 ];
 

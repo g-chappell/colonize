@@ -12,6 +12,18 @@ export {
 } from './ground-combat-action.js';
 export { assertValidGroundCombatant } from './ground-combatant.js';
 export type { GroundCombatant } from './ground-combatant.js';
-export { resolveGroundCombat, getTerrainDefenderModifier } from './ground-resolve.js';
+export {
+  resolveGroundCombat,
+  getTerrainDefenderModifier,
+  FORTIFICATION_NEUTRAL_MODIFIER,
+} from './ground-resolve.js';
 export type { GroundCombatContext, GroundCombatOutcome } from './ground-resolve.js';
 export type { GroundCombatEvent } from './ground-combat-event.js';
+export {
+  FORTIFICATION_NEUTRAL_BONUS,
+  FORTIFICATION_TIER_BONUS,
+  FORTIFICATION_TIERS_DESCENDING,
+  getFortificationDefenderBonus,
+  isFortificationTier,
+} from './fortification.js';
+export type { FortificationTierId } from './fortification.js';

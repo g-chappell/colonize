@@ -79,6 +79,25 @@ describe('BUILDINGS', () => {
     expect(getBuilding('study-hall').prerequisites).toContain('chapel-of-the-kraken');
   });
 
+  it('fortification ladder is foundable from a bare colony (stockade has no prerequisites)', () => {
+    expect(getBuilding('stockade').prerequisites).toEqual([]);
+  });
+
+  it('fortification ladder requires its predecessor (stockade < bastion < citadel)', () => {
+    expect(getBuilding('bastion').prerequisites).toContain('stockade');
+    expect(getBuilding('citadel').prerequisites).toContain('bastion');
+  });
+
+  it('fortification cost ascends stockade < bastion < citadel (design-intent ladder)', () => {
+    const sumCost = (entry: ReturnType<typeof getBuilding>) =>
+      Object.values(entry.cost).reduce((a, b) => a + b, 0);
+    const stockade = sumCost(getBuilding('stockade'));
+    const bastion = sumCost(getBuilding('bastion'));
+    const citadel = sumCost(getBuilding('citadel'));
+    expect(stockade).toBeLessThan(bastion);
+    expect(bastion).toBeLessThan(citadel);
+  });
+
   it('shipyard is strictly more expensive than a starter warehouse on overlapping resources', () => {
     const shipyard = getBuilding('shipyard');
     const warehouse = getBuilding('warehouse');

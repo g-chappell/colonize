@@ -15,7 +15,16 @@ export interface GroundCombatContext {
   readonly action: GroundCombatActionType;
   readonly terrain: TileType;
   readonly rng: () => number;
+  // Optional scalar the orchestrator computes from the defender's
+  // colony.buildings via getFortificationDefenderBonus. Composes
+  // multiplicatively with terrainDefenderModifier in the damage rolls,
+  // matching the terrain-modifier shape. Omitted = 1.0 (no fortification).
+  // Per CLAUDE.md "Scalar seams for pre-registry axis values": the combat
+  // resolver takes the scalar, the orchestrator owns the colony lookup.
+  readonly defenderFortificationBonus?: number;
 }
+
+export const FORTIFICATION_NEUTRAL_MODIFIER = 1.0;
 
 export interface GroundCombatOutcome {
   readonly action: GroundCombatActionType;
@@ -25,6 +34,7 @@ export interface GroundCombatOutcome {
   readonly events: readonly GroundCombatEvent[];
   readonly rpsMultiplier: number;
   readonly terrainDefenderModifier: number;
+  readonly defenderFortificationBonus: number;
 }
 
 const RPS_ADVANTAGE = 1.3;
@@ -61,12 +71,39 @@ export function resolveGroundCombat(
   }
   const rpsMultiplier = getRpsMultiplier(attacker.type, defender.type);
   const terrainDefenderModifier = getTerrainDefenderModifier(context.terrain);
+  const defenderFortificationBonus = normaliseFortificationBonus(
+    context.defenderFortificationBonus,
+  );
   switch (context.action) {
     case GroundCombatActionType.Engage:
-      return resolveEngage(attacker, defender, context, rpsMultiplier, terrainDefenderModifier);
+      return resolveEngage(
+        attacker,
+        defender,
+        context,
+        rpsMultiplier,
+        terrainDefenderModifier,
+        defenderFortificationBonus,
+      );
     case GroundCombatActionType.Flee:
-      return resolveFlee(attacker, defender, context, rpsMultiplier, terrainDefenderModifier);
+      return resolveFlee(
+        attacker,
+        defender,
+        context,
+        rpsMultiplier,
+        terrainDefenderModifier,
+        defenderFortificationBonus,
+      );
   }
+}
+
+function normaliseFortificationBonus(raw: number | undefined): number {
+  if (raw === undefined) return FORTIFICATION_NEUTRAL_MODIFIER;
+  if (typeof raw !== 'number' || !Number.isFinite(raw) || raw <= 0) {
+    throw new RangeError(
+      `resolveGroundCombat: defenderFortificationBonus must be a positive finite number (got ${raw})`,
+    );
+  }
+  return raw;
 }
 
 function resolveEngage(
@@ -75,10 +112,12 @@ function resolveEngage(
   context: GroundCombatContext,
   rpsMultiplier: number,
   terrainDefenderModifier: number,
+  defenderFortificationBonus: number,
 ): GroundCombatOutcome {
   const events: GroundCombatEvent[] = [];
+  const effectiveDefenderModifier = terrainDefenderModifier * defenderFortificationBonus;
   const attackerStrike = clampDamage(
-    rollEngageDamage(attacker.attack, rpsMultiplier, terrainDefenderModifier, context.rng),
+    rollEngageDamage(attacker.attack, rpsMultiplier, effectiveDefenderModifier, context.rng),
     defender.hp,
   );
   const defenderAfter = withHp(defender, defender.hp - attackerStrike);
@@ -97,11 +136,13 @@ function resolveEngage(
       events,
       rpsMultiplier,
       terrainDefenderModifier,
+      defenderFortificationBonus,
     };
   }
-  // Defender counterattack is not shielded by terrain — the attacker has to
-  // leave cover to press the assault. Inverse RPS multiplier: if attacker had
-  // the RPS advantage, the defender returns fire at a disadvantage.
+  // Defender counterattack is not shielded by terrain or fortifications —
+  // the attacker has to leave cover to press the assault. Inverse RPS
+  // multiplier: if attacker had the RPS advantage, the defender returns
+  // fire at a disadvantage.
   const counterDamage = clampDamage(
     rollCounterDamage(defenderAfter.attack, rpsMultiplier, context.rng),
     attacker.hp,
@@ -122,6 +163,7 @@ function resolveEngage(
     events,
     rpsMultiplier,
     terrainDefenderModifier,
+    defenderFortificationBonus,
   };
 }
 
@@ -131,6 +173,7 @@ function resolveFlee(
   context: GroundCombatContext,
   rpsMultiplier: number,
   terrainDefenderModifier: number,
+  defenderFortificationBonus: number,
 ): GroundCombatOutcome {
   const success = rollFleeSuccess(attacker.type, defender.type, context.rng);
   const partingDamage = clampDamage(
@@ -162,6 +205,7 @@ function resolveFlee(
     events,
     rpsMultiplier,
     terrainDefenderModifier,
+    defenderFortificationBonus,
   };
 }
 

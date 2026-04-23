@@ -164,6 +164,12 @@ export {
   assertValidGroundCombatant,
   resolveGroundCombat,
   getTerrainDefenderModifier,
+  FORTIFICATION_NEUTRAL_MODIFIER,
+  FORTIFICATION_NEUTRAL_BONUS,
+  FORTIFICATION_TIER_BONUS,
+  FORTIFICATION_TIERS_DESCENDING,
+  getFortificationDefenderBonus,
+  isFortificationTier,
 } from './combat/index.js';
 export type {
   Combatant,
@@ -175,6 +181,7 @@ export type {
   GroundCombatContext,
   GroundCombatOutcome,
   GroundCombatEvent,
+  FortificationTierId,
 } from './combat/index.js';
 export {
   DiplomacyAction,
