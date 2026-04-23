@@ -10,8 +10,8 @@ _Created: 2026-04-20_
 
 - **Total tasks:** 90
 - **Done:** 70 (78%)
-- **Ready:** 20
-- **In progress:** 0
+- **Ready:** 19
+- **In progress:** 1
 - **Blocked:** 0
 
 ---
@@ -579,7 +579,7 @@ Collective).
   > cultists raid; Sons of Scylla ambush; Scarlet Forge shows up
   > as a rare tech-trader; Blackwater Collective as a black-market
   > vendor in Tortuga.
-  - :black_circle: **TASK-061** — NPC faction templates + encounter rules  `med` `medium` _(core, content)_  
+  - :large_orange_diamond: **TASK-061** — NPC faction templates + encounter rules  `med` `medium` _(core, content)_  
     _depends on: TASK-058, TASK-060_
     > Each NPC faction has a spawn rule, encounter behaviour,
     > and flavour text. Minimal AI — fixed behaviours. Not
