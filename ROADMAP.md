@@ -9,9 +9,9 @@ _Created: 2026-04-20_
 ## Summary
 
 - **Total tasks:** 90
-- **Done:** 59 (66%)
+- **Done:** 60 (67%)
 - **Ready:** 30
-- **In progress:** 1
+- **In progress:** 0
 - **Blocked:** 0
 
 ---
@@ -698,7 +698,7 @@ salvaged-futurism).
   > Static/cinematic opener set in NW 2191: Sparrow's Diary
   > entries framing the Endeavour's return and the player's
   > assumption of the successor role.
-  - :large_orange_diamond: **TASK-074** — Prologue scene + pageable diary UI  `high` `medium` _(web, content)_  
+  - :white_check_mark: **TASK-074** — Prologue scene + pageable diary UI  `high` `medium` _(web, content)_ · [PR](https://github.com/g-chappell/colonize/pull/81)  
     _depends on: TASK-013_
     > Page-by-page diary presentation with period typography,
     > parchment background, subtle audio. Skip button present.
