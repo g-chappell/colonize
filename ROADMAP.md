@@ -10,8 +10,8 @@ _Created: 2026-04-20_
 
 - **Total tasks:** 90
 - **Done:** 71 (79%)
-- **Ready:** 19
-- **In progress:** 0
+- **Ready:** 18
+- **In progress:** 1
 - **Blocked:** 0
 
 ---
@@ -584,7 +584,7 @@ Collective).
     > Each NPC faction has a spawn rule, encounter behaviour,
     > and flavour text. Minimal AI — fixed behaviours. Not
     > diplomatic entities (can't sign treaties).
-  - :black_circle: **TASK-062** — Tortuga black-market vendor UI  `med` `small` _(web, content)_  
+  - :large_orange_diamond: **TASK-062** — Tortuga black-market vendor UI  `med` `small` _(web, content)_  
     _depends on: TASK-061, TASK-048_
     > In Tortuga colony, Blackwater Collective vendor offers
     > rare-good buy/sell at odd prices + occasional Kraken
