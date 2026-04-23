@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { TUTORIAL_STEPS } from '@colonize/content';
 import './App.css';
+import { BlackMarketModal } from './blackmarket/BlackMarketModal';
 import { ColonyOverlay } from './colony/ColonyOverlay';
 import { CombatOverlay } from './combat/CombatOverlay';
 import { CouncilPickModal } from './council/CouncilPickModal';
@@ -97,6 +98,7 @@ export function App() {
         <RumourRevealModal />
         <CombatOverlay />
         <CouncilPickModal />
+        <BlackMarketModal />
         <SovereigntyBeatModal />
         <TutorialStepModal />
         {screen === 'pause' && <PauseOverlay />}
