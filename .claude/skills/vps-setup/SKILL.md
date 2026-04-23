@@ -1,7 +1,8 @@
 ---
 name: vps-setup
 description: One-time VPS bootstrap. Installs Docker + nginx + gh CLI, authenticates gh, writes systemd unit for Claude Code agent, writes nginx reverse-proxy config, prompts for .env secrets. Run ONCE on the VPS per project. Not for local dev machines.
-user_invocable: true
+user-invocable: true
+disable-model-invocation: true
 ---
 
 # /vps-setup

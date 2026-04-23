@@ -1,7 +1,7 @@
 ---
 name: deploy
 description: Build + deploy the app via docker compose, then run a health check, rolling back to the previous image if health fails. Reads deploy config from .claude/project.json. Inert if deploy.target is empty.
-user_invocable: true
+user-invocable: true
 ---
 
 # /deploy

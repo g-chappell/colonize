@@ -1,7 +1,8 @@
 ---
 name: init-autonomous
 description: THE setup wizard — bootstrap a new project end-to-end (env check, GitHub, PM, architect, VPS, workspace, roadmap, cadence, first deploy). One command from empty directory to running autonomous agent.
-user_invocable: true
+user-invocable: true
+disable-model-invocation: true
 ---
 
 # /init-autonomous

@@ -1,7 +1,7 @@
 ---
 name: roadmap-add
 description: Add a single epic, story, or task to roadmap.yml without a full interview. Use for quick additions — a one-line task under an existing story, or a single story under an existing epic. For multi-task epics use /pm-brainstorm → /roadmap-expand.
-user_invocable: true
+user-invocable: true
 ---
 
 # /roadmap-add

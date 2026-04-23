@@ -1,7 +1,7 @@
 ---
 name: autonomous-approve
 description: DEPRECATED — self-improvement approval is no longer gated. This skill now functions as a revert helper for rolling back a bad self-improvement refinement. Lists recent review PRs and walks you through `gh pr close` (pre-merge) or `gh pr revert` (post-merge) for the refinement you want out.
-user_invocable: true
+user-invocable: true
 ---
 
 # /autonomous-approve (DEPRECATED — revert helper only)
