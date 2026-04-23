@@ -9,8 +9,8 @@ _Created: 2026-04-20_
 ## Summary
 
 - **Total tasks:** 90
-- **Done:** 67 (74%)
-- **Ready:** 23
+- **Done:** 68 (76%)
+- **Ready:** 22
 - **In progress:** 0
 - **Blocked:** 0
 
@@ -525,7 +525,7 @@ routes, colony fortifications. The stick to the carrot of trade.
 - **STORY-32** — Raiding trade routes
   > Privateer units can intercept merchant routes, stealing cargo
   > without a full combat if intercept is unopposed.
-  - :black_circle: **TASK-056** — Privateer raid action + merchant-route vulnerability  `med` `medium` _(core)_  
+  - :white_check_mark: **TASK-056** — Privateer raid action + merchant-route vulnerability  `med` `medium` _(core)_ · [PR](https://github.com/g-chappell/colonize/pull/92)  
     _depends on: TASK-050, TASK-053_
     > Privateer can ambush a tile; merchant ships passing
     > through are raided (cargo stolen, ship undamaged if no

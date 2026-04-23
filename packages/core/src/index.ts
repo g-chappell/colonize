@@ -309,3 +309,11 @@ export type {
   TickMerchantRouteResult,
   MerchantRouteActionOutcome,
 } from './route/index.js';
+export { ALL_RAID_RESULTS, BASE_RAID_LOOT_FRACTION, resolveRaid } from './raid/index.js';
+export type {
+  RaidEvent,
+  RaidLootSnapshot,
+  RaidOutcome,
+  RaidResult,
+  ResolveRaidOpts,
+} from './raid/index.js';
