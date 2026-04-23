@@ -10,8 +10,8 @@ _Created: 2026-04-20_
 
 - **Total tasks:** 90
 - **Done:** 65 (72%)
-- **Ready:** 25
-- **In progress:** 0
+- **Ready:** 24
+- **In progress:** 1
 - **Blocked:** 0
 
 ---
@@ -476,7 +476,7 @@ routes. The economic backbone of the mid-game.
     > Ship's AutoRoute state ticks forward each turn. Breaks if
     > the route becomes invalid (colony destroyed, ship
     > captured).
-  - :black_circle: **TASK-051** — Route-builder UI  `med` `medium` _(web)_  
+  - :large_orange_diamond: **TASK-051** — Route-builder UI  `med` `medium` _(web)_  
     _depends on: TASK-050_
     > Pick colonies, configure per-stop actions, save/name
     > route, assign to ship. Edit/duplicate routes. Visualize
