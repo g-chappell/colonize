@@ -9,9 +9,9 @@ _Created: 2026-04-20_
 ## Summary
 
 - **Total tasks:** 90
-- **Done:** 65 (72%)
+- **Done:** 66 (73%)
 - **Ready:** 24
-- **In progress:** 1
+- **In progress:** 0
 - **Blocked:** 0
 
 ---
@@ -476,7 +476,7 @@ routes. The economic backbone of the mid-game.
     > Ship's AutoRoute state ticks forward each turn. Breaks if
     > the route becomes invalid (colony destroyed, ship
     > captured).
-  - :large_orange_diamond: **TASK-051** — Route-builder UI  `med` `medium` _(web)_  
+  - :white_check_mark: **TASK-051** — Route-builder UI  `med` `medium` _(web)_ · [PR](https://github.com/g-chappell/colonize/pull/90)  
     _depends on: TASK-050_
     > Pick colonies, configure per-stop actions, save/name
     > route, assign to ship. Edit/duplicate routes. Visualize
