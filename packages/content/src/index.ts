@@ -158,3 +158,11 @@ export {
   type AbyssalStanceFlavourEntry,
   type AbyssalStanceId,
 } from './abyssal-stance.js';
+
+export {
+  NPC_FACTION_FLAVOURS,
+  getNpcFactionFlavour,
+  isNpcFactionId,
+  type NpcFactionFlavourEntry,
+  type NpcFactionId,
+} from './npc-factions.js';

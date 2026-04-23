@@ -1482,7 +1482,7 @@ epics:
         tasks:
           - id: TASK-061
             title: NPC faction templates + encounter rules
-            status: ready
+            status: done
             priority: med
             complexity: medium
             workspaces:
@@ -1495,11 +1495,11 @@ epics:
             depends_on:
               - TASK-058
               - TASK-060
-            pr: null
-            completed: null
+            pr: https://github.com/g-chappell/colonize/pull/101
+            completed: "2026-04-23"
             blocked_reason: null
-            last_attempted: null
-            attempt_count: 0
+            last_attempted: "2026-04-23T14:30:00Z"
+            attempt_count: 1
           - id: TASK-062
             title: Tortuga black-market vendor UI
             status: ready
