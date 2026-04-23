@@ -1350,7 +1350,7 @@ epics:
         tasks:
           - id: TASK-056
             title: Privateer raid action + merchant-route vulnerability
-            status: in-progress
+            status: done
             priority: med
             complexity: medium
             workspaces:
@@ -1362,8 +1362,8 @@ epics:
             depends_on:
               - TASK-050
               - TASK-053
-            pr: null
-            completed: null
+            pr: https://github.com/g-chappell/colonize/pull/92
+            completed: '2026-04-23'
             blocked_reason: null
             last_attempted: '2026-04-23T07:30:00Z'
             attempt_count: 1
