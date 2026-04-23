@@ -25,6 +25,8 @@ const UNIT_TYPE_NAMES: Readonly<Record<UnitType, string>> = {
   [UnitType.Frigate]: 'Frigate',
   [UnitType.ShipOfTheLine]: 'Ship of the Line',
   [UnitType.Privateer]: 'Privateer',
+  [UnitType.Cartographer]: 'Cartographer',
+  [UnitType.Explorer]: 'Explorer',
   [UnitType.Marines]: 'Marines',
   [UnitType.Dragoons]: 'Dragoons',
   [UnitType.Pikemen]: 'Pikemen',
