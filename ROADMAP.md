@@ -10,8 +10,8 @@ _Created: 2026-04-20_
 
 - **Total tasks:** 90
 - **Done:** 59 (66%)
-- **Ready:** 31
-- **In progress:** 0
+- **Ready:** 30
+- **In progress:** 1
 - **Blocked:** 0
 
 ---
@@ -698,7 +698,7 @@ salvaged-futurism).
   > Static/cinematic opener set in NW 2191: Sparrow's Diary
   > entries framing the Endeavour's return and the player's
   > assumption of the successor role.
-  - :black_circle: **TASK-074** — Prologue scene + pageable diary UI  `high` `medium` _(web, content)_  
+  - :large_orange_diamond: **TASK-074** — Prologue scene + pageable diary UI  `high` `medium` _(web, content)_  
     _depends on: TASK-013_
     > Page-by-page diary presentation with period typography,
     > parchment background, subtle audio. Skip button present.
