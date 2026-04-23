@@ -150,3 +150,11 @@ export {
   type TutorialStep,
   type TutorialStepId,
 } from './tutorial-steps.js';
+
+export {
+  ABYSSAL_STANCE_FLAVOURS,
+  getAbyssalStanceFlavour,
+  isAbyssalStanceId,
+  type AbyssalStanceFlavourEntry,
+  type AbyssalStanceId,
+} from './abyssal-stance.js';

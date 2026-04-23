@@ -1454,7 +1454,7 @@ epics:
         tasks:
           - id: TASK-060
             title: Abyssal stance system + event triggers
-            status: ready
+            status: done
             priority: med
             complexity: medium
             workspaces:
@@ -1467,11 +1467,11 @@ epics:
               aggression).
             depends_on:
               - TASK-017
-            pr: null
-            completed: null
+            pr: https://github.com/g-chappell/colonize/pull/95
+            completed: 2026-04-23
             blocked_reason: null
-            last_attempted: null
-            attempt_count: 0
+            last_attempted: 2026-04-23T14:30:00Z
+            attempt_count: 1
       - id: STORY-36
         title: NPC encounter factions
         description: |
