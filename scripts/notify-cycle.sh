@@ -47,16 +47,24 @@ if [[ ! -f "$LOG" ]]; then
 fi
 
 # Extract the most recent "### Run" block. Picks the block whose
-# `### Run [YYYY-MM-DD HH:MM]` timestamp is lexicographically largest,
-# NOT the last one by file position — defends against the log briefly
-# drifting out of chronological order (seen historically when a cycle
-# inserted its entry near the top of the file instead of appending).
-# ISO-8601 sorts lexicographically, so string max == chronological max.
+# timestamp is lexicographically largest, NOT the last one by file
+# position — defends against the log briefly drifting out of
+# chronological order (seen historically when a cycle inserted its
+# entry near the top of the file instead of appending).
+#
+# Accepts two timestamp formats so format drift in the write path
+# doesn't silently drop entries:
+#   [YYYY-MM-DD HH:MM]          — canonical, written by scripts/append-agent-log.sh
+#   [YYYY-MM-DDTHH:MM(:SS)?Z]   — ISO-8601 variant, sometimes emitted by hand
+# Both sort lexicographically within a day, and within a minute the
+# ISO form sorts after the space form (because 'T' > ' '), so string
+# max == chronological max across the mixed set.
 LAST_ENTRY="$(awk '
   function flush(   _ts) {
     if (buf == "") return
     _ts = ""
-    if (match(buf, /^### Run \[[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}\]/)) {
+    if (match(buf, /^### Run \[[0-9]{4}-[0-9]{2}-[0-9]{2}[ T][0-9]{2}:[0-9]{2}(:[0-9]{2})?Z?\]/)) {
+      # Strip leading "### Run [" (9 chars) and trailing "]" (1 char).
       _ts = substr(buf, RSTART + 9, RLENGTH - 10)
     }
     if (_ts > best_ts) { best_ts = _ts; best = buf }
