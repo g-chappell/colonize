@@ -10,8 +10,8 @@ _Created: 2026-04-20_
 
 - **Total tasks:** 90
 - **Done:** 62 (69%)
-- **Ready:** 28
-- **In progress:** 0
+- **Ready:** 27
+- **In progress:** 1
 - **Blocked:** 0
 
 ---
@@ -775,7 +775,7 @@ site.
     > /auth/magic-link + /auth/verify + /me endpoints. Session
     > cookie. Schema in shared. Postgres-backed users table
     > with Drizzle or Kysely (pick in PR).
-  - :black_circle: **TASK-083** — Cloud save endpoints + client sync  `high` `medium` _(server, web, shared, core)_  
+  - :large_orange_diamond: **TASK-083** — Cloud save endpoints + client sync  `high` `medium` _(server, web, shared, core)_  
     _depends on: TASK-082_
     > PUT/GET /saves/:slot. Client syncs after each turn (debounced).
     > Merge strategy: last-writer-wins with a version counter.

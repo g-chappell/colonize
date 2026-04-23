@@ -2021,7 +2021,7 @@ epics:
             attempt_count: 1
           - id: TASK-083
             title: Cloud save endpoints + client sync
-            status: ready
+            status: in-progress
             priority: high
             complexity: medium
             workspaces:
@@ -2038,8 +2038,8 @@ epics:
             pr: null
             completed: null
             blocked_reason: null
-            last_attempted: null
-            attempt_count: 0
+            last_attempted: "2026-04-23T05:00:00Z"
+            attempt_count: 1
       - id: STORY-49
         title: Ad integration
         description: |
