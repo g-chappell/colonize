@@ -1090,4 +1090,49 @@ describe('useGameStore', () => {
       expect(useGameStore.getState().sovereigntyBeat).toBeNull();
     });
   });
+
+  describe('endgame', () => {
+    it('declareEndgame flips endgame slice and routes to the game-over screen atomically', () => {
+      useGameStore.getState().declareEndgame({
+        kind: 'victory',
+        result: 'sovereignty-victory',
+        turn: 42,
+      });
+      const state = useGameStore.getState();
+      expect(state.endgame).toEqual({
+        kind: 'victory',
+        result: 'sovereignty-victory',
+        turn: 42,
+      });
+      expect(state.screen).toBe('game-over');
+    });
+
+    it('declareEndgame is a no-op once an endgame is already declared', () => {
+      useGameStore.getState().declareEndgame({
+        kind: 'victory',
+        result: 'sovereignty-victory',
+        turn: 42,
+      });
+      useGameStore.getState().declareEndgame({
+        kind: 'defeat',
+        result: 'annihilated',
+        turn: 99,
+      });
+      const state = useGameStore.getState();
+      expect(state.endgame?.kind).toBe('victory');
+      expect(state.endgame?.turn).toBe(42);
+    });
+
+    it('reset clears the endgame slice and returns to menu', () => {
+      useGameStore.getState().declareEndgame({
+        kind: 'defeat',
+        result: 'annihilated',
+        turn: 10,
+      });
+      useGameStore.getState().reset();
+      const state = useGameStore.getState();
+      expect(state.endgame).toBeNull();
+      expect(state.screen).toBe('menu');
+    });
+  });
 });

@@ -1,4 +1,4 @@
-import { ALL_TURN_PHASES, TurnManager, TurnPhase } from '@colonize/core';
+import { ALL_TURN_PHASES, TurnManager, TurnPhase, checkEndgame } from '@colonize/core';
 import { bus } from '../bus';
 import { useGameStore } from '../store/game';
 
@@ -32,6 +32,25 @@ function bindManagerToStore(manager: TurnManager): () => void {
       }),
     );
   }
+  // Victory/loss check on End-exit: the turn-cycle has finished resolving
+  // and the store slices (colonies, units, sovereigntyWar) reflect the
+  // end-of-turn state. `declareEndgame` is itself idempotent (no-op once
+  // an outcome is already set), so repeated triggers from a stalled-
+  // re-enter scenario are harmless.
+  unsubs.push(
+    manager.on(TurnPhase.End, 'exit', (ctx) => {
+      const state = useGameStore.getState();
+      if (state.endgame !== null) return;
+      const war = state.sovereigntyWar;
+      const outcome = checkEndgame({
+        turn: ctx.turn,
+        colonyCount: state.colonies.filter((c) => c.faction === state.faction).length,
+        fleetCount: state.units.filter((u) => u.faction === state.faction).length,
+        sovereigntyWarVictorious: war !== null && war.turnsElapsed >= war.turnsRequired,
+      });
+      if (outcome) useGameStore.getState().declareEndgame(outcome);
+    }),
+  );
   return () => {
     for (const u of unsubs) u();
   };
