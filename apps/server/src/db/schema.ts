@@ -4,7 +4,16 @@
 // can issue typed queries. Keep the two in sync — when adding a column,
 // add a new numbered migration AND update the matching pgTable here.
 
-import { pgTable, varchar, timestamp, index, uniqueIndex } from 'drizzle-orm/pg-core';
+import {
+  pgTable,
+  varchar,
+  timestamp,
+  integer,
+  jsonb,
+  index,
+  primaryKey,
+  uniqueIndex,
+} from 'drizzle-orm/pg-core';
 
 export const users = pgTable(
   'users',
@@ -46,5 +55,21 @@ export const magicLinks = pgTable(
   },
   (t) => ({
     userIdx: index('magic_links_user_id_idx').on(t.userId),
+  }),
+);
+
+export const saves = pgTable(
+  'saves',
+  {
+    userId: varchar('user_id', { length: 36 })
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    slot: varchar('slot', { length: 32 }).notNull(),
+    version: integer('version').notNull(),
+    payload: jsonb('payload').notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => ({
+    pk: primaryKey({ columns: [t.userId, t.slot] }),
   }),
 );

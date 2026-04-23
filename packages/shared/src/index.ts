@@ -58,6 +58,53 @@ export const ErrorResponse = z.object({
 });
 export type ErrorResponse = z.infer<typeof ErrorResponse>;
 
+// --- Cloud save (server endpoints in apps/server) ---
+
+// Slot identifier. Kept narrow enough to be URL-safe and short enough to
+// index in Postgres without a TEXT column; the server rejects anything
+// outside `[a-z0-9_-]{1,32}`.
+export const SaveSlotId = z
+  .string()
+  .min(1)
+  .max(32)
+  .regex(/^[a-z0-9_-]+$/, 'slot must match /^[a-z0-9_-]+$/');
+export type SaveSlotId = z.infer<typeof SaveSlotId>;
+
+// Opaque payload — the server never introspects save contents; it only
+// tracks the version + the last-written JSON blob. Widened as `unknown`
+// so a future save-format migration inside @colonize/core doesn't force
+// a shared schema bump.
+export const SavePayload = z.unknown();
+export type SavePayload = z.infer<typeof SavePayload>;
+
+// PUT /saves/:slot — client writes a save at a slot. `version` is a
+// monotonically increasing integer owned by the client; the server
+// rejects writes whose version is <= the server's current version for
+// that (user, slot) pair with `stale_version` so a stale tab cannot
+// clobber a newer save written from another device.
+export const PutSaveRequest = z.object({
+  version: z.number().int().positive(),
+  payload: SavePayload,
+});
+export type PutSaveRequest = z.infer<typeof PutSaveRequest>;
+
+export const PutSaveResponse = z.object({
+  slot: SaveSlotId,
+  version: z.number().int().positive(),
+  updatedAt: z.string().datetime(),
+});
+export type PutSaveResponse = z.infer<typeof PutSaveResponse>;
+
+// GET /saves/:slot — client reads the latest save at a slot. Returns
+// 404 when no save has ever been written for (user, slot).
+export const GetSaveResponse = z.object({
+  slot: SaveSlotId,
+  version: z.number().int().positive(),
+  updatedAt: z.string().datetime(),
+  payload: SavePayload,
+});
+export type GetSaveResponse = z.infer<typeof GetSaveResponse>;
+
 // Event payloads for the web client's pub/sub bus (apps/web/src/bus.ts).
 // Extend via declaration merging as HUD↔Phaser events are introduced.
 export interface GameEvents {
