@@ -207,3 +207,21 @@ gap-free.
 - Refinements:
   1. 3aeab90 — `scripts/deploy.sh` adds `up -d --no-recreate` pass before the rolling app recreate so freshly-introduced compose dependents (db, future Redis/mailcatcher/S3-mock) are started on first deploy. Driven by TASK-082's deploy outcome — first attempt rolled back after 90s healthcheck timeout because the postgres `db` container had never been created on the host; manual recovery was `docker compose up -d db` then re-run deploy. The two-pass shape (`up -d --no-recreate` then `up -d --no-deps --force-recreate app`) is steady-state-equivalent to the single-pass shape (the first pass is a no-op when all services are healthy) but auto-recovers from the missing-dependent case. CLAUDE.md note deliberately omitted because the script comment + commit message carry the rationale at the only call-site; a Tier 3 entry for a script-level invariant the script itself enforces would be noise.
 
+---
+
+## Review [2026-04-23 14:30] — after TASK-051, TASK-052, TASK-056, TASK-057, TASK-060
+- Success streak: 5
+- Patterns identified: 0 cross-cutting (≥ 2-entry) novel patterns
+- Proposals drafted: 0
+- Proposals de-duplicated: 0
+- Refinements committed: 0
+- PR: n/a
+- Outcome: skipped-no-patterns
+- Files touched: none
+
+The five tasks in this window were heavy on *successful re-application* of already-codified Tier 3 rules — Scalar seams for pre-registry axis values (TASK-056 factionRaidLootMultiplier reuse, TASK-057 defenderFortificationBonus, TASK-060 stance modifier multipliers), Ship the entity's primitive; leave iteration / scheduling to the task that owns the collection (TASK-056 raid resolver vs orchestrator, TASK-060 stance tracker vs orchestrator), Trim consumer-specific fields off save-format registries (TASK-057 BuildingDefinition omits defenseBonus, TASK-060 stance/action enums omit consumer-axis fields), Relational invariants over literal numbers in balance-tunable registry tests (TASK-052 price-shock direction-sign + step-divisibility, TASK-056 phantom > non-phantom on identical victim, TASK-057 fortification ladder + cost ladder + stroke-width ladder, TASK-060 KRAKEN_STIR + PALE_WATCH stance orderings), Pure-sibling module pattern for Phaser game code + the React-component variant (TASK-051 routes-math.ts + route-layout.ts, TASK-057 colony-fortification.ts), Map/Set-backed save-format emitters sort entries in toJSON for byte-parity determinism (TASK-056 alphabetical resource-event order, TASK-060 sorted toJSON).
+
+Single-entry candidates considered + deferred per the ≥ 2-entry bar: (a) TASK-056's "Discriminated-union outcome with state-equivalent-but-semantically-distinct cases — 'empty-target' vs 'success' with no loot" — clean codifiable rule but only one instance in this window; (b) TASK-052's "Content table carries a redundant `direction: 'spike'|'crash'` label even though `Math.sign(volumeDelta)` encodes the same — narrative copy needs the label, CI invariant pins drift" — interesting counterweight to "Trim consumer-specific fields" but only one instance; (c) TASK-051's "Merge main into the feature branch (NOT rebase) when PR comes up BEHIND — non-destructive, squash-merge collapses the merge commit" — actionable workflow guidance and demonstrably worth pinning (this run rebased instead) but only one instance and arguably belongs in `.claude/skills/autonomous-run.md` Step 9/10 rather than CLAUDE.md; (d) TASK-056's "Faction validation degrades gracefully via `isPlayableFactionId(faction)` for non-playable factions — default rather than throw at the system seam" — clean rule but single entry.
+
+Healthy outcome: the existing rule set is doing its job — five tasks landed without a single new gotcha. No PR opened.
+
