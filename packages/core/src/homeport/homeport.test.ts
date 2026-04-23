@@ -5,6 +5,7 @@ import {
   MIN_MID_PRICE,
   MAX_MID_PRICE,
   PRICE_VOLUME_STEP,
+  PRICE_DRIFT_STEP,
   type HomePortJSON,
 } from './homeport.js';
 
@@ -245,5 +246,143 @@ describe('HomePort.toJSON / fromJSON', () => {
     a.recordPlayerSale('timber', PRICE_VOLUME_STEP * 4);
     expect(b.netVolume('timber')).toBe(0);
     expect(b.midPrice('timber')).toBe(10);
+  });
+});
+
+describe('HomePort.tickPriceDrift', () => {
+  it('is a no-op when every netVolume is already zero', () => {
+    const port = seed();
+    const before = port.toJSON();
+    port.tickPriceDrift();
+    expect(port.toJSON()).toEqual(before);
+  });
+
+  it('nudges a positive netVolume toward zero by PRICE_DRIFT_STEP', () => {
+    const port = seed({ netVolume: { timber: 7 } });
+    port.tickPriceDrift();
+    expect(port.netVolume('timber')).toBe(7 - PRICE_DRIFT_STEP);
+  });
+
+  it('nudges a negative netVolume toward zero by PRICE_DRIFT_STEP', () => {
+    const port = seed({ netVolume: { timber: -7 } });
+    port.tickPriceDrift();
+    expect(port.netVolume('timber')).toBe(-7 + PRICE_DRIFT_STEP);
+  });
+
+  it('does not overshoot zero (|v| < PRICE_DRIFT_STEP snaps to 0)', () => {
+    const port = seed({ netVolume: { timber: 1, salvage: -1 } });
+    port.tickPriceDrift();
+    expect(port.netVolume('timber')).toBe(0);
+    expect(port.netVolume('salvage')).toBe(0);
+  });
+
+  it('drifts every traded resource independently in one tick', () => {
+    const port = seed({ netVolume: { timber: 4, fibre: -3, salvage: 0 } });
+    port.tickPriceDrift();
+    expect(port.netVolume('timber')).toBe(4 - PRICE_DRIFT_STEP);
+    expect(port.netVolume('fibre')).toBe(-3 + PRICE_DRIFT_STEP);
+    expect(port.netVolume('salvage')).toBe(0);
+  });
+
+  it('repeated ticks eventually return every price to baseline', () => {
+    const port = seed({ netVolume: { timber: 25, fibre: -17 } });
+    for (let i = 0; i < 100; i++) port.tickPriceDrift();
+    expect(port.netVolume('timber')).toBe(0);
+    expect(port.netVolume('fibre')).toBe(0);
+    expect(port.midPrice('timber')).toBe(port.basePrice('timber'));
+    expect(port.midPrice('fibre')).toBe(port.basePrice('fibre'));
+  });
+
+  it('entries that reach zero are purged from the sparse map', () => {
+    const port = seed({ netVolume: { timber: PRICE_DRIFT_STEP } });
+    port.tickPriceDrift();
+    expect(port.toJSON().netVolume).toEqual({});
+  });
+
+  it('drift output is deterministic regardless of construction order', () => {
+    const a = new HomePort({
+      id: 'p',
+      faction: 'otk',
+      basePrices: { timber: 10, fibre: 8 },
+      netVolume: { timber: 3, fibre: -2 },
+    });
+    const b = new HomePort({
+      id: 'p',
+      faction: 'otk',
+      basePrices: { fibre: 8, timber: 10 },
+      netVolume: { fibre: -2, timber: 3 },
+    });
+    a.tickPriceDrift();
+    b.tickPriceDrift();
+    expect(JSON.stringify(a.toJSON())).toBe(JSON.stringify(b.toJSON()));
+  });
+});
+
+describe('HomePort.applyPriceShock', () => {
+  it('a positive delta (crash) lowers the mid-price', () => {
+    const port = seed();
+    port.applyPriceShock('timber', PRICE_VOLUME_STEP * 3);
+    expect(port.midPrice('timber')).toBe(10 - 3);
+    expect(port.netVolume('timber')).toBe(PRICE_VOLUME_STEP * 3);
+  });
+
+  it('a negative delta (spike) raises the mid-price', () => {
+    const port = seed();
+    port.applyPriceShock('timber', -PRICE_VOLUME_STEP * 3);
+    expect(port.midPrice('timber')).toBe(10 + 3);
+    expect(port.netVolume('timber')).toBe(-PRICE_VOLUME_STEP * 3);
+  });
+
+  it('mid-price remains bounded below by MIN_MID_PRICE even on a huge crash', () => {
+    const port = seed();
+    port.applyPriceShock('timber', PRICE_VOLUME_STEP * 1000);
+    expect(port.midPrice('timber')).toBe(MIN_MID_PRICE);
+    expect(port.buyBackPrice('timber')).toBe(MIN_MID_PRICE - PRICE_SPREAD);
+  });
+
+  it('mid-price remains bounded above by MAX_MID_PRICE even on a huge spike', () => {
+    const port = seed();
+    port.applyPriceShock('timber', -PRICE_VOLUME_STEP * 1000);
+    expect(port.midPrice('timber')).toBe(MAX_MID_PRICE);
+    expect(port.sellPrice('timber')).toBe(MAX_MID_PRICE + PRICE_SPREAD);
+  });
+
+  it('stacks with prior player volume (shocks compose additively)', () => {
+    const port = seed();
+    port.recordPlayerSale('timber', PRICE_VOLUME_STEP);
+    port.applyPriceShock('timber', PRICE_VOLUME_STEP);
+    expect(port.netVolume('timber')).toBe(PRICE_VOLUME_STEP * 2);
+    expect(port.midPrice('timber')).toBe(10 - 2);
+  });
+
+  it('a shock + opposite shock of equal magnitude clears netVolume', () => {
+    const port = seed();
+    port.applyPriceShock('timber', PRICE_VOLUME_STEP * 2);
+    port.applyPriceShock('timber', -PRICE_VOLUME_STEP * 2);
+    expect(port.netVolume('timber')).toBe(0);
+    expect(port.midPrice('timber')).toBe(10);
+  });
+
+  it('is reversible by subsequent drift ticks', () => {
+    const port = seed();
+    port.applyPriceShock('timber', PRICE_VOLUME_STEP * 2);
+    expect(port.midPrice('timber')).toBeLessThan(10);
+    for (let i = 0; i < PRICE_VOLUME_STEP * 2; i++) port.tickPriceDrift();
+    expect(port.netVolume('timber')).toBe(0);
+    expect(port.midPrice('timber')).toBe(10);
+  });
+
+  it.each([
+    ['zero delta', 0],
+    ['fractional delta', 1.5],
+    ['NaN delta', Number.NaN],
+  ])('rejects invalid volumeDelta (%s)', (_label, delta) => {
+    const port = seed();
+    expect(() => port.applyPriceShock('timber', delta)).toThrow(RangeError);
+  });
+
+  it('rejects a shock on an untraded resource', () => {
+    const port = seed();
+    expect(() => port.applyPriceShock('forgework', PRICE_VOLUME_STEP)).toThrow(RangeError);
   });
 });

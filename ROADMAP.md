@@ -9,8 +9,8 @@ _Created: 2026-04-20_
 ## Summary
 
 - **Total tasks:** 90
-- **Done:** 66 (73%)
-- **Ready:** 24
+- **Done:** 67 (74%)
+- **Ready:** 23
 - **In progress:** 0
 - **Blocked:** 0
 
@@ -486,7 +486,7 @@ routes. The economic backbone of the mid-game.
   > Home-port prices drift with volume and occasional shock events
   > (news of Red Tide ruins Silver trade; Kraken sighting spikes
   > demand for charms, etc.).
-  - :black_circle: **TASK-052** — Price-drift tick + event-triggered shocks  `med` `medium` _(core, content)_  
+  - :white_check_mark: **TASK-052** — Price-drift tick + event-triggered shocks  `med` `medium` _(core, content)_ · [PR](https://github.com/g-chappell/colonize/pull/91)  
     _depends on: TASK-047_
     > Slow drift each turn toward baseline; shock events move a
     > single good's price sharply with a flavour message. Event

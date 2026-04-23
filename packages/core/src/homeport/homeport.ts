@@ -28,6 +28,7 @@ export const PRICE_SPREAD = 1;
 export const MIN_MID_PRICE = 2;
 export const MAX_MID_PRICE = 99;
 export const PRICE_VOLUME_STEP = 5;
+export const PRICE_DRIFT_STEP = 1;
 
 export interface HomePortJSON {
   readonly id: string;
@@ -133,6 +134,37 @@ export class HomePort {
   recordPlayerPurchase(resourceId: ResourceId, qty: number): void {
     assertPositiveQty('recordPlayerPurchase', qty);
     this._mutateVolume(resourceId, -qty);
+  }
+
+  // Nudges every non-zero netVolume entry PRICE_DRIFT_STEP units toward
+  // zero (i.e. mid-price drifts back toward basePrice by at most one
+  // PRICE_DRIFT_STEP / PRICE_VOLUME_STEP fraction per tick). Orchestrator
+  // owns when this fires; the primitive only mutates state.
+  tickPriceDrift(): void {
+    for (const id of [...this._netVolume.keys()]) {
+      const v = this._netVolume.get(id)!;
+      const nudged = v > 0 ? Math.max(0, v - PRICE_DRIFT_STEP) : Math.min(0, v + PRICE_DRIFT_STEP);
+      if (nudged === 0) {
+        this._netVolume.delete(id);
+      } else {
+        this._netVolume.set(id, nudged);
+      }
+    }
+  }
+
+  // Applies a signed volume delta to one resource, moving the mid-price
+  // sharply. Content-owned shock events pick the resource, magnitude,
+  // and flavour (see packages/content/src/price-shocks.ts); this
+  // primitive only mutates state. Sign convention matches
+  // recordPlayerSale / recordPlayerPurchase: positive = glut (price
+  // drops, a "crash"); negative = scarcity (price rises, a "spike").
+  applyPriceShock(resourceId: ResourceId, volumeDelta: number): void {
+    if (!Number.isInteger(volumeDelta) || volumeDelta === 0) {
+      throw new RangeError(
+        `applyPriceShock: volumeDelta must be a non-zero integer (got ${volumeDelta})`,
+      );
+    }
+    this._mutateVolume(resourceId, volumeDelta);
   }
 
   private _mutateVolume(resourceId: ResourceId, delta: number): void {
