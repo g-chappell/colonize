@@ -1652,19 +1652,20 @@ epics:
             attempt_count: 1
           - id: TASK-068
             title: Tithe notification + payment UI
-            status: in-progress
+            status: done
             priority: med
             complexity: small
             workspaces:
               - web
+              - content
             description: |
               Per-turn notification shows tithe due, pay/boycott
               choice. Tension meter in HUD. Boycott flavour text from
               content.
             depends_on:
               - TASK-067
-            pr: null
-            completed: null
+            pr: https://github.com/g-chappell/colonize/pull/103
+            completed: '2026-04-23'
             blocked_reason: null
             last_attempted: 2026-04-23T22:30:00Z
             attempt_count: 1
