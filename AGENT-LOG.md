@@ -1430,7 +1430,7 @@ gaps.
 - Files changed: packages/core/src/npc/npc-faction.ts, packages/core/src/npc/index.ts, packages/core/src/npc/npc-faction.test.ts, packages/core/src/index.ts, packages/content/src/npc-factions.ts, packages/content/src/npc-factions.test.ts, packages/content/src/index.ts, roadmap/roadmap.yml, ROADMAP.md
 - Regression alert: false
 - Review proposed: pending (Step 15)
-- Deploy: pending (Step 12)
+- Deploy: success (colonize.blacksail.dev — image colonize:latest, healthcheck ok on attempt 2)
 - Lessons learned: Core-content mirror pattern now applied a third time (PlayableFactionId, AbyssalStanceId, NpcFactionId) — the "duplicated-union + sibling-drift-test" idiom reads as load-bearing; worth a pattern-notes entry if a fourth mirror lands. Categorical "non-diplomatic" rule encoded as an id-union disjointness assertion rather than a per-faction boolean — saves a speculative field per `registry-patterns.md` guidance on "trim consumer-specific fields".
 
 ---
