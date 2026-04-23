@@ -9,9 +9,9 @@ _Created: 2026-04-20_
 ## Summary
 
 - **Total tasks:** 90
-- **Done:** 69 (77%)
+- **Done:** 70 (78%)
 - **Ready:** 20
-- **In progress:** 1
+- **In progress:** 0
 - **Blocked:** 0
 
 ---
@@ -567,7 +567,7 @@ Collective).
   > (OTK venerates, Sons of Scylla venerates Scylla specifically,
   > others fear). Player stance can shift based on site
   > interactions.
-  - :large_orange_diamond: **TASK-060** — Abyssal stance system + event triggers  `med` `medium` _(core, content)_  
+  - :white_check_mark: **TASK-060** — Abyssal stance system + event triggers  `med` `medium` _(core, content)_ · [PR](https://github.com/g-chappell/colonize/pull/95)  
     _depends on: TASK-017_
     > Per-faction stance: Venerate / Tolerate / Plunder / Guard.
     > Actions at Abyssal tiles shift stance. Stance affects
