@@ -9,8 +9,8 @@ _Created: 2026-04-20_
 ## Summary
 
 - **Total tasks:** 90
-- **Done:** 64 (71%)
-- **Ready:** 26
+- **Done:** 65 (72%)
+- **Ready:** 25
 - **In progress:** 0
 - **Blocked:** 0
 
@@ -470,7 +470,7 @@ routes. The economic backbone of the mid-game.
   > Save a multi-stop route (loadA → unloadA → ... → loadN →
   > unloadN → repeat); ship runs it on autopilot every turn until
   > told to stop.
-  - :black_circle: **TASK-050** — Merchant route data model + turn executor  `med` `medium` _(core)_  
+  - :white_check_mark: **TASK-050** — Merchant route data model + turn executor  `med` `medium` _(core)_ · [PR](https://github.com/g-chappell/colonize/pull/87)  
     _depends on: TASK-049, TASK-028_
     > Route = ordered stops, each with load/unload actions.
     > Ship's AutoRoute state ticks forward each turn. Breaks if

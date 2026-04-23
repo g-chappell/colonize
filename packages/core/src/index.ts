@@ -284,3 +284,27 @@ export {
   endgameKindForResult,
 } from './endgame/index.js';
 export type { EndgameOutcome, EndgameCheckInputs } from './endgame/index.js';
+export {
+  MerchantRoute,
+  MerchantRouteActionKind,
+  ALL_MERCHANT_ROUTE_ACTION_KINDS,
+  isMerchantRouteActionKind,
+  AutoRoute,
+  AutoRouteStatus,
+  ALL_AUTO_ROUTE_STATUSES,
+  isAutoRouteStatus,
+  tickMerchantRoute,
+} from './route/index.js';
+export type {
+  MerchantRouteJSON,
+  MerchantRouteInit,
+  MerchantRouteId,
+  MerchantRouteAction,
+  MerchantRouteStop,
+  ColonyId,
+  AutoRouteJSON,
+  AutoRouteInit,
+  TickMerchantRouteInput,
+  TickMerchantRouteResult,
+  MerchantRouteActionOutcome,
+} from './route/index.js';
