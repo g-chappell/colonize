@@ -10,8 +10,8 @@ _Created: 2026-04-20_
 
 - **Total tasks:** 90
 - **Done:** 57 (63%)
-- **Ready:** 33
-- **In progress:** 0
+- **Ready:** 32
+- **In progress:** 1
 - **Blocked:** 0
 
 ---
@@ -345,7 +345,7 @@ Ship blueprints (OTK-only).
 - **STORY-20** — Scouting unit types
   > Cartographer + Explorer: longer sight range, higher movement,
   > weaker combat. Essential for early exploration.
-  - :black_circle: **TASK-036** — Cartographer + Explorer unit types  `med` `small` _(core, content)_  
+  - :large_orange_diamond: **TASK-036** — Cartographer + Explorer unit types  `med` `small` _(core, content)_  
     _depends on: TASK-027_
     > Two new UnitTypes with sight radius 2× normal, higher MP,
     > minimal guns. Recruitable from tavern in a starting
