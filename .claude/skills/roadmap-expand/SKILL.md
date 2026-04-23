@@ -1,7 +1,7 @@
 ---
 name: roadmap-expand
 description: Take structured output from /pm-brainstorm or /ux-discovery (or hand-drafted) and inject it into roadmap.yml. Auto-generates IDs, validates, re-renders ROADMAP.md, and commits on a dedicated roadmap/ branch with a PR. Never writes to main directly.
-user_invocable: true
+user-invocable: true
 ---
 
 # /roadmap-expand

@@ -1,7 +1,8 @@
 ---
 name: test-all
 description: Run every test command defined in .claude/project.json across all workspaces. Reports pass/fail counts per workspace. Used by /autonomous-run step 7 for local validation before push.
-user_invocable: true
+user-invocable: true
+disable-model-invocation: true
 ---
 
 # /test-all

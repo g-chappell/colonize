@@ -1,7 +1,7 @@
 ---
 name: pm-brainstorm
 description: Product Manager mindset. Explore a product idea or new direction, probe with Jobs-to-be-Done questions, and draft an epic with 2–4 stories ready to feed /roadmap-expand. Use when kicking off a new epic OR when the roadmap is running thin.
-user_invocable: true
+user-invocable: true
 ---
 
 # /pm-brainstorm

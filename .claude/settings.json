@@ -12,6 +12,16 @@
       "TodoWrite(*)",
       "Agent(*)",
       "PushNotification(*)"
+    ],
+    "deny": [
+      "Read(./.env)",
+      "Read(./.env.local)",
+      "Read(./.env.*)",
+      "Read(./secrets/**)",
+      "Write(./.env)",
+      "Write(./.env.local)",
+      "Edit(./.env)",
+      "Edit(./.env.local)"
     ]
   },
   "hooks": {
@@ -22,7 +32,7 @@
           {
             "type": "command",
             "command": "node .claude/hooks/post-edit.mjs",
-            "timeout": 60,
+            "timeout": 30,
             "statusMessage": "Running hooks..."
           }
         ]

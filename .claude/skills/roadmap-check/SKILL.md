@@ -1,7 +1,7 @@
 ---
 name: roadmap-check
 description: Validate roadmap.yml and print the next ready task the autonomous agent would pick. Use to sanity-check the roadmap before enabling the scheduled task, or to manually see what's next.
-user_invocable: true
+user-invocable: true
 ---
 
 # /roadmap-check

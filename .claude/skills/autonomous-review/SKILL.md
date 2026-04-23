@@ -1,6 +1,7 @@
 ---
 name: autonomous-review
 description: Draft and auto-merge repo-wide refinements after N consecutive successful runs. Reads AGENT-LOG, produces CLAUDE.md / script / skill / workflow / roadmap edits on a dedicated PR branch, enables auto-merge. No PENDING.md, no human approval gate — the PR itself is the audit trail. Do NOT invoke directly — called by /autonomous-run Step 10.
+user-invocable: false
 ---
 
 # /autonomous-review

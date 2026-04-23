@@ -1,7 +1,7 @@
 ---
 name: ux-discovery
 description: UX / user-researcher mindset. Take an epic or story, probe the user for flows + edge cases + acceptance criteria, and emit tasks rich enough for the autonomous agent to implement without re-interviewing. Use between /pm-brainstorm and /roadmap-expand for user-facing features.
-user_invocable: true
+user-invocable: true
 ---
 
 # /ux-discovery

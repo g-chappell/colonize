@@ -1,7 +1,8 @@
 ---
 name: autonomous-run
 description: THE scheduled entry point. Runs one autonomous dev cycle: sync main, recover any stuck CI, select next task, branch, implement, validate locally, open PR with auto-merge, log, notify via PushNotification. Every 12th-14th step handles optional VPS auto-deploy. Self-improvement reviews (every N successes) are PR-driven and do not pause execution.
-user_invocable: true
+user-invocable: true
+disable-model-invocation: true
 ---
 
 # /autonomous-run
@@ -227,6 +228,7 @@ scripts/append-agent-log.sh <<'EOF'
 - Regression alert: <true if any count decreased, else false>
 - Review proposed: <filled in Step 15 if applicable>
 - Deploy: <filled in Step 14 if applicable>
+- Tokens: <input>/<output>/<total> (cost: $<USD>)   # omit if CLI didn't expose it
 - Lessons learned: <optional free text>
 EOF
 ```
