@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import type { TutorialStepId } from '@colonize/content';
 import type {
   ArchiveCharterId,
+  AutoRouteJSON,
   BuildingType,
   CharterHand,
   ColonyJSON,
@@ -14,6 +15,7 @@ import type {
   FactionChartersJSON,
   GameVersion,
   HomePortJSON,
+  MerchantRouteJSON,
   RelationsMatrixJSON,
   ResourceId,
   RumourOutcome,
@@ -22,9 +24,12 @@ import type {
   UnitJSON,
 } from '@colonize/core';
 import {
+  AutoRoute,
+  AutoRouteStatus,
   CORE_VERSION,
   FactionCharters,
   HomePort,
+  MerchantRoute,
   RelationsMatrix,
   TurnPhase as TurnPhaseEnum,
   attemptDiplomacyAction,
@@ -59,6 +64,7 @@ export type Screen =
   | 'trade'
   | 'transfer'
   | 'diplomacy'
+  | 'routes'
   | 'game-over';
 
 // Active trade session (which ship is trading at which colony's home
@@ -234,6 +240,19 @@ export interface GameState {
   // which colony). Non-null while `screen === 'transfer'`; cleared by
   // `closeTransferSession`.
   transferSession: TransferSession | null;
+  // Player-authored merchant-route catalogue, keyed by route id. The
+  // `id` doubles as the display name — the route-builder screen slugs
+  // the typed name and stores the resulting id. Per-ship AutoRoute
+  // assignments live in the sibling slice below; the two update
+  // together when a route is deleted (orphan AutoRoutes are pruned
+  // atomically).
+  merchantRoutes: Readonly<Record<string, MerchantRouteJSON>>;
+  // AutoRoute assignments keyed by ship unit id — 1:1 with a ship.
+  // Non-existent key means the ship is manually piloted. A route id
+  // referenced here must appear in `merchantRoutes`; `deleteRoute`
+  // enforces this by pruning every AutoRoute that pointed at the
+  // deleted route in the same `set` call.
+  autoRoutes: Readonly<Record<string, AutoRouteJSON>>;
   // Per-faction Archive-Charter ledger, keyed by faction id. Each value
   // is a plain FactionChartersJSON snapshot (available + selected). A
   // missing key means the faction has not yet been seeded — the store
@@ -356,6 +375,31 @@ export interface GameState {
     unitId: string,
     lines: readonly TransferCommitLine[],
   ) => void;
+  // Open / close the route-builder overlay. Open routes the screen to
+  // 'routes'; close routes back to 'game'. The overlay is launched
+  // from the HUD, so closing returns to map view, not the colony
+  // overlay.
+  openRouteScreen: () => void;
+  closeRouteScreen: () => void;
+  // Save a merchant route (create-or-replace by id). Validates the
+  // route via `MerchantRoute.fromJSON` — malformed input is silently
+  // skipped so a caller can defence-in-depth an UI that already
+  // enforces constraints. The AutoRoute slice is untouched; callers
+  // reassign a ship explicitly via `assignRouteToShip` afterwards.
+  saveMerchantRoute: (route: MerchantRouteJSON) => void;
+  // Delete a merchant route and prune every AutoRoute that pointed
+  // at it, in a single atomic `set` so a re-render cannot observe
+  // orphaned AutoRoute entries referencing a missing route.
+  deleteMerchantRoute: (routeId: string) => void;
+  // Assign a route to a ship. The AutoRoute starts at stop 0 with
+  // status 'active'. Reassignment replaces any existing AutoRoute
+  // on the same ship (the prior route is simply dropped — the ship
+  // never runs two routes at once). Silently skips when the route
+  // id is unknown or the ship is missing from the roster.
+  assignRouteToShip: (unitId: string, routeId: string) => void;
+  // Clear the AutoRoute entry for a ship. No-op when the ship has
+  // no assignment.
+  unassignRoute: (unitId: string) => void;
   // Replace the relations snapshot wholesale. Used by save-load and
   // tests that want to seed starting relations without going through
   // individual mutations.
@@ -464,6 +508,8 @@ const initialState = {
   homePorts: {} as Readonly<Record<string, HomePortJSON>>,
   tradeSession: null as TradeSession | null,
   transferSession: null as TransferSession | null,
+  merchantRoutes: {} as Readonly<Record<string, MerchantRouteJSON>>,
+  autoRoutes: {} as Readonly<Record<string, AutoRouteJSON>>,
   relations: { entries: [] } as RelationsMatrixJSON,
   lastDiplomacyOutcome: null as DiplomacyAttemptOutcome | null,
   sovereigntyWar: null as ConcordFleetCampaignJSON | null,
@@ -740,6 +786,55 @@ export const useGameStore = create<GameState>((set) => ({
         c.id === colonyId ? { ...c, stocks: { ...c.stocks, resources: nextColonyResources } } : c,
       );
       return { units: nextUnits, colonies: nextColonies };
+    }),
+  openRouteScreen: () => set({ screen: 'routes' }),
+  closeRouteScreen: () => set({ screen: 'game' }),
+  saveMerchantRoute: (route) =>
+    set((state) => {
+      let validated: MerchantRouteJSON;
+      try {
+        validated = MerchantRoute.fromJSON(route).toJSON();
+      } catch {
+        return {};
+      }
+      return {
+        merchantRoutes: { ...state.merchantRoutes, [validated.id]: validated },
+      };
+    }),
+  deleteMerchantRoute: (routeId) =>
+    set((state) => {
+      if (!(routeId in state.merchantRoutes)) return {};
+      const nextRoutes: Record<string, MerchantRouteJSON> = {};
+      for (const [id, r] of Object.entries(state.merchantRoutes)) {
+        if (id !== routeId) nextRoutes[id] = r;
+      }
+      const nextAutoRoutes: Record<string, AutoRouteJSON> = {};
+      for (const [unitId, ar] of Object.entries(state.autoRoutes)) {
+        if (ar.routeId !== routeId) nextAutoRoutes[unitId] = ar;
+      }
+      return { merchantRoutes: nextRoutes, autoRoutes: nextAutoRoutes };
+    }),
+  assignRouteToShip: (unitId, routeId) =>
+    set((state) => {
+      if (!(routeId in state.merchantRoutes)) return {};
+      if (!state.units.some((u) => u.id === unitId)) return {};
+      const ar = new AutoRoute({
+        unitId,
+        routeId,
+        currentStopIndex: 0,
+        status: AutoRouteStatus.Active,
+        brokenReason: null,
+      });
+      return { autoRoutes: { ...state.autoRoutes, [unitId]: ar.toJSON() } };
+    }),
+  unassignRoute: (unitId) =>
+    set((state) => {
+      if (!(unitId in state.autoRoutes)) return {};
+      const next: Record<string, AutoRouteJSON> = {};
+      for (const [uid, ar] of Object.entries(state.autoRoutes)) {
+        if (uid !== unitId) next[uid] = ar;
+      }
+      return { autoRoutes: next };
     }),
   setRelations: (relations) => set({ relations }),
   openDiplomacy: () => set({ screen: 'diplomacy' }),

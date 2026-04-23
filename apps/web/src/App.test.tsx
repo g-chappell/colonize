@@ -171,6 +171,21 @@ describe('App', () => {
     });
   });
 
+  describe('route screen', () => {
+    it('mounts the route screen over the game stage when screen is routes', () => {
+      useGameStore.getState().setScreen('routes');
+      render(<App />);
+      expect(screen.getByTestId('hud')).toBeInTheDocument();
+      expect(screen.getByTestId('route-screen')).toBeInTheDocument();
+    });
+
+    it('does not mount the route screen outside the routes screen', () => {
+      useGameStore.getState().setScreen('game');
+      render(<App />);
+      expect(screen.queryByTestId('route-screen')).not.toBeInTheDocument();
+    });
+  });
+
   describe('combat overlay', () => {
     const sampleOutcome: CombatOutcome = {
       action: CombatActionType.Broadside,

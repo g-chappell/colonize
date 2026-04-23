@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { TileType, findPath, type ColonyJSON, type Coord, type UnitJSON } from '@colonize/core';
-import type { FactionVisibility, GameMap } from '@colonize/core';
+import type { FactionVisibility, GameMap, MerchantRouteJSON } from '@colonize/core';
 
 import { bus } from '../bus';
 import { useGameStore, type ProposedMove } from '../store/game';
@@ -18,6 +18,7 @@ import { pickColonyIdAtTile } from './colony-input';
 import { FogOverlay } from './fog-overlay';
 import { decideMoveClick } from './move-intent';
 import { truncatePathResult } from './path-preview';
+import { computeRouteSegments } from './route-layout';
 import {
   OCEAN_ANIMATION_FRAMERATE,
   OCEAN_ANIMATION_FRAMES,
@@ -45,10 +46,19 @@ import {
 // units, and the fog overlay sits above everything so unseen units
 // stay hidden behind the fog.
 export const PATH_PREVIEW_DEPTH = 30;
+export const ROUTE_LAYER_DEPTH = 35;
 export const COLONY_LAYER_DEPTH = 40;
 export const UNIT_LAYER_DEPTH = 50;
 export const SELECTION_RING_DEPTH = 60;
 export const FOG_OVERLAY_DEPTH = 100;
+
+// Merchant-route line visuals — drawn between sequential route stops
+// on the Phaser map so the player sees their trade loops at a glance.
+// Colour matches the HUD gold palette; alpha keeps the lines readable
+// without drowning the terrain.
+export const ROUTE_LINE_COLOR = 0xd6b466;
+export const ROUTE_LINE_WIDTH = 2;
+export const ROUTE_LINE_ALPHA = 0.55;
 
 // Colony body sized just larger than the tile-fill scale so the
 // structure reads as more permanent than a unit silhouette but doesn't
@@ -117,6 +127,8 @@ export class GameScene extends Phaser.Scene {
   private unsubscribeSelection: (() => void) | null = null;
   private unsubscribeProposedMove: (() => void) | null = null;
   private unsubscribeColonies: (() => void) | null = null;
+  private routeLines: Phaser.GameObjects.Graphics | null = null;
+  private unsubscribeRoutes: (() => void) | null = null;
   // True while a commit tween is playing. Blocks further input so the
   // player can't stack moves on a mid-flight sprite (which would race
   // the store commit that lands at tween end).
@@ -146,6 +158,7 @@ export class GameScene extends Phaser.Scene {
     this.configureCamera(map, data.cameraFocus);
     this.setupCameraControls();
     this.setupColonyLayer();
+    this.setupRouteLayer();
     this.setupUnitLayer();
 
     const visibility = this.initialVisibility ?? data.visibility;
@@ -161,6 +174,8 @@ export class GameScene extends Phaser.Scene {
     this.events.once(Phaser.Scenes.Events.DESTROY, this.teardownUnitLayer, this);
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, this.teardownColonyLayer, this);
     this.events.once(Phaser.Scenes.Events.DESTROY, this.teardownColonyLayer, this);
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, this.teardownRouteLayer, this);
+    this.events.once(Phaser.Scenes.Events.DESTROY, this.teardownRouteLayer, this);
   }
 
   private ensureOceanAnimation(): void {
@@ -480,6 +495,7 @@ export class GameScene extends Phaser.Scene {
     this.unsubscribeColonies = useGameStore.subscribe((state, prev) => {
       if (state.colonies === prev.colonies) return;
       this.syncColonyContainers(state.colonies);
+      this.syncRouteLines(state.merchantRoutes, state.colonies);
     });
   }
 
@@ -490,6 +506,45 @@ export class GameScene extends Phaser.Scene {
       container.destroy();
     }
     this.colonyContainers.clear();
+  }
+
+  private setupRouteLayer(): void {
+    this.routeLines = this.add.graphics();
+    this.routeLines.setDepth(ROUTE_LAYER_DEPTH);
+    const initial = useGameStore.getState();
+    this.syncRouteLines(initial.merchantRoutes, initial.colonies);
+    this.unsubscribeRoutes = useGameStore.subscribe((state, prev) => {
+      if (state.merchantRoutes === prev.merchantRoutes) return;
+      this.syncRouteLines(state.merchantRoutes, state.colonies);
+    });
+  }
+
+  private teardownRouteLayer(): void {
+    this.unsubscribeRoutes?.();
+    this.unsubscribeRoutes = null;
+    this.routeLines?.destroy();
+    this.routeLines = null;
+  }
+
+  private syncRouteLines(
+    routes: Readonly<Record<string, MerchantRouteJSON>>,
+    colonies: readonly ColonyJSON[],
+  ): void {
+    const g = this.routeLines;
+    if (!g) return;
+    g.clear();
+    const segments = computeRouteSegments(routes, colonies);
+    if (segments.length === 0) {
+      g.setVisible(false);
+      return;
+    }
+    g.lineStyle(ROUTE_LINE_WIDTH, ROUTE_LINE_COLOR, ROUTE_LINE_ALPHA);
+    for (const seg of segments) {
+      const from = tileCenterInWorld(seg.from.x, seg.from.y);
+      const to = tileCenterInWorld(seg.to.x, seg.to.y);
+      g.lineBetween(from.x, from.y, to.x, to.y);
+    }
+    g.setVisible(true);
   }
 
   private syncColonyContainers(colonies: readonly ColonyJSON[]): void {
