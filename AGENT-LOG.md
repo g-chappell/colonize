@@ -1254,7 +1254,7 @@ gaps.
 
 ---
 
-### Run [2026-04-23T05:21:00Z]
+### Run [2026-04-23 05:21]
 - Task: TASK-083 — Cloud save endpoints + client sync
 - Outcome: success
 - PR: https://github.com/g-chappell/colonize/pull/85
@@ -1274,7 +1274,7 @@ gaps.
 
 ---
 
-### Run [2026-04-23T06:17:00Z]
+### Run [2026-04-23 06:17]
 - Task: TASK-046 — Training buildings (School, Archive-study Hall)
 - Outcome: success
 - PR: https://github.com/g-chappell/colonize/pull/86
@@ -1294,7 +1294,7 @@ gaps.
 
 ---
 
-### Run [2026-04-23T07:22:50Z]
+### Run [2026-04-23 07:22]
 - Task: TASK-050 — Merchant route data model + turn executor
 - Outcome: success
 - PR: https://github.com/g-chappell/colonize/pull/87
