@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import {
   BuildingType,
+  CONCORD_TENSION_THRESHOLDS,
   CORE_VERSION,
   CombatActionType,
   CombatResult,
@@ -1133,6 +1134,91 @@ describe('useGameStore', () => {
       const state = useGameStore.getState();
       expect(state.endgame).toBeNull();
       expect(state.screen).toBe('menu');
+    });
+  });
+
+  describe('Concord tithe + tension slices', () => {
+    it('starts with a null tithe notification and a zeroed tension snapshot', () => {
+      const state = useGameStore.getState();
+      expect(state.titheNotification).toBeNull();
+      expect(state.concordTension.tension).toBe(0);
+      expect(state.concordTension.crossed).toEqual([]);
+      expect(state.concordTension.thresholds).toEqual([...CONCORD_TENSION_THRESHOLDS]);
+      expect(state.concordTension.pending).toEqual([]);
+    });
+
+    it('showTitheNotification stores the notification', () => {
+      useGameStore.getState().showTitheNotification({ amount: 30, gameYear: 5 });
+      const notif = useGameStore.getState().titheNotification;
+      expect(notif).toEqual({ amount: 30, gameYear: 5 });
+    });
+
+    it('showTitheNotification is a no-op when one is already pending', () => {
+      useGameStore.getState().showTitheNotification({ amount: 30 });
+      useGameStore.getState().showTitheNotification({ amount: 50 });
+      expect(useGameStore.getState().titheNotification?.amount).toBe(30);
+    });
+
+    it('payTithe clears the notification without raising tension', () => {
+      useGameStore.getState().showTitheNotification({ amount: 30 });
+      useGameStore.getState().payTithe();
+      expect(useGameStore.getState().titheNotification).toBeNull();
+      expect(useGameStore.getState().concordTension.tension).toBe(0);
+    });
+
+    it('payTithe is a no-op when no notification is active', () => {
+      useGameStore.getState().payTithe();
+      expect(useGameStore.getState().titheNotification).toBeNull();
+      expect(useGameStore.getState().concordTension.tension).toBe(0);
+    });
+
+    it('boycottTithe raises tension by the notification amount and clears the slice', () => {
+      useGameStore.getState().showTitheNotification({ amount: 30 });
+      const events = useGameStore.getState().boycottTithe();
+      expect(events).toEqual([{ threshold: 25 }]);
+      const state = useGameStore.getState();
+      expect(state.titheNotification).toBeNull();
+      expect(state.concordTension.tension).toBe(30);
+      expect(state.concordTension.crossed).toEqual([25]);
+    });
+
+    it('boycottTithe returns every threshold a single raise crosses', () => {
+      useGameStore.getState().showTitheNotification({ amount: 80 });
+      const events = useGameStore.getState().boycottTithe();
+      expect(events.map((e) => e.threshold)).toEqual([25, 50, 75]);
+      expect(useGameStore.getState().concordTension.crossed).toEqual([25, 50, 75]);
+    });
+
+    it('boycottTithe accumulates tension across consecutive refusals', () => {
+      useGameStore.getState().showTitheNotification({ amount: 20 });
+      useGameStore.getState().boycottTithe();
+      useGameStore.getState().showTitheNotification({ amount: 10 });
+      useGameStore.getState().boycottTithe();
+      expect(useGameStore.getState().concordTension.tension).toBe(30);
+      expect(useGameStore.getState().concordTension.crossed).toEqual([25]);
+    });
+
+    it('boycottTithe floors fractional amounts before raising', () => {
+      useGameStore.getState().showTitheNotification({ amount: 25.7 });
+      useGameStore.getState().boycottTithe();
+      expect(useGameStore.getState().concordTension.tension).toBe(25);
+    });
+
+    it('boycottTithe is a no-op (returns empty) when no notification is active', () => {
+      const events = useGameStore.getState().boycottTithe();
+      expect(events).toEqual([]);
+      expect(useGameStore.getState().concordTension.tension).toBe(0);
+    });
+
+    it('reset clears a pending tithe notification and zeroes the tension snapshot', () => {
+      useGameStore.getState().showTitheNotification({ amount: 60 });
+      useGameStore.getState().boycottTithe();
+      useGameStore.getState().showTitheNotification({ amount: 5 });
+      useGameStore.getState().reset();
+      const state = useGameStore.getState();
+      expect(state.titheNotification).toBeNull();
+      expect(state.concordTension.tension).toBe(0);
+      expect(state.concordTension.crossed).toEqual([]);
     });
   });
 

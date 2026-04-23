@@ -9,8 +9,8 @@ _Created: 2026-04-20_
 ## Summary
 
 - **Total tasks:** 90
-- **Done:** 72 (80%)
-- **Ready:** 18
+- **Done:** 73 (81%)
+- **Ready:** 17
 - **In progress:** 0
 - **Blocked:** 0
 
@@ -640,7 +640,7 @@ Fleet invasion. Victory conditions engine.
     > Scale up over game years. Refusing to pay (via boycott)
     > raises a tension meter which eventually triggers Concord
     > ultimatum.
-  - :black_circle: **TASK-068** — Tithe notification + payment UI  `med` `small` _(web)_  
+  - :white_check_mark: **TASK-068** — Tithe notification + payment UI  `med` `small` _(web, content)_ · [PR](https://github.com/g-chappell/colonize/pull/103)  
     _depends on: TASK-067_
     > Per-turn notification shows tithe due, pay/boycott
     > choice. Tension meter in HUD. Boycott flavour text from

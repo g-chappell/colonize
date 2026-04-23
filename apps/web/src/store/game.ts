@@ -8,6 +8,8 @@ import type {
   ColonyJSON,
   CombatOutcome,
   ConcordFleetCampaignJSON,
+  ConcordTensionMeterJSON,
+  ConcordUltimatumEvent,
   Coord,
   DiplomacyAction,
   DiplomacyAttemptOutcome,
@@ -26,7 +28,9 @@ import type {
 import {
   AutoRoute,
   AutoRouteStatus,
+  CONCORD_TENSION_THRESHOLDS,
   CORE_VERSION,
+  ConcordTensionMeter,
   FactionCharters,
   HomePort,
   MerchantRoute,
@@ -134,6 +138,30 @@ export interface CouncilPickSession {
   readonly threshold: number;
   readonly hand: CharterHand;
 }
+
+// Per-turn Concord tithe notification — the modal data for a single
+// "tithe due" prompt. Non-null while the tithe modal is mounted; the
+// player resolves it by paying (which clears the slice; treasury
+// deduction is a future orchestrator concern) or by boycotting (which
+// raises the player faction's `concordTension` meter by `amount` and
+// clears the slice). Treated as an unbidden event-modal (slice-driven
+// self-mounting overlay per CLAUDE.md): the player was mid-something
+// when the tithe came due, and resolving it returns them there.
+export interface TitheNotification {
+  readonly amount: number;
+  readonly gameYear?: number;
+}
+
+// Default snapshot for the Concord tension meter — mirrors the empty
+// state of `new ConcordTensionMeter()`. Frozen so callers cannot
+// mutate the shared default; `set` clones via `toJSON()` whenever
+// `boycottTithe` raises tension.
+const DEFAULT_CONCORD_TENSION_SNAPSHOT: ConcordTensionMeterJSON = Object.freeze({
+  tension: 0,
+  thresholds: Object.freeze([...CONCORD_TENSION_THRESHOLDS]),
+  crossed: Object.freeze([]),
+  pending: Object.freeze([]),
+}) as ConcordTensionMeterJSON;
 
 // User-editable game settings that survive pause/resume. Audio volumes
 // mirror the `AudioState` defaults in apps/web/src/game/audio-state.ts —
@@ -282,6 +310,20 @@ export interface GameState {
   // task) and cleared by `dismissBlackMarketEncounter` when the
   // player walks away.
   blackMarketEncounter: BlackMarketEncounter | null;
+  // Per-turn Concord tithe notification — see TitheNotification above.
+  // Non-null while the payment modal is mounted; cleared by `payTithe`
+  // or `boycottTithe`. The orchestrator that drives per-turn tithe
+  // computation (a future task) calls `showTitheNotification(amount)`
+  // at the start of each turn when the player faction has any colony
+  // presence; the modal handles the player's choice.
+  titheNotification: TitheNotification | null;
+  // Player-faction Concord tension snapshot. Persisted as a plain JSON
+  // shape so the store stays cloneable for save-load; `boycottTithe`
+  // reconstitutes a ConcordTensionMeter via `fromJSON` to call `raise`,
+  // then writes the updated snapshot back. The HUD chip reads this
+  // slice directly without reconstituting the meter (it only needs the
+  // numeric tension + crossed-thresholds count).
+  concordTension: ConcordTensionMeterJSON;
   // Per-faction-pair relations + cooldowns, plain JSON for zustand
   // round-trip compatibility. Gameplay code reconstitutes a
   // RelationsMatrix instance via `RelationsMatrix.fromJSON` when it
@@ -374,6 +416,26 @@ export interface GameState {
   dismissRumourReveal: () => void;
   showBlackMarketEncounter: (encounter: BlackMarketEncounter) => void;
   dismissBlackMarketEncounter: () => void;
+  // Mount the per-turn tithe notification with `amount` coins due. The
+  // optional `gameYear` is forwarded so tests / future orchestration can
+  // pin the modal copy to a calendar slice. No-op when a notification
+  // is already active — only the first per-turn call wins, so a
+  // double-fire from a spurious orchestrator tick cannot stack two
+  // modals on top of each other.
+  showTitheNotification: (notification: TitheNotification) => void;
+  // Resolve the active tithe notification by paying. Clears the slice
+  // without touching the tension meter. Treasury deduction is deferred
+  // to the orchestrator that owns the player wallet — the modal only
+  // signals intent. No-op when no notification is active.
+  payTithe: () => void;
+  // Resolve the active tithe notification by boycotting. Reconstitutes
+  // the player faction's tension meter, raises by the notification
+  // amount, writes the updated snapshot back, and clears the slice.
+  // Returns the freshly-crossed ultimatum events so a future orchestrator
+  // can chain into the Concord-escalation modal without re-deriving
+  // them from the snapshot diff. No-op (returns []) when no notification
+  // is active.
+  boycottTithe: () => readonly ConcordUltimatumEvent[];
   showCombatOutcome: (outcome: CombatOutcome) => void;
   dismissCombatOutcome: () => void;
   setHomePort: (factionId: string, port: HomePortJSON) => void;
@@ -528,6 +590,8 @@ const initialState = {
   factionCharters: {} as Readonly<Record<string, FactionChartersJSON>>,
   councilPick: null as CouncilPickSession | null,
   blackMarketEncounter: null as BlackMarketEncounter | null,
+  titheNotification: null as TitheNotification | null,
+  concordTension: DEFAULT_CONCORD_TENSION_SNAPSHOT,
   homePorts: {} as Readonly<Record<string, HomePortJSON>>,
   tradeSession: null as TradeSession | null,
   transferSession: null as TransferSession | null,
@@ -724,6 +788,19 @@ export const useGameStore = create<GameState>((set) => ({
   dismissRumourReveal: () => set({ rumourReveal: null }),
   showBlackMarketEncounter: (encounter) => set({ blackMarketEncounter: encounter }),
   dismissBlackMarketEncounter: () => set({ blackMarketEncounter: null }),
+  showTitheNotification: (notification) =>
+    set((state) => (state.titheNotification === null ? { titheNotification: notification } : {})),
+  payTithe: () =>
+    set((state) => (state.titheNotification === null ? {} : { titheNotification: null })),
+  boycottTithe: () => {
+    const state = useGameStore.getState();
+    const notification = state.titheNotification;
+    if (notification === null) return [];
+    const meter = ConcordTensionMeter.fromJSON(state.concordTension);
+    const crossed = meter.raise(Math.max(0, Math.floor(notification.amount)));
+    set({ concordTension: meter.toJSON(), titheNotification: null });
+    return crossed;
+  },
   showCombatOutcome: (outcome) => set({ combatOutcome: outcome }),
   dismissCombatOutcome: () => set({ combatOutcome: null }),
   setHomePort: (factionId, port) =>

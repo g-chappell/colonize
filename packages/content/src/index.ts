@@ -117,6 +117,15 @@ export {
 } from './chimes-flavour.js';
 
 export {
+  TITHE_FLAVOURS,
+  CONCORD_TENSION_TIER_VALUES,
+  getTitheFlavour,
+  isConcordTensionTier,
+  type ConcordTensionTier,
+  type TitheFlavour,
+} from './concord-tithe-flavour.js';
+
+export {
   ARCHIVE_CHARTER_FLAVOURS,
   getArchiveCharterFlavour,
   isArchiveCharterFlavourId,

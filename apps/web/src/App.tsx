@@ -9,6 +9,7 @@ import { DiplomacyScreen } from './diplomacy/DiplomacyScreen';
 import { GameCanvas } from './GameCanvas';
 import { Hud } from './hud/Hud';
 import { RumourRevealModal } from './hud/RumourRevealModal';
+import { TithePaymentModal } from './hud/TithePaymentModal';
 import { GameOverScreen } from './gameover/GameOverScreen';
 import { MainMenu } from './menu/MainMenu';
 import { FactionSelect } from './menu/FactionSelect';
@@ -100,6 +101,7 @@ export function App() {
         <CouncilPickModal />
         <BlackMarketModal />
         <SovereigntyBeatModal />
+        <TithePaymentModal />
         <TutorialStepModal />
         {screen === 'pause' && <PauseOverlay />}
         {screen === 'colony' && <ColonyOverlay />}
