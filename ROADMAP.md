@@ -10,8 +10,8 @@ _Created: 2026-04-20_
 
 - **Total tasks:** 90
 - **Done:** 58 (64%)
-- **Ready:** 32
-- **In progress:** 0
+- **Ready:** 31
+- **In progress:** 1
 - **Blocked:** 0
 
 ---
@@ -676,7 +676,7 @@ Fleet invasion. Victory conditions engine.
   > Conquest). Loss states (treasury bankrupt, fleet eliminated,
   > capital lost). Victory/loss screens with faction-appropriate
   > flavour.
-  - :black_circle: **TASK-072** — Victory/loss engine + game-over screen  `high` `medium` _(core, web, content)_  
+  - :large_orange_diamond: **TASK-072** — Victory/loss engine + game-over screen  `high` `medium` _(core, web, content)_  
     _depends on: TASK-024, TASK-066, TASK-070_
     > Check conditions per turn. When hit, freeze play + show
     > game-over screen with stats, faction-appropriate epilogue
