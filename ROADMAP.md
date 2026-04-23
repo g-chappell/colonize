@@ -10,8 +10,8 @@ _Created: 2026-04-20_
 
 - **Total tasks:** 90
 - **Done:** 68 (76%)
-- **Ready:** 22
-- **In progress:** 0
+- **Ready:** 21
+- **In progress:** 1
 - **Blocked:** 0
 
 ---
@@ -534,7 +534,7 @@ routes, colony fortifications. The stick to the carrot of trade.
 - **STORY-33** — Fortifications
   > Colonies can build walls, harbour booms, and coastal batteries.
   > Modify defender stats in combat resolvers.
-  - :black_circle: **TASK-057** — Fortification buildings + combat modifiers  `med` `medium` _(core, content)_  
+  - :large_orange_diamond: **TASK-057** — Fortification buildings + combat modifiers  `med` `medium` _(core, content)_  
     _depends on: TASK-040, TASK-053_
     > Three fortification buildings with ascending defense
     > bonuses. Modify defender stats when colony is attacked.

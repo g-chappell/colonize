@@ -1375,7 +1375,7 @@ epics:
         tasks:
           - id: TASK-057
             title: Fortification buildings + combat modifiers
-            status: ready
+            status: in-progress
             priority: med
             complexity: medium
             workspaces:
@@ -1391,8 +1391,8 @@ epics:
             pr: null
             completed: null
             blocked_reason: null
-            last_attempted: null
-            attempt_count: 0
+            last_attempted: "2026-04-23T07:50:00Z"
+            attempt_count: 1
   - id: EPIC-09
     title: Diplomacy & faction stances
     description: |
