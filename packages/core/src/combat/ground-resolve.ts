@@ -254,6 +254,8 @@ function groundBaseSpeed(type: UnitType): number {
     case UnitType.Frigate:
     case UnitType.ShipOfTheLine:
     case UnitType.Privateer:
+    case UnitType.Cartographer:
+    case UnitType.Explorer:
       return 1;
   }
 }

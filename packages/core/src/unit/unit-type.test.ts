@@ -22,6 +22,8 @@ describe('UnitType registry', () => {
         UnitType.Frigate,
         UnitType.ShipOfTheLine,
         UnitType.Privateer,
+        UnitType.Cartographer,
+        UnitType.Explorer,
         UnitType.Marines,
         UnitType.Dragoons,
         UnitType.Pikemen,
@@ -108,6 +110,8 @@ describe('getUnitTypeDefinition', () => {
       expect(def.id).toBe(type);
       expect(Number.isInteger(def.baseMovement)).toBe(true);
       expect(def.baseMovement).toBeGreaterThan(0);
+      expect(Number.isInteger(def.sightRadius)).toBe(true);
+      expect(def.sightRadius).toBeGreaterThan(0);
     }
   });
 
@@ -131,6 +135,31 @@ describe('getUnitTypeDefinition', () => {
     const pikemen = getUnitTypeDefinition(UnitType.Pikemen);
     expect(dragoons.baseMovement).toBeGreaterThan(marines.baseMovement);
     expect(dragoons.baseMovement).toBeGreaterThan(pikemen.baseMovement);
+  });
+
+  it('cartographer and explorer carry 2x the sight of a standard ship', () => {
+    const sloop = getUnitTypeDefinition(UnitType.Sloop);
+    const cartographer = getUnitTypeDefinition(UnitType.Cartographer);
+    const explorer = getUnitTypeDefinition(UnitType.Explorer);
+    expect(cartographer.sightRadius).toBe(sloop.sightRadius * 2);
+    expect(explorer.sightRadius).toBe(sloop.sightRadius * 2);
+  });
+
+  it('cartographer and explorer outrun every base ship class', () => {
+    const cartographer = getUnitTypeDefinition(UnitType.Cartographer);
+    const explorer = getUnitTypeDefinition(UnitType.Explorer);
+    const shipTypes = [
+      UnitType.Sloop,
+      UnitType.Brig,
+      UnitType.Frigate,
+      UnitType.ShipOfTheLine,
+      UnitType.Privateer,
+    ];
+    for (const t of shipTypes) {
+      const ship = getUnitTypeDefinition(t);
+      expect(cartographer.baseMovement).toBeGreaterThan(ship.baseMovement);
+      expect(explorer.baseMovement).toBeGreaterThan(ship.baseMovement);
+    }
   });
 
   it('throws TypeError on unknown string', () => {

@@ -29,6 +29,8 @@ export const UNIT_VISUAL_SPECS: Readonly<Record<UnitType, UnitVisualSpec>> = {
   [UnitType.Frigate]: { label: 'F', shape: 'square' },
   [UnitType.ShipOfTheLine]: { label: 'X', shape: 'square' },
   [UnitType.Privateer]: { label: 'P', shape: 'square' },
+  [UnitType.Cartographer]: { label: 'G', shape: 'diamond' },
+  [UnitType.Explorer]: { label: 'E', shape: 'diamond' },
   [UnitType.Marines]: { label: 'M', shape: 'circle' },
   [UnitType.Dragoons]: { label: 'D', shape: 'circle' },
   [UnitType.Pikemen]: { label: 'K', shape: 'circle' },

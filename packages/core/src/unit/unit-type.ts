@@ -7,6 +7,8 @@ export const UnitType = {
   Frigate: 'frigate',
   ShipOfTheLine: 'ship-of-the-line',
   Privateer: 'privateer',
+  Cartographer: 'cartographer',
+  Explorer: 'explorer',
   Marines: 'marines',
   Dragoons: 'dragoons',
   Pikemen: 'pikemen',
@@ -45,20 +47,23 @@ export function isGroundUnitType(value: unknown): value is UnitType {
 export interface UnitTypeDefinition {
   readonly id: UnitType;
   readonly baseMovement: number;
+  readonly sightRadius: number;
 }
 
 const UNIT_TYPE_DEFINITIONS: Readonly<Record<UnitType, UnitTypeDefinition>> = {
-  [UnitType.Scout]: { id: UnitType.Scout, baseMovement: 2 },
-  [UnitType.Settler]: { id: UnitType.Settler, baseMovement: 1 },
-  [UnitType.FoundingShip]: { id: UnitType.FoundingShip, baseMovement: 2 },
-  [UnitType.Sloop]: { id: UnitType.Sloop, baseMovement: 4 },
-  [UnitType.Brig]: { id: UnitType.Brig, baseMovement: 3 },
-  [UnitType.Frigate]: { id: UnitType.Frigate, baseMovement: 3 },
-  [UnitType.ShipOfTheLine]: { id: UnitType.ShipOfTheLine, baseMovement: 2 },
-  [UnitType.Privateer]: { id: UnitType.Privateer, baseMovement: 4 },
-  [UnitType.Marines]: { id: UnitType.Marines, baseMovement: 1 },
-  [UnitType.Dragoons]: { id: UnitType.Dragoons, baseMovement: 2 },
-  [UnitType.Pikemen]: { id: UnitType.Pikemen, baseMovement: 1 },
+  [UnitType.Scout]: { id: UnitType.Scout, baseMovement: 2, sightRadius: 2 },
+  [UnitType.Settler]: { id: UnitType.Settler, baseMovement: 1, sightRadius: 1 },
+  [UnitType.FoundingShip]: { id: UnitType.FoundingShip, baseMovement: 2, sightRadius: 2 },
+  [UnitType.Sloop]: { id: UnitType.Sloop, baseMovement: 4, sightRadius: 2 },
+  [UnitType.Brig]: { id: UnitType.Brig, baseMovement: 3, sightRadius: 2 },
+  [UnitType.Frigate]: { id: UnitType.Frigate, baseMovement: 3, sightRadius: 2 },
+  [UnitType.ShipOfTheLine]: { id: UnitType.ShipOfTheLine, baseMovement: 2, sightRadius: 2 },
+  [UnitType.Privateer]: { id: UnitType.Privateer, baseMovement: 4, sightRadius: 2 },
+  [UnitType.Cartographer]: { id: UnitType.Cartographer, baseMovement: 5, sightRadius: 4 },
+  [UnitType.Explorer]: { id: UnitType.Explorer, baseMovement: 5, sightRadius: 4 },
+  [UnitType.Marines]: { id: UnitType.Marines, baseMovement: 1, sightRadius: 1 },
+  [UnitType.Dragoons]: { id: UnitType.Dragoons, baseMovement: 2, sightRadius: 1 },
+  [UnitType.Pikemen]: { id: UnitType.Pikemen, baseMovement: 1, sightRadius: 1 },
 };
 
 export function getUnitTypeDefinition(type: UnitType): UnitTypeDefinition {
