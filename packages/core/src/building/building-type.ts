@@ -13,6 +13,7 @@ export const BuildingType = {
   Barracks: 'barracks',
   Distillery: 'distillery',
   Forge: 'forge',
+  School: 'school',
   StudyHall: 'study-hall',
   Shipyard: 'shipyard',
   GunDeck: 'gun-deck',
@@ -92,6 +93,11 @@ const BUILDING_DEFINITIONS: Readonly<Record<BuildingType, BuildingDefinition>> =
     id: BuildingType.Forge,
     cost: { planks: 20, salvage: 20 },
     prerequisites: [BuildingType.Sawmill],
+  },
+  [BuildingType.School]: {
+    id: BuildingType.School,
+    cost: { timber: 15, fibre: 5 },
+    prerequisites: [BuildingType.Tavern],
   },
   [BuildingType.StudyHall]: {
     id: BuildingType.StudyHall,

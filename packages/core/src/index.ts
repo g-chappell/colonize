@@ -103,6 +103,14 @@ export {
   getProfessionBuildingMultiplier,
   applyProfessionBonusToYield,
 } from './profession/index.js';
+export {
+  TrainingOrder,
+  isTrainingBuilding,
+  canTrainAt,
+  getTrainingDuration,
+  listTrainingOfferings,
+} from './training/index.js';
+export type { TrainingOrderInit, TrainingOrderJSON } from './training/index.js';
 export { Colony, foundColony, canFoundColonyAt, FOUNDABLE_TILE_TYPES } from './colony/index.js';
 export type {
   ColonyJSON,

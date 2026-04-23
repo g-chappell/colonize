@@ -28,6 +28,7 @@ describe('BuildingType registry', () => {
     expect(ids.has(BuildingType.Tavern)).toBe(true);
     expect(ids.has(BuildingType.Shipyard)).toBe(true);
     expect(ids.has(BuildingType.Forge)).toBe(true);
+    expect(ids.has(BuildingType.School)).toBe(true);
     expect(ids.has(BuildingType.StudyHall)).toBe(true);
     expect(ids.has(BuildingType.ChapelOfTheKraken)).toBe(true);
     expect(ids.has(BuildingType.Distillery)).toBe(true);
