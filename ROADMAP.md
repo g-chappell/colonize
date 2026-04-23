@@ -9,9 +9,9 @@ _Created: 2026-04-20_
 ## Summary
 
 - **Total tasks:** 90
-- **Done:** 58 (64%)
+- **Done:** 59 (66%)
 - **Ready:** 31
-- **In progress:** 1
+- **In progress:** 0
 - **Blocked:** 0
 
 ---
@@ -676,7 +676,7 @@ Fleet invasion. Victory conditions engine.
   > Conquest). Loss states (treasury bankrupt, fleet eliminated,
   > capital lost). Victory/loss screens with faction-appropriate
   > flavour.
-  - :large_orange_diamond: **TASK-072** — Victory/loss engine + game-over screen  `high` `medium` _(core, web, content)_  
+  - :white_check_mark: **TASK-072** — Victory/loss engine + game-over screen  `high` `medium` _(core, web, content)_ · [PR](https://github.com/g-chappell/colonize/pull/80)  
     _depends on: TASK-024, TASK-066, TASK-070_
     > Check conditions per turn. When hit, freeze play + show
     > game-over screen with stats, faction-appropriate epilogue

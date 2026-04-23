@@ -1750,7 +1750,7 @@ epics:
         tasks:
           - id: TASK-072
             title: Victory/loss engine + game-over screen
-            status: in-progress
+            status: done
             priority: high
             complexity: medium
             workspaces:
@@ -1765,8 +1765,8 @@ epics:
               - TASK-024
               - TASK-066
               - TASK-070
-            pr: null
-            completed: null
+            pr: https://github.com/g-chappell/colonize/pull/80
+            completed: '2026-04-23'
             blocked_reason: null
             last_attempted: '2026-04-23T00:00:00Z'
             attempt_count: 1
