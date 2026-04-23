@@ -863,7 +863,7 @@ epics:
         tasks:
           - id: TASK-036
             title: Cartographer + Explorer unit types
-            status: in-progress
+            status: done
             priority: med
             complexity: small
             workspaces:
@@ -875,8 +875,8 @@ epics:
               colony. Flavour text references Sparrow's diary voice.
             depends_on:
               - TASK-027
-            pr: null
-            completed: null
+            pr: "https://github.com/g-chappell/colonize/pull/79"
+            completed: "2026-04-23"
             blocked_reason: null
             last_attempted: "2026-04-23T00:13:15Z"
             attempt_count: 1
