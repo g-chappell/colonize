@@ -1435,3 +1435,16 @@ gaps.
 
 ---
 
+### Run [2026-04-23 22:24]
+- Task: TASK-062 — Tortuga black-market vendor UI
+- Outcome: success
+- PR: https://github.com/g-chappell/colonize/pull/102
+- Test counts: core=1121 (unchanged), content=226 (was 213 — +13 across `packages/content/src/black-market.test.ts` covering three-kind catalogue coverage (buy / sell / single-talisman) + unique offering ids + non-empty pitch copy + known-resource+positive-quantity+positive-price per trade offer + buy offers above fair-market Chime-per-unit floor (markup) + sell offers below fair-market Chime-per-unit ceiling (discount) + buy > sell no-arbitrage relational invariant + Kraken Talisman priciest single entry in catalogue + Talisman pitch mentions inscription motif + `getBlackMarketOffering` by-id resolution + throw-on-unknown + `isBlackMarketOfferingId` accept/reject), web=632 (was 624 — +8 in `apps/web/src/blackmarket/BlackMarketModal.test.tsx` covering null-encounter-renders-nothing + Blackwater Collective header + Tortuga place chrome + per-offering row price/quantity/pitch rendering + "Asks" for buys and "Pays" for sells verb branch + Talisman aside absent when not offered + Talisman aside visible with high Chime price when offered + Leave button dismisses slice + single-artefact-only encounter path), server=56 (unchanged), shared=18 (unchanged)
+- Files changed: packages/content/src/black-market.ts, packages/content/src/black-market.test.ts, packages/content/src/index.ts, apps/web/src/store/game.ts, apps/web/src/App.tsx, apps/web/src/blackmarket/BlackMarketModal.tsx, apps/web/src/blackmarket/BlackMarketModal.module.css, apps/web/src/blackmarket/BlackMarketModal.test.tsx, roadmap/roadmap.yml, ROADMAP.md
+- Regression alert: false
+- Review proposed: pending-step-15
+- Deploy: pending-step-14
+- Lessons learned: Applied the slice-driven self-mounting event-modal pattern (RumourRevealModal / CombatOverlay) a third time for Blackwater Collective — the encounter slice + `<Component />` unconditional mount + `return null` branch reads as load-bearing across event modals (rumour outcome, combat outcome, vendor encounter); worth noting in `ui-screens.md` if a fourth slice-driven modal lands. Chose NOT to wire buy/sell to cargo or Chimes yet — the task scope is "UI" and Liberty Chimes isn't a store slice today anyway; downstream encounter-orchestrator task owns the actual transfer, and adding speculative transaction plumbing would violate the CLAUDE.md "ship the entity's primitive; leave iteration / scheduling to the task that owns the collection" rule. Content-side pricing tests pin relational invariants (buy > sell per-unit, talisman priciest, markup floor, discount ceiling) instead of literal Chime counts — per `registry-patterns.md` this survives the balance pass in TASK-073 without cascading test fixes.
+
+---
+
