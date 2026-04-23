@@ -192,3 +192,18 @@ gap-free.
   1. 0f8be6e — codify per-access defensive copies on pending-state getters (primitive getters that expose queued/deferred internal collections return fresh per-call copies, never live references — complements the existing Map/Set-sorted-toJSON determinism rule which covers wire-format emission; this covers in-memory getter surface). Driven by TASK-065 `ChimesLedger.pendingEvents` fresh-array return + TASK-070 `ConcordFleetCampaign.pendingWaves()` deep-copied ship/ground arrays — two primitives, same defensive discipline, both citing prior unwritten precedent (`Colony.crew`, `CargoHold.toJSON`). Without the copy, an orchestrator's `.pop()`/`.splice()`/`.shift()` to "consume" an entry silently corrupts primitive invariants.
   2. 8b5c7cb — codify relational invariants over literal numbers in balance-tunable registry tests (tests pin design-intent relationships — monotonicity, ordering, cardinality, uniqueness, cross-tier escalation — rather than literal values; test that `pacified < standard < brutal` survives every rebalance that preserves intent; test that pins `turnsRequired === 12` breaks on first balance tweak). Driven by TASK-070's `concord-campaign.test.ts` (3-tier relational invariants) + TASK-065 chimes-registry + TASK-066 charter-registry + TASK-067 tension ladder — four-of-five entries exhibited the pattern. Generalises the existing "Rule-relevant stats" bullet's ordering-invariant prescription from duplicated-number case to all balance-tunable registry tests.
   3. 30a4da7 — codify FIFO-queue + re-fire-guard Set pattern for threshold-crossing accumulators (sibling `_pending: Event[]` + `_crossed: Set<number>` pair; walk ladder ascending; for each threshold where `prev < t <= next` AND `!_crossed.has(t)`, push event + add to set; drain via FIFO `consumeNextEvent`; sorted-toJSON round-trip; prefer mirrored sibling over generic `ThresholdAccumulator<Event>` base class). Driven by TASK-065 ChimesLedger + TASK-067 ConcordTensionMeter — two primitives shipping the same ~20-line shape independently; TASK-067's lesson explicitly says "mirrored the ChimesLedger shape rather than generalizing". Upcoming EPIC-07/09 reputation/fame/infamy ledgers on the roadmap will hit the same shape; codifying documents the mirror-over-generic call so a well-meaning refactor does not flatten both into a base class.
+
+---
+
+## Review [2026-04-23T04:35:00Z] — after TASK-036 through TASK-082
+- Success streak: 5
+- Patterns identified: 1 (deploy-script first-time-dependent-service trap)
+- Proposals drafted: 1
+- Proposals de-duplicated: 0 dropped (1 survived)
+- Refinements committed: 1
+- PR: https://github.com/g-chappell/colonize/pull/84
+- Outcome: opened
+- Files touched: scripts/deploy.sh
+- Refinements:
+  1. 3aeab90 — `scripts/deploy.sh` adds `up -d --no-recreate` pass before the rolling app recreate so freshly-introduced compose dependents (db, future Redis/mailcatcher/S3-mock) are started on first deploy. Driven by TASK-082's deploy outcome — first attempt rolled back after 90s healthcheck timeout because the postgres `db` container had never been created on the host; manual recovery was `docker compose up -d db` then re-run deploy. The two-pass shape (`up -d --no-recreate` then `up -d --no-deps --force-recreate app`) is steady-state-equivalent to the single-pass shape (the first pass is a no-op when all services are healthy) but auto-recovers from the missing-dependent case. CLAUDE.md note deliberately omitted because the script comment + commit message carry the rationale at the only call-site; a Tier 3 entry for a script-level invariant the script itself enforces would be noise.
+
