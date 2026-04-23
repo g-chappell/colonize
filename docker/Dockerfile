@@ -43,6 +43,7 @@ COPY --from=builder /app/apps/web/dist           ./apps/web/dist
 COPY --from=builder /app/packages/core/dist      ./packages/core/dist
 COPY --from=builder /app/packages/shared/dist    ./packages/shared/dist
 COPY --from=builder /app/packages/content        ./packages/content
+COPY --from=builder /app/roadmap                 ./roadmap
 
 EXPOSE 3000
 CMD ["node", "apps/server/dist/index.js"]

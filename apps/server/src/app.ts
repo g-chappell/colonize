@@ -28,6 +28,19 @@ export interface BuildAppOptions {
    */
   staticRoot?: string;
   /**
+   * Absolute path to the repository's `roadmap/` directory. When set, the
+   * server mounts its contents at `/roadmap/*` (so the HTML viewer at
+   * `roadmap/viewer/index.html` can fetch its sibling `roadmap.yml` via the
+   * viewer's existing `../roadmap.yml` request), and redirects the bare
+   * `/roadmap` URL to `/roadmap/viewer/`.
+   *
+   * Omit in development and tests. When omitted and `NODE_ENV === 'production'`,
+   * auto-resolves to `<image>/roadmap` relative to this file's compiled
+   * location — matching the Docker runtime layout
+   * (`/app/apps/server/dist/app.js` → `/app/roadmap`).
+   */
+  roadmapRoot?: string;
+  /**
    * Auth wiring. When provided, /auth/magic-link, /auth/verify, and /me are
    * registered against the supplied repository + sender. Optional fields
    * fall back to the DEFAULT_* constants exported from this module. Omit
@@ -61,6 +74,13 @@ function resolveDefaultStaticRoot(): string | null {
   if (process.env.NODE_ENV !== 'production') return null;
   const here = dirname(fileURLToPath(import.meta.url));
   const candidate = resolve(here, '../../web/dist');
+  return existsSync(candidate) ? candidate : null;
+}
+
+function resolveDefaultRoadmapRoot(): string | null {
+  if (process.env.NODE_ENV !== 'production') return null;
+  const here = dirname(fileURLToPath(import.meta.url));
+  const candidate = resolve(here, '../../../roadmap');
   return existsSync(candidate) ? candidate : null;
 }
 
@@ -111,6 +131,20 @@ export function buildApp(options: BuildAppOptions = {}): FastifyInstance {
     });
   }
 
+  const roadmapRoot = options.roadmapRoot ?? resolveDefaultRoadmapRoot();
+  if (roadmapRoot) {
+    app.register(fastifyStatic, {
+      root: roadmapRoot,
+      prefix: '/roadmap/',
+      decorateReply: false,
+    });
+
+    // Bare `/roadmap` (and `/roadmap/`) land on the viewer. The viewer's own
+    // `../roadmap.yml` fetch then resolves to `/roadmap/roadmap.yml`.
+    app.get('/roadmap', (_req, reply) => reply.redirect('/roadmap/viewer/'));
+    app.get('/roadmap/', (_req, reply) => reply.redirect('/roadmap/viewer/'));
+  }
+
   const staticRoot = options.staticRoot ?? resolveDefaultStaticRoot();
   if (staticRoot) {
     app.register(fastifyStatic, {
@@ -121,6 +155,11 @@ export function buildApp(options: BuildAppOptions = {}): FastifyInstance {
 
     app.setNotFoundHandler((req, reply) => {
       if (req.method !== 'GET') {
+        reply.status(404).send({ error: 'Not Found' });
+        return;
+      }
+      // Missing assets under /roadmap/ must 404, not fall through to the SPA.
+      if (req.url.startsWith('/roadmap/') || req.url === '/roadmap') {
         reply.status(404).send({ error: 'Not Found' });
         return;
       }
