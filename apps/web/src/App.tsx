@@ -7,6 +7,7 @@ import { DiplomacyScreen } from './diplomacy/DiplomacyScreen';
 import { GameCanvas } from './GameCanvas';
 import { Hud } from './hud/Hud';
 import { RumourRevealModal } from './hud/RumourRevealModal';
+import { GameOverScreen } from './gameover/GameOverScreen';
 import { MainMenu } from './menu/MainMenu';
 import { FactionSelect } from './menu/FactionSelect';
 import { PauseOverlay } from './pause/PauseOverlay';
@@ -45,6 +46,10 @@ export function App() {
 
   if (screen === 'faction-select') {
     return <FactionSelect />;
+  }
+
+  if (screen === 'game-over') {
+    return <GameOverScreen />;
   }
 
   return (

@@ -9,6 +9,7 @@ import type {
   Coord,
   DiplomacyAction,
   DiplomacyAttemptOutcome,
+  EndgameOutcome,
   FactionChartersJSON,
   GameVersion,
   HomePortJSON,
@@ -55,7 +56,8 @@ export type Screen =
   | 'colony'
   | 'trade'
   | 'transfer'
-  | 'diplomacy';
+  | 'diplomacy'
+  | 'game-over';
 
 // Active trade session (which ship is trading at which colony's home
 // port). Non-null while `screen === 'trade'`; cleared by
@@ -262,6 +264,13 @@ export interface GameState {
   // (slice-driven self-mounting overlay per CLAUDE.md) — does not
   // gate on a Screen literal.
   sovereigntyBeat: SovereigntyMilestone | null;
+  // Resolved victory-or-defeat outcome. Non-null while the game-over
+  // terminal screen is mounted. Populated by `declareEndgame` (called
+  // from the turn-controller's TurnPhase.End exit hook when a win / loss
+  // condition resolves) and cleared by `reset`. The `'game-over'` Screen
+  // literal and this slice travel together — setting one without the
+  // other is a bug — so `declareEndgame` flips both in a single set.
+  endgame: EndgameOutcome | null;
   settings: SettingsState;
   setCurrentTurn: (turn: number) => void;
   advanceTurn: () => void;
@@ -377,6 +386,13 @@ export interface GameState {
   // re-ticking the campaign counter.
   showSovereigntyBeat: (milestone: SovereigntyMilestone) => void;
   dismissSovereigntyBeat: () => void;
+  // Lock the game into the game-over terminal screen with the supplied
+  // outcome. Atomic: the `endgame` slice and `screen` literal flip in a
+  // single `set` so a re-render cannot observe one without the other.
+  // No-op when an endgame is already declared — only the first trigger
+  // wins (a subsequent tick that would also resolve never replaces the
+  // original outcome).
+  declareEndgame: (outcome: EndgameOutcome) => void;
   reset: () => void;
 }
 
@@ -422,6 +438,7 @@ const initialState = {
   lastDiplomacyOutcome: null as DiplomacyAttemptOutcome | null,
   sovereigntyWar: null as ConcordFleetCampaignJSON | null,
   sovereigntyBeat: null as SovereigntyMilestone | null,
+  endgame: null as EndgameOutcome | null,
   settings: DEFAULT_SETTINGS,
 } as const;
 
@@ -736,5 +753,10 @@ export const useGameStore = create<GameState>((set) => ({
   endSovereigntyWar: () => set({ sovereigntyWar: null, sovereigntyBeat: null }),
   showSovereigntyBeat: (milestone) => set({ sovereigntyBeat: milestone }),
   dismissSovereigntyBeat: () => set({ sovereigntyBeat: null }),
+  declareEndgame: (outcome) =>
+    set((state) => {
+      if (state.endgame !== null) return {};
+      return { endgame: outcome, screen: 'game-over' as Screen };
+    }),
   reset: () => set({ ...initialState }),
 }));

@@ -267,4 +267,18 @@ describe('App', () => {
       expect(screen.getByTestId('sovereignty-beat')).toBeInTheDocument();
     });
   });
+
+  describe('game-over terminal screen', () => {
+    it('replaces the game stage with the game-over screen when declared', () => {
+      useGameStore.getState().declareEndgame({
+        kind: 'victory',
+        result: 'sovereignty-victory',
+        turn: 42,
+      });
+      render(<App />);
+      expect(screen.getByTestId('game-over-screen')).toBeInTheDocument();
+      expect(screen.queryByTestId('hud')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('main-menu')).not.toBeInTheDocument();
+    });
+  });
 });

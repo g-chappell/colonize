@@ -123,3 +123,11 @@ export {
   type ConcordCampaignDifficultyId,
   type ConcordCampaignWave,
 } from './concord-campaign.js';
+
+export {
+  EPILOGUES,
+  ALL_ENDGAME_RESULT_IDS,
+  getEpilogue,
+  type EndgameResultId,
+  type EpilogueEntry,
+} from './epilogues.js';
