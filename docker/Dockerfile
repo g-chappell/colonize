@@ -38,6 +38,7 @@ RUN npm ci --omit=dev --workspace=apps/server --include-workspace-root
 
 # Copy built artifacts from builder
 COPY --from=builder /app/apps/server/dist        ./apps/server/dist
+COPY --from=builder /app/apps/server/migrations  ./apps/server/migrations
 COPY --from=builder /app/apps/web/dist           ./apps/web/dist
 COPY --from=builder /app/packages/core/dist      ./packages/core/dist
 COPY --from=builder /app/packages/shared/dist    ./packages/shared/dist
