@@ -1456,7 +1456,7 @@ gaps.
 - Files changed: apps/web/src/App.test.tsx, apps/web/src/App.tsx, apps/web/src/hud/Hud.module.css, apps/web/src/hud/Hud.test.tsx, apps/web/src/hud/Hud.tsx, apps/web/src/hud/TithePaymentModal.module.css, apps/web/src/hud/TithePaymentModal.test.tsx, apps/web/src/hud/TithePaymentModal.tsx, apps/web/src/store/game.test.ts, apps/web/src/store/game.ts, packages/content/src/concord-tithe-flavour.test.ts, packages/content/src/concord-tithe-flavour.ts, packages/content/src/index.ts
 - Regression alert: false
 - Review proposed: pending
-- Deploy: pending
+- Deploy: success
 - Lessons learned: Mirroring the SovereigntyBeatModal slice-driven pattern (nullable slice + always-mounted overlay) extended cleanly to the tithe modal; the local useState two-phase split (choice → boycott confirmation) avoided polluting the slice with cosmetic state.
 
 ---
