@@ -54,7 +54,14 @@ if [[ "$STRATEGY" == "restart" ]]; then
   $COMPOSE down
   $COMPOSE up -d
 else
-  # rolling: new container replaces old with minimal gap
+  # rolling strategy: ensure dependent services (db, redis, mailcatcher, …)
+  # are running first, then force-recreate just the app container. The
+  # `up -d --no-recreate` pass starts any missing services without touching
+  # already-healthy ones; the second pass swaps the app with minimal gap.
+  # Without the first pass, a freshly-introduced compose service (e.g. the
+  # postgres `db` added in TASK-082) is never started and the rolling app
+  # recreate fails its healthcheck because its dependencies don't exist.
+  $COMPOSE up -d --no-recreate
   $COMPOSE up -d --no-deps --force-recreate app
 fi
 
