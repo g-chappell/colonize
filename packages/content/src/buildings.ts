@@ -19,6 +19,7 @@ export type BuildingEntryId =
   | 'barracks'
   | 'distillery'
   | 'forge'
+  | 'school'
   | 'study-hall'
   | 'shipyard'
   | 'gun-deck';
@@ -142,11 +143,20 @@ export const BUILDINGS: readonly BuildingEntry[] = [
     prerequisites: ['sawmill'],
   },
   {
+    id: 'school',
+    name: 'School',
+    summary: 'Trains Deckhands into working professions over several turns.',
+    description:
+      'Slate boards, rope-end pointers, a master who shouts over the tide. Deckhands walk in green and walk out as shipwrights, gunners, cartographers, or quartermasters.',
+    cost: { timber: 15, fibre: 5 },
+    prerequisites: ['tavern'],
+  },
+  {
     id: 'study-hall',
     name: 'Archive & Study Hall',
-    summary: 'Unlocks lore recovery and codex entries from salvage.',
+    summary: 'Trains rarer Scholars and Loremasters; unlocks lore recovery from salvage.',
     description:
-      'Oilcloth-bound atlases, glass cases of mica-etched charts, one door that is always locked. Scholars here read what wreckers only sell by the pound.',
+      'Oilcloth-bound atlases, glass cases of mica-etched charts, one door that is always locked. Scholars and loremasters train here; what the wreckers sell by the pound is read, not burned.',
     cost: { planks: 15, salvage: 10 },
     prerequisites: ['chapel-of-the-kraken'],
   },

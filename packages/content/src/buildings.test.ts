@@ -71,6 +71,14 @@ describe('BUILDINGS', () => {
     expect(getBuilding('chapel-of-the-kraken').prerequisites).toEqual([]);
   });
 
+  it('school depends on tavern (common-profession training gate)', () => {
+    expect(getBuilding('school').prerequisites).toContain('tavern');
+  });
+
+  it('study-hall depends on chapel-of-the-kraken (rare-profession training gate)', () => {
+    expect(getBuilding('study-hall').prerequisites).toContain('chapel-of-the-kraken');
+  });
+
   it('shipyard is strictly more expensive than a starter warehouse on overlapping resources', () => {
     const shipyard = getBuilding('shipyard');
     const warehouse = getBuilding('warehouse');
