@@ -52,7 +52,10 @@ function latestSuccessEntry(text) {
     const ts = normalise(`${m[1]} ${m[2]}:${m[3] ?? '00'}`);
     const outcome = b.match(/^- Outcome:\s*(\S+)/m)?.[1];
     if (outcome !== 'success' && outcome !== 'success_with_warning') continue;
-    if (ts > bestTs) { bestTs = ts; best = b; }
+    if (ts > bestTs) {
+      bestTs = ts;
+      best = b;
+    }
   }
   return best;
 }
@@ -77,7 +80,9 @@ function readCurrentCountsArg() {
   try {
     const stdin = readFileSync(0, 'utf8').trim();
     if (stdin) return parseCounts(stdin);
-  } catch { /* no-op */ }
+  } catch {
+    /* no-op */
+  }
   return null;
 }
 
@@ -116,7 +121,5 @@ for (const [k, v] of Object.entries(curr)) {
   if (!(k in prev)) workspaces[k] = { prev: null, curr: v, delta: v };
 }
 
-process.stdout.write(
-  JSON.stringify({ regressed, workspaces, missingInCurrent }) + '\n',
-);
+process.stdout.write(JSON.stringify({ regressed, workspaces, missingInCurrent }) + '\n');
 process.exit(regressed ? 1 : 0);
