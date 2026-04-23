@@ -1443,7 +1443,7 @@ gaps.
 - Files changed: packages/content/src/black-market.ts, packages/content/src/black-market.test.ts, packages/content/src/index.ts, apps/web/src/store/game.ts, apps/web/src/App.tsx, apps/web/src/blackmarket/BlackMarketModal.tsx, apps/web/src/blackmarket/BlackMarketModal.module.css, apps/web/src/blackmarket/BlackMarketModal.test.tsx, roadmap/roadmap.yml, ROADMAP.md
 - Regression alert: false
 - Review proposed: pending-step-15
-- Deploy: pending-step-14
+- Deploy: success (colonize.blacksail.dev — image colonize:latest, rolling redeploy, healthcheck ok on attempt 2)
 - Lessons learned: Applied the slice-driven self-mounting event-modal pattern (RumourRevealModal / CombatOverlay) a third time for Blackwater Collective — the encounter slice + `<Component />` unconditional mount + `return null` branch reads as load-bearing across event modals (rumour outcome, combat outcome, vendor encounter); worth noting in `ui-screens.md` if a fourth slice-driven modal lands. Chose NOT to wire buy/sell to cargo or Chimes yet — the task scope is "UI" and Liberty Chimes isn't a store slice today anyway; downstream encounter-orchestrator task owns the actual transfer, and adding speculative transaction plumbing would violate the CLAUDE.md "ship the entity's primitive; leave iteration / scheduling to the task that owns the collection" rule. Content-side pricing tests pin relational invariants (buy > sell per-unit, talisman priciest, markup floor, discount ceiling) instead of literal Chime counts — per `registry-patterns.md` this survives the balance pass in TASK-073 without cascading test fixes.
 
 ---
