@@ -1225,7 +1225,7 @@ epics:
             attempt_count: 1
           - id: TASK-051
             title: Route-builder UI
-            status: ready
+            status: done
             priority: med
             complexity: medium
             workspaces:
@@ -1236,11 +1236,11 @@ epics:
               route on map with connecting lines.
             depends_on:
               - TASK-050
-            pr: null
-            completed: null
+            pr: https://github.com/g-chappell/colonize/pull/90
+            completed: '2026-04-23T10:40:00Z'
             blocked_reason: null
-            last_attempted: null
-            attempt_count: 0
+            last_attempted: '2026-04-23T09:55:00Z'
+            attempt_count: 1
       - id: STORY-29
         title: Price dynamics & market events
         description: |

@@ -1135,4 +1135,160 @@ describe('useGameStore', () => {
       expect(state.screen).toBe('menu');
     });
   });
+
+  describe('merchant routes', () => {
+    const route = {
+      id: 'salt-run',
+      faction: 'otk',
+      stops: [
+        {
+          colonyId: 'driftwatch',
+          actions: [{ kind: 'load' as const, resourceId: 'salvage', qty: 5 }],
+        },
+        {
+          colonyId: 'blackreef',
+          actions: [{ kind: 'unload' as const, resourceId: 'salvage', qty: 5 }],
+        },
+      ],
+    };
+
+    beforeEach(() => {
+      useGameStore.getState().setUnits([
+        {
+          id: 'ship-1',
+          faction: 'otk',
+          position: { x: 0, y: 0 },
+          type: UnitType.Sloop,
+          movement: 4,
+          cargo: EMPTY_CARGO,
+        },
+      ]);
+    });
+
+    it('starts with empty merchantRoutes and autoRoutes maps', () => {
+      const s = useGameStore.getState();
+      expect(s.merchantRoutes).toEqual({});
+      expect(s.autoRoutes).toEqual({});
+    });
+
+    it('openRouteScreen / closeRouteScreen route between game and routes', () => {
+      useGameStore.getState().setScreen('game');
+      useGameStore.getState().openRouteScreen();
+      expect(useGameStore.getState().screen).toBe('routes');
+      useGameStore.getState().closeRouteScreen();
+      expect(useGameStore.getState().screen).toBe('game');
+    });
+
+    it('saveMerchantRoute stores the validated JSON by id', () => {
+      useGameStore.getState().saveMerchantRoute(route);
+      expect(useGameStore.getState().merchantRoutes['salt-run']).toBeDefined();
+      expect(useGameStore.getState().merchantRoutes['salt-run']?.stops).toHaveLength(2);
+    });
+
+    it('saveMerchantRoute silently drops malformed input', () => {
+      const bad = { ...route, stops: [] };
+      useGameStore.getState().saveMerchantRoute(bad);
+      expect(useGameStore.getState().merchantRoutes['salt-run']).toBeUndefined();
+    });
+
+    it('saveMerchantRoute replaces an existing route with the same id', () => {
+      useGameStore.getState().saveMerchantRoute(route);
+      const replaced = { ...route, stops: [route.stops[0]!] };
+      useGameStore.getState().saveMerchantRoute(replaced);
+      expect(useGameStore.getState().merchantRoutes['salt-run']?.stops).toHaveLength(1);
+    });
+
+    it('deleteMerchantRoute removes the entry and prunes AutoRoutes atomically', () => {
+      useGameStore.getState().saveMerchantRoute(route);
+      useGameStore.getState().assignRouteToShip('ship-1', 'salt-run');
+      expect(useGameStore.getState().autoRoutes['ship-1']?.routeId).toBe('salt-run');
+      useGameStore.getState().deleteMerchantRoute('salt-run');
+      const s = useGameStore.getState();
+      expect(s.merchantRoutes['salt-run']).toBeUndefined();
+      expect(s.autoRoutes['ship-1']).toBeUndefined();
+    });
+
+    it('deleteMerchantRoute is a no-op for an unknown id', () => {
+      useGameStore.getState().saveMerchantRoute(route);
+      useGameStore.getState().deleteMerchantRoute('ghost');
+      expect(useGameStore.getState().merchantRoutes['salt-run']).toBeDefined();
+    });
+
+    it('deleteMerchantRoute leaves AutoRoutes pointing at other routes untouched', () => {
+      const other = { ...route, id: 'spice-run' };
+      useGameStore.getState().saveMerchantRoute(route);
+      useGameStore.getState().saveMerchantRoute(other);
+      useGameStore.getState().setUnits([
+        {
+          id: 'ship-1',
+          faction: 'otk',
+          position: { x: 0, y: 0 },
+          type: UnitType.Sloop,
+          movement: 4,
+          cargo: EMPTY_CARGO,
+        },
+        {
+          id: 'ship-2',
+          faction: 'otk',
+          position: { x: 0, y: 0 },
+          type: UnitType.Sloop,
+          movement: 4,
+          cargo: EMPTY_CARGO,
+        },
+      ]);
+      useGameStore.getState().assignRouteToShip('ship-1', 'salt-run');
+      useGameStore.getState().assignRouteToShip('ship-2', 'spice-run');
+      useGameStore.getState().deleteMerchantRoute('salt-run');
+      const s = useGameStore.getState();
+      expect(s.autoRoutes['ship-1']).toBeUndefined();
+      expect(s.autoRoutes['ship-2']?.routeId).toBe('spice-run');
+    });
+
+    it('assignRouteToShip creates an AutoRoute at stop 0, active', () => {
+      useGameStore.getState().saveMerchantRoute(route);
+      useGameStore.getState().assignRouteToShip('ship-1', 'salt-run');
+      const ar = useGameStore.getState().autoRoutes['ship-1'];
+      expect(ar).toBeDefined();
+      expect(ar?.routeId).toBe('salt-run');
+      expect(ar?.currentStopIndex).toBe(0);
+      expect(ar?.status).toBe('active');
+      expect(ar?.brokenReason).toBeNull();
+    });
+
+    it('assignRouteToShip is a no-op for an unknown route', () => {
+      useGameStore.getState().assignRouteToShip('ship-1', 'ghost-route');
+      expect(useGameStore.getState().autoRoutes['ship-1']).toBeUndefined();
+    });
+
+    it('assignRouteToShip is a no-op for a missing ship', () => {
+      useGameStore.getState().saveMerchantRoute(route);
+      useGameStore.getState().assignRouteToShip('ship-ghost', 'salt-run');
+      expect(useGameStore.getState().autoRoutes['ship-ghost']).toBeUndefined();
+    });
+
+    it('assignRouteToShip replaces any prior AutoRoute on the same ship', () => {
+      const other = { ...route, id: 'spice-run' };
+      useGameStore.getState().saveMerchantRoute(route);
+      useGameStore.getState().saveMerchantRoute(other);
+      useGameStore.getState().assignRouteToShip('ship-1', 'salt-run');
+      useGameStore.getState().assignRouteToShip('ship-1', 'spice-run');
+      expect(useGameStore.getState().autoRoutes['ship-1']?.routeId).toBe('spice-run');
+    });
+
+    it('unassignRoute clears the AutoRoute entry for the ship', () => {
+      useGameStore.getState().saveMerchantRoute(route);
+      useGameStore.getState().assignRouteToShip('ship-1', 'salt-run');
+      useGameStore.getState().unassignRoute('ship-1');
+      expect(useGameStore.getState().autoRoutes['ship-1']).toBeUndefined();
+    });
+
+    it('reset clears merchantRoutes + autoRoutes', () => {
+      useGameStore.getState().saveMerchantRoute(route);
+      useGameStore.getState().assignRouteToShip('ship-1', 'salt-run');
+      useGameStore.getState().reset();
+      const s = useGameStore.getState();
+      expect(s.merchantRoutes).toEqual({});
+      expect(s.autoRoutes).toEqual({});
+    });
+  });
 });

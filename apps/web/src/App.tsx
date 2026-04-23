@@ -13,6 +13,7 @@ import { MainMenu } from './menu/MainMenu';
 import { FactionSelect } from './menu/FactionSelect';
 import { PauseOverlay } from './pause/PauseOverlay';
 import { Prologue } from './prologue/Prologue';
+import { RouteScreen } from './routes/RouteScreen';
 import { SovereigntyBeatModal } from './sovereignty/SovereigntyBeatModal';
 import { SovereigntyWarOverlay } from './sovereignty/SovereigntyWarOverlay';
 import { TradeScreen } from './trade/TradeScreen';
@@ -103,6 +104,7 @@ export function App() {
         {screen === 'trade' && <TradeScreen />}
         {screen === 'transfer' && <CargoTransferScreen />}
         {screen === 'diplomacy' && <DiplomacyScreen />}
+        {screen === 'routes' && <RouteScreen />}
       </div>
     </main>
   );

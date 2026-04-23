@@ -52,6 +52,7 @@ export function Hud(): JSX.Element {
         <AiThinkingIndicator />
       </div>
       <div className={styles.topRight}>
+        <RoutesButton />
         <DiplomacyButton />
         <MenuButton />
         <ResourceBar />
@@ -92,6 +93,21 @@ export function DiplomacyButton(): JSX.Element {
       data-testid="hud-diplomacy-button"
     >
       ⚖
+    </button>
+  );
+}
+
+export function RoutesButton(): JSX.Element {
+  const openRouteScreen = useGameStore((s) => s.openRouteScreen);
+  return (
+    <button
+      type="button"
+      className={styles.menuButton}
+      onClick={() => openRouteScreen()}
+      aria-label="Open merchant route builder"
+      data-testid="hud-routes-button"
+    >
+      ⚓
     </button>
   );
 }

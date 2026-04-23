@@ -53,6 +53,7 @@ describe('Hud', () => {
     expect(screen.getByTestId('hud-end-turn')).toBeInTheDocument();
     expect(screen.getByTestId('hud-menu-button')).toBeInTheDocument();
     expect(screen.getByTestId('hud-diplomacy-button')).toBeInTheDocument();
+    expect(screen.getByTestId('hud-routes-button')).toBeInTheDocument();
   });
 
   describe('MenuButton', () => {
@@ -70,6 +71,15 @@ describe('Hud', () => {
       render(<Hud />);
       fireEvent.click(screen.getByTestId('hud-diplomacy-button'));
       expect(useGameStore.getState().screen).toBe('diplomacy');
+    });
+  });
+
+  describe('RoutesButton', () => {
+    it('opens the routes screen when clicked', () => {
+      useGameStore.getState().setScreen('game');
+      render(<Hud />);
+      fireEvent.click(screen.getByTestId('hud-routes-button'));
+      expect(useGameStore.getState().screen).toBe('routes');
     });
   });
 
