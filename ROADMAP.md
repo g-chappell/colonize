@@ -9,9 +9,9 @@ _Created: 2026-04-20_
 ## Summary
 
 - **Total tasks:** 90
-- **Done:** 63 (70%)
+- **Done:** 64 (71%)
 - **Ready:** 26
-- **In progress:** 1
+- **In progress:** 0
 - **Blocked:** 0
 
 ---
@@ -429,7 +429,7 @@ factions).
     > Profession enum. Each profession has +X% bonus to specific
     > yield or building. Crew has current profession; can have
     > training-in-progress.
-  - :large_orange_diamond: **TASK-046** — Training buildings (School, Archive-study Hall)  `med` `medium` _(core, content)_  
+  - :white_check_mark: **TASK-046** — Training buildings (School, Archive-study Hall)  `med` `medium` _(core, content)_ · [PR](https://github.com/g-chappell/colonize/pull/86)  
     _depends on: TASK-045_
     > School trains generic Deckhand → chosen profession over N
     > turns. Archive-study Hall trains rarer Scholar /

@@ -1101,7 +1101,7 @@ epics:
             attempt_count: 1
           - id: TASK-046
             title: Training buildings (School, Archive-study Hall)
-            status: in-progress
+            status: done
             priority: med
             complexity: medium
             workspaces:
@@ -1114,8 +1114,8 @@ epics:
               conversion.
             depends_on:
               - TASK-045
-            pr: null
-            completed: null
+            pr: https://github.com/g-chappell/colonize/pull/86
+            completed: '2026-04-23'
             blocked_reason: null
             last_attempted: '2026-04-23T00:00:00Z'
             attempt_count: 1
