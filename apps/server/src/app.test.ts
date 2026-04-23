@@ -6,6 +6,7 @@ import { buildApp, SERVER_VERSION } from './app.js';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const FIXTURE_WEB_DIST = resolve(here, './__fixtures__/web-dist');
+const REPO_ROADMAP = resolve(here, '../../../roadmap');
 
 describe('@colonize/server /health', () => {
   const apps = new Set<ReturnType<typeof buildApp>>();
@@ -112,5 +113,89 @@ describe('@colonize/server static web serving', () => {
     expect(res.statusCode).toBe(200);
     const parsed = HealthResponse.parse(res.json());
     expect(parsed.ok).toBe(true);
+  });
+});
+
+describe('@colonize/server roadmap serving', () => {
+  const apps = new Set<ReturnType<typeof buildApp>>();
+
+  afterEach(async () => {
+    for (const app of apps) {
+      await app.close();
+    }
+    apps.clear();
+  });
+
+  function freshApp(...args: Parameters<typeof buildApp>) {
+    const app = buildApp(...args);
+    apps.add(app);
+    return app;
+  }
+
+  it('redirects /roadmap to /roadmap/viewer/', async () => {
+    const app = freshApp({ roadmapRoot: REPO_ROADMAP });
+    const res = await app.inject({ method: 'GET', url: '/roadmap' });
+    expect(res.statusCode).toBe(302);
+    expect(res.headers.location).toBe('/roadmap/viewer/');
+  });
+
+  it('redirects /roadmap/ (with trailing slash) to /roadmap/viewer/', async () => {
+    const app = freshApp({ roadmapRoot: REPO_ROADMAP });
+    const res = await app.inject({ method: 'GET', url: '/roadmap/' });
+    expect(res.statusCode).toBe(302);
+    expect(res.headers.location).toBe('/roadmap/viewer/');
+  });
+
+  it('serves the viewer HTML at /roadmap/viewer/index.html', async () => {
+    const app = freshApp({ roadmapRoot: REPO_ROADMAP });
+    const res = await app.inject({
+      method: 'GET',
+      url: '/roadmap/viewer/index.html',
+    });
+    expect(res.statusCode).toBe(200);
+    expect(res.body).toContain('<title>Roadmap</title>');
+  });
+
+  it('serves roadmap.yml at /roadmap/roadmap.yml (viewers ../roadmap.yml fetch)', async () => {
+    const app = freshApp({ roadmapRoot: REPO_ROADMAP });
+    const res = await app.inject({ method: 'GET', url: '/roadmap/roadmap.yml' });
+    expect(res.statusCode).toBe(200);
+    expect(res.body).toContain('epics:');
+  });
+
+  it('serves yaml-lite.mjs at /roadmap/yaml-lite.mjs (viewer module import)', async () => {
+    const app = freshApp({ roadmapRoot: REPO_ROADMAP });
+    const res = await app.inject({ method: 'GET', url: '/roadmap/yaml-lite.mjs' });
+    expect(res.statusCode).toBe(200);
+    expect(res.body).toContain('export');
+  });
+
+  it('returns 404 (not SPA fallback) for missing /roadmap/* assets when SPA is also configured', async () => {
+    const app = freshApp({
+      roadmapRoot: REPO_ROADMAP,
+      staticRoot: FIXTURE_WEB_DIST,
+    });
+    const res = await app.inject({
+      method: 'GET',
+      url: '/roadmap/does-not-exist.yml',
+    });
+    expect(res.statusCode).toBe(404);
+    expect(res.body).not.toContain('colonize-static-test-marker');
+  });
+
+  it('leaves the main SPA fallback working for non-/roadmap paths', async () => {
+    const app = freshApp({
+      roadmapRoot: REPO_ROADMAP,
+      staticRoot: FIXTURE_WEB_DIST,
+    });
+    const res = await app.inject({ method: 'GET', url: '/game/turn/7' });
+    expect(res.statusCode).toBe(200);
+    expect(res.body).toContain('colonize-static-test-marker');
+  });
+
+  it('does not register /roadmap routes when roadmapRoot is omitted', async () => {
+    const app = freshApp();
+    const res = await app.inject({ method: 'GET', url: '/roadmap' });
+    expect(res.statusCode).toBe(404);
   });
 });
