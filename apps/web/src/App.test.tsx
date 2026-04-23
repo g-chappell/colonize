@@ -291,6 +291,22 @@ describe('App', () => {
     });
   });
 
+  describe('tithe payment modal', () => {
+    it('mounts the modal over the game stage when a tithe notification is pending', () => {
+      useGameStore.getState().setScreen('game');
+      useGameStore.getState().showTitheNotification({ amount: 35 });
+      render(<App />);
+      expect(screen.getByTestId('hud')).toBeInTheDocument();
+      expect(screen.getByTestId('tithe-payment')).toBeInTheDocument();
+    });
+
+    it('does not mount the modal when no tithe notification is pending', () => {
+      useGameStore.getState().setScreen('game');
+      render(<App />);
+      expect(screen.queryByTestId('tithe-payment')).not.toBeInTheDocument();
+    });
+  });
+
   describe('game-over terminal screen', () => {
     it('replaces the game stage with the game-over screen when declared', () => {
       useGameStore.getState().declareEndgame({

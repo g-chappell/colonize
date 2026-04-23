@@ -1,11 +1,13 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { TurnPhase, UnitType, type UnitJSON } from '@colonize/core';
+import { CONCORD_TENSION_THRESHOLDS, TurnPhase, UnitType, type UnitJSON } from '@colonize/core';
+import { getTitheFlavour } from '@colonize/content';
 import { bus } from '../bus';
 import { turnController } from '../game/turn-controller';
 import { useGameStore } from '../store/game';
 import {
   AiThinkingIndicator,
+  ConcordTensionChip,
   EndTurnButton,
   FactionChip,
   Hud,
@@ -54,6 +56,7 @@ describe('Hud', () => {
     expect(screen.getByTestId('hud-menu-button')).toBeInTheDocument();
     expect(screen.getByTestId('hud-diplomacy-button')).toBeInTheDocument();
     expect(screen.getByTestId('hud-routes-button')).toBeInTheDocument();
+    expect(screen.getByTestId('hud-concord-tension')).toBeInTheDocument();
   });
 
   describe('MenuButton', () => {
@@ -108,6 +111,72 @@ describe('Hud', () => {
       useGameStore.getState().setFaction('bloodborne');
       render(<FactionChip />);
       expect(screen.getByTestId('hud-faction')).toHaveTextContent('Bloodborne Legion');
+    });
+  });
+
+  describe('ConcordTensionChip', () => {
+    it('renders the baseline (tier 0) label and 0/100 value on a fresh game', () => {
+      render(<ConcordTensionChip />);
+      const chip = screen.getByTestId('hud-concord-tension');
+      const max = CONCORD_TENSION_THRESHOLDS[CONCORD_TENSION_THRESHOLDS.length - 1]!;
+      expect(chip).toHaveTextContent('Concord');
+      expect(screen.getByTestId('hud-concord-tension-tier')).toHaveTextContent(
+        getTitheFlavour(0).tierLabel,
+      );
+      expect(screen.getByTestId('hud-concord-tension-value')).toHaveTextContent(`0/${max}`);
+      expect(chip).toHaveAttribute('data-tier', '0');
+      expect(chip).toHaveAttribute('aria-valuenow', '0');
+      expect(chip).toHaveAttribute('aria-valuemax', String(max));
+    });
+
+    it('reflects the tier label after thresholds have been crossed', () => {
+      useGameStore.setState({
+        concordTension: {
+          tension: 60,
+          thresholds: [...CONCORD_TENSION_THRESHOLDS],
+          crossed: [25, 50],
+          pending: [],
+        },
+      });
+      render(<ConcordTensionChip />);
+      expect(screen.getByTestId('hud-concord-tension-tier')).toHaveTextContent(
+        getTitheFlavour(2).tierLabel,
+      );
+      expect(screen.getByTestId('hud-concord-tension-value')).toHaveTextContent('60/100');
+      expect(screen.getByTestId('hud-concord-tension')).toHaveAttribute('data-tier', '2');
+    });
+
+    it('clamps to tier 4 when every threshold has been crossed', () => {
+      useGameStore.setState({
+        concordTension: {
+          tension: 130,
+          thresholds: [...CONCORD_TENSION_THRESHOLDS],
+          crossed: [25, 50, 75, 100],
+          pending: [],
+        },
+      });
+      render(<ConcordTensionChip />);
+      expect(screen.getByTestId('hud-concord-tension')).toHaveAttribute('data-tier', '4');
+      expect(screen.getByTestId('hud-concord-tension-tier')).toHaveTextContent(
+        getTitheFlavour(4).tierLabel,
+      );
+    });
+
+    it('clamps aria-valuenow to the ladder maximum even when tension exceeds it', () => {
+      useGameStore.setState({
+        concordTension: {
+          tension: 200,
+          thresholds: [...CONCORD_TENSION_THRESHOLDS],
+          crossed: [25, 50, 75, 100],
+          pending: [],
+        },
+      });
+      render(<ConcordTensionChip />);
+      const max = CONCORD_TENSION_THRESHOLDS[CONCORD_TENSION_THRESHOLDS.length - 1]!;
+      expect(screen.getByTestId('hud-concord-tension')).toHaveAttribute(
+        'aria-valuenow',
+        String(max),
+      );
     });
   });
 

@@ -1,5 +1,6 @@
 import { TurnPhase, UnitType, getUnitTypeDefinition } from '@colonize/core';
 import type { UnitJSON } from '@colonize/core';
+import { getTitheFlavour, type ConcordTensionTier } from '@colonize/content';
 import { findUnitById } from '../game/unit-input';
 import { turnController } from '../game/turn-controller';
 import { FACTION_NAMES, useGameStore, type PlayableFaction } from '../store/game';
@@ -47,6 +48,7 @@ export function Hud(): JSX.Element {
       <div className={styles.topLeft}>
         <YearDisplay />
         <FactionChip />
+        <ConcordTensionChip />
       </div>
       <div className={styles.topCenter}>
         <AiThinkingIndicator />
@@ -129,6 +131,50 @@ export function FactionChip(): JSX.Element {
       {FACTION_NAMES[faction]}
     </div>
   );
+}
+
+// Reads the player faction's Concord tension snapshot directly — no
+// reconstitution required (the chip only needs the numeric tension +
+// crossed-thresholds count to derive the tier label). The maximum
+// threshold is the last entry in the snapshot's ladder so per-difficulty
+// rescaling (a future Concord-difficulty registry) does not require a
+// chip rewrite. Always mounted (no early-return on tension = 0) so the
+// player learns the system exists before the first refusal raises it.
+export function ConcordTensionChip(): JSX.Element {
+  const snapshot = useGameStore((s) => s.concordTension);
+  const tier = clampConcordTier(snapshot.crossed.length);
+  const flavour = getTitheFlavour(tier);
+  const max =
+    snapshot.thresholds.length > 0 ? snapshot.thresholds[snapshot.thresholds.length - 1]! : 0;
+  const ariaMax = max > 0 ? max : 1;
+  const ariaNow = Math.min(snapshot.tension, ariaMax);
+  return (
+    <div
+      className={styles.concordTension}
+      role="meter"
+      aria-label="Concord tension"
+      aria-valuemin={0}
+      aria-valuemax={ariaMax}
+      aria-valuenow={ariaNow}
+      data-tier={String(tier)}
+      data-testid="hud-concord-tension"
+    >
+      <span className={styles.concordTensionLabel}>Concord</span>
+      <span className={styles.concordTensionTier} data-testid="hud-concord-tension-tier">
+        {flavour.tierLabel}
+      </span>
+      <span className={styles.concordTensionValue} data-testid="hud-concord-tension-value">
+        {snapshot.tension}
+        {max > 0 ? `/${max}` : ''}
+      </span>
+    </div>
+  );
+}
+
+function clampConcordTier(crossedCount: number): ConcordTensionTier {
+  if (crossedCount <= 0) return 0;
+  if (crossedCount >= 4) return 4;
+  return crossedCount as ConcordTensionTier;
 }
 
 export function ResourceBar(): JSX.Element {
