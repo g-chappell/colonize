@@ -15,7 +15,7 @@ export function MainMenu(): JSX.Element {
     {
       id: 'new-game',
       label: 'New Game',
-      onSelect: () => setScreen('faction-select'),
+      onSelect: () => setScreen('prologue'),
     },
     { id: 'continue', label: 'Continue', disabled: true },
     { id: 'settings', label: 'Settings' },

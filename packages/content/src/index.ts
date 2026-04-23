@@ -131,3 +131,5 @@ export {
   type EndgameResultId,
   type EpilogueEntry,
 } from './epilogues.js';
+
+export { SPARROW_DIARY, SPARROW_EPILOGUE, type DiaryEntry } from './prologue.js';
