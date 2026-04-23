@@ -128,6 +128,7 @@ export {
   MIN_MID_PRICE,
   MAX_MID_PRICE,
   PRICE_VOLUME_STEP,
+  PRICE_DRIFT_STEP,
 } from './homeport/index.js';
 export type { HomePortJSON, HomePortInit } from './homeport/index.js';
 export {

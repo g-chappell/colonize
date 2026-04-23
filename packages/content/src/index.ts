@@ -92,6 +92,15 @@ export {
 } from './homeport-prices.js';
 
 export {
+  PRICE_SHOCKS,
+  getPriceShock,
+  isPriceShockId,
+  listPriceShocksForResource,
+  type PriceShockDirection,
+  type PriceShockEvent,
+} from './price-shocks.js';
+
+export {
   DIPLOMACY_ACTION_FLAVOURS,
   getDiplomacyActionFlavour,
   isDiplomacyActionId,
