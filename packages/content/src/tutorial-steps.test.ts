@@ -38,6 +38,18 @@ describe('TUTORIAL_STEPS', () => {
     }
   });
 
+  it('every step body stays under fifty words (TASK-080 brief)', () => {
+    for (const step of TUTORIAL_STEPS) {
+      const wordCount = step.body.trim().split(/\s+/).length;
+      expect(wordCount, `step ${step.id} body (${wordCount} words)`).toBeLessThan(50);
+    }
+  });
+
+  it('authors the full 12–15 step campaign (TASK-080 brief)', () => {
+    expect(TUTORIAL_STEPS.length).toBeGreaterThanOrEqual(12);
+    expect(TUTORIAL_STEPS.length).toBeLessThanOrEqual(15);
+  });
+
   it('every targetTestId (when present) follows the hud- prefix convention', () => {
     const steps: readonly TutorialStep[] = TUTORIAL_STEPS;
     for (const step of steps) {
