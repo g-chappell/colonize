@@ -1631,3 +1631,15 @@ gaps.
 
 ---
 
+### Run [2026-04-24 14:25]
+- Task: TASK-037 — Map-edge cue: 'hic sunt dracones' tile-edge motif
+- Outcome: success
+- PR: https://github.com/g-chappell/colonize/pull/122
+- Test counts: core=1159, content=290, web=847, server=69, shared=24
+- Files changed: apps/web/src/game/fog-edge-motif.ts, apps/web/src/game/fog-edge-motif.test.ts, apps/web/src/game/fog-edge-motif-layer.ts, apps/web/src/game/game-scene.ts, packages/content/src/frontier-motifs.ts, packages/content/src/frontier-motifs.test.ts, packages/content/src/index.ts
+- Regression alert: false
+- Deploy: pending
+- Lessons learned: FogOverlay's constructor+sync+setDepth+destroy surface is the right shape for any per-tile visibility-driven decorative layer; mirroring it (rather than folding motif rendering into FogOverlay itself) kept the two concerns independently testable — the pure-sibling edge detector has no fog-alpha dependency, and the Phaser wrapper's `render(...)` is a clear-and-rebuild that doesn't need to track per-tile state.
+
+---
+
