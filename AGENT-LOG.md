@@ -1587,3 +1587,13 @@ gaps.
 
 ---
 
+### Run [2026-04-24 10:17]
+- Task: N/A — autonomous cycle skipped at precheck
+- Outcome: skipped
+- PR: n/a
+- Reason: dirty_tree
+- Notes: `.claude/scheduled_tasks.lock` (root-owned, mtime 2026-04-24 09:34) is untracked and triggers the Step 2 dirty-tree guard. The lock appears to be a stale runtime artefact from the scheduler (`claude-rc.service` or similar) — predates the previous TASK-086 cycle and still present after it. Recommend: add `.claude/scheduled_tasks.lock` to root `.gitignore` (mirroring the existing `.claude/.setup-progress` and `scripts/.deploy-lock` entries) so future cycles aren't blocked. Owner of the lock file is root, so cleanup needs sudo or a gitignore entry rather than an in-cycle delete.
+- Regression alert: false
+
+---
+
