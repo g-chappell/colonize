@@ -1,5 +1,6 @@
 import type { Coord } from '../map/map.js';
-import { ALL_DIRECTIONS, Direction, stepDirection } from '../map/direction.js';
+import { ALL_DIRECTIONS, stepDirection } from '../map/direction.js';
+import type { Direction } from '../map/direction.js';
 
 // Subset of RumourOutcomeCategory that the tavern hint UI actually
 // points at today (TASK-076). The directional chevrons only surface
