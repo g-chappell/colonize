@@ -1551,7 +1551,7 @@ epics:
             attempt_count: 1
           - id: TASK-064
             title: Faction-select bonus tooltip polish
-            status: ready
+            status: in-progress
             priority: low
             complexity: small
             workspaces:
@@ -1566,8 +1566,8 @@ epics:
             pr: null
             completed: null
             blocked_reason: null
-            last_attempted: null
-            attempt_count: 0
+            last_attempted: '2026-04-24T16:20:00Z'
+            attempt_count: 1
   - id: EPIC-10
     title: Concord meta-layer & Sovereignty endgame
     description: |
