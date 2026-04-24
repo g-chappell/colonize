@@ -9,9 +9,9 @@ _Created: 2026-04-20_
 ## Summary
 
 - **Total tasks:** 90
-- **Done:** 82 (91%)
+- **Done:** 83 (92%)
 - **Ready:** 7
-- **In progress:** 1
+- **In progress:** 0
 - **Blocked:** 0
 
 ---
@@ -809,7 +809,7 @@ site.
   > Landing page at colonize.blacksail.dev root (before game
   > loads) with launch trailer, screenshots, store links, press
   > kit, privacy policy, terms.
-  - :large_orange_diamond: **TASK-087** — Marketing landing route in apps/web  `med` `medium` _(web, content)_  
+  - :white_check_mark: **TASK-087** — Marketing landing route in apps/web  `med` `medium` _(web, content)_ · [PR](https://github.com/g-chappell/colonize/pull/120)  
     _depends on: TASK-014_
     > / renders landing (marketing), /play renders the game.
     > Hero trailer video, screenshot carousel, store badges,

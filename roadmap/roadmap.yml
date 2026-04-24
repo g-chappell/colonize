@@ -2123,7 +2123,7 @@ epics:
         tasks:
           - id: TASK-087
             title: Marketing landing route in apps/web
-            status: in-progress
+            status: done
             priority: med
             complexity: medium
             workspaces:
@@ -2135,8 +2135,8 @@ epics:
               call-to-action.
             depends_on:
               - TASK-014
-            pr: null
-            completed: null
+            pr: https://github.com/g-chappell/colonize/pull/120
+            completed: '2026-04-24T12:13:00Z'
             blocked_reason: null
             last_attempted: '2026-04-24T12:04:00Z'
             attempt_count: 1
