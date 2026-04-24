@@ -26,9 +26,12 @@ import { TradeScreen } from './trade/TradeScreen';
 import { CargoTransferScreen } from './transfer/CargoTransferScreen';
 import { TutorialStepModal } from './tutorial/TutorialStepModal';
 import { nextTutorialStep } from './tutorial/tutorial-trigger';
+import { LandingPage } from './marketing/LandingPage';
+import { usePathRoute } from './marketing/use-path-route';
 import { useGameStore } from './store/game';
 
 export function App() {
+  const route = usePathRoute();
   const screen = useGameStore((s) => s.screen);
   const setScreen = useGameStore((s) => s.setScreen);
   const currentTurn = useGameStore((s) => s.currentTurn);
@@ -98,6 +101,10 @@ export function App() {
     const step = nextTutorialStep(currentTurn + 1, fired, TUTORIAL_STEPS);
     if (step) showTutorialStep(step.id);
   }, [screen, currentTurn, tutorialEnabled, tutorialStep, firedTutorialSteps, showTutorialStep]);
+
+  if (route === 'landing') {
+    return <LandingPage />;
+  }
 
   if (screen === 'menu') {
     return <MainMenu />;
