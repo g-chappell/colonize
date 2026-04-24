@@ -33,6 +33,10 @@ export interface AdOrchestratorSnapshot {
   readonly sovereigntyBeat: unknown;
   readonly titheNotification: unknown;
   readonly tidewaterPartyEvent: unknown;
+  // Server-granted entitlement flags. `hasRemoveAds` short-circuits
+  // the entire ad pipeline when true — a paid user never sees an
+  // interstitial and never contributes a guard-reason telemetry line.
+  readonly entitlements: { readonly hasRemoveAds: boolean };
 }
 
 // Which store slices roll up under each AdGuardFlag. `narrativeModalOpen`
@@ -55,6 +59,7 @@ export function deriveAdGuardFlags(snapshot: AdOrchestratorSnapshot): AdGuardFla
     narrativeModalOpen,
     combatOverlayOpen: snapshot.combatOutcome !== null,
     tutorialStepActive: snapshot.tutorialStep !== null,
+    hasRemoveAdsEntitlement: snapshot.entitlements.hasRemoveAds,
   };
 }
 

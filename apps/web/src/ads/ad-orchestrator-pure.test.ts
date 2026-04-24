@@ -18,6 +18,7 @@ function snapshot(overrides: Partial<AdOrchestratorSnapshot> = {}): AdOrchestrat
     sovereigntyBeat: null,
     titheNotification: null,
     tidewaterPartyEvent: null,
+    entitlements: { hasRemoveAds: false },
     ...overrides,
   };
 }
@@ -29,7 +30,15 @@ describe('deriveAdGuardFlags', () => {
       narrativeModalOpen: false,
       combatOverlayOpen: false,
       tutorialStepActive: false,
+      hasRemoveAdsEntitlement: false,
     });
+  });
+
+  it('reads entitlements.hasRemoveAds into the hasRemoveAdsEntitlement flag', () => {
+    expect(
+      deriveAdGuardFlags(snapshot({ entitlements: { hasRemoveAds: true } }))
+        .hasRemoveAdsEntitlement,
+    ).toBe(true);
   });
 
   it('reads sovereigntyWar into the inSovereigntyWar flag', () => {
@@ -71,6 +80,7 @@ describe('decideTurnEndAdAction', () => {
     narrativeModalOpen: false,
     combatOverlayOpen: false,
     tutorialStepActive: false,
+    hasRemoveAdsEntitlement: false,
   };
 
   it('skips with reason=cadence before N turns have elapsed', () => {
@@ -143,6 +153,14 @@ describe('decideTurnEndAdAction', () => {
         flags: { ...clearFlags, narrativeModalOpen: true },
       }),
     ).toEqual({ action: 'skip', reason: 'narrative' });
+    expect(
+      decideTurnEndAdAction({
+        currentTurn: 10,
+        lastAdShowTurn: 0,
+        cadenceN: 10,
+        flags: { ...clearFlags, hasRemoveAdsEntitlement: true },
+      }),
+    ).toEqual({ action: 'skip', reason: 'entitlement' });
   });
 
   it('re-arms after a successful show: cadence restarts from lastAdShowTurn', () => {

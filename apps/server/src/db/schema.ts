@@ -73,3 +73,23 @@ export const saves = pgTable(
     pk: primaryKey({ columns: [t.userId, t.slot] }),
   }),
 );
+
+// Entitlements granted via IAP receipt validation. One row per
+// (user_id, entitlement); the product id + platform that granted the
+// entitlement are tracked for audit but not re-read at gate-check time
+// — the mere presence of the row is what `hasRemoveAds` evaluates.
+export const entitlements = pgTable(
+  'entitlements',
+  {
+    userId: varchar('user_id', { length: 36 })
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    entitlement: varchar('entitlement', { length: 64 }).notNull(),
+    productId: varchar('product_id', { length: 128 }).notNull(),
+    platform: varchar('platform', { length: 16 }).notNull(),
+    validatedAt: timestamp('validated_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => ({
+    pk: primaryKey({ columns: [t.userId, t.entitlement] }),
+  }),
+);

@@ -1700,4 +1700,21 @@ describe('useGameStore', () => {
       expect(useGameStore.getState().lastAdShowTurn).toBe(0);
     });
   });
+
+  describe('entitlements slice', () => {
+    it('defaults to hasRemoveAds=false before the server has been consulted', () => {
+      expect(useGameStore.getState().entitlements).toEqual({ hasRemoveAds: false });
+    });
+
+    it('replaces the slice wholesale on setEntitlements', () => {
+      useGameStore.getState().setEntitlements({ hasRemoveAds: true });
+      expect(useGameStore.getState().entitlements).toEqual({ hasRemoveAds: true });
+    });
+
+    it('reset returns entitlements to the default unpaid shape', () => {
+      useGameStore.getState().setEntitlements({ hasRemoveAds: true });
+      useGameStore.getState().reset();
+      expect(useGameStore.getState().entitlements).toEqual({ hasRemoveAds: false });
+    });
+  });
 });

@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import type { Entitlements as EntitlementsDto } from '@colonize/shared';
 import {
   initialUnlockedCodexEntryIds,
   type BlackMarketOffering,
@@ -449,6 +450,13 @@ export interface GameState {
   // only on a `shown` AdOutcome — a `skipped` (guarded/unavailable/error)
   // outcome leaves the slice alone so the next turn re-attempts.
   lastAdShowTurn: number;
+  // Entitlement flags surfaced by the server's /me/entitlements +
+  // /iap/verify-receipt responses. `hasRemoveAds` gates the ad
+  // orchestrator — when true the turn-end interstitial is suppressed
+  // for the rest of the session. Hydrated at sign-in and refreshed
+  // after each successful IAP verification; never mutated locally on a
+  // client-side guess.
+  entitlements: EntitlementsDto;
   settings: SettingsState;
   setCurrentTurn: (turn: number) => void;
   advanceTurn: () => void;
@@ -683,8 +691,17 @@ export interface GameState {
   // to stamp the cadence cursor. A `skipped` outcome must NOT call this
   // so the cadence re-attempts on the next turn.
   recordAdShown: (turn: number) => void;
+  // Replace the in-memory entitlements slice with the server's latest
+  // /me/entitlements or /iap/verify-receipt response. Always called
+  // with the full shape — the server is the only authority, so a
+  // partial update is a bug.
+  setEntitlements: (entitlements: EntitlementsDto) => void;
   reset: () => void;
 }
+
+const DEFAULT_ENTITLEMENTS: EntitlementsDto = {
+  hasRemoveAds: false,
+};
 
 // Mirrors `DEFAULTS` in apps/web/src/game/audio-state.ts. Duplicated
 // rather than imported so the store stays importable from test files
@@ -743,6 +760,7 @@ const initialState = {
   firedTutorialSteps: [] as readonly TutorialStepId[],
   codexUnlocked: initialUnlockedCodexEntryIds(),
   lastAdShowTurn: 0,
+  entitlements: DEFAULT_ENTITLEMENTS,
   settings: DEFAULT_SETTINGS,
 } as const;
 
@@ -1199,6 +1217,7 @@ export const useGameStore = create<GameState>((set) => ({
     }),
   recordAdShown: (turn) =>
     set((state) => (turn > state.lastAdShowTurn ? { lastAdShowTurn: turn } : {})),
+  setEntitlements: (entitlements) => set({ entitlements }),
   reset: () =>
     set({
       ...initialState,

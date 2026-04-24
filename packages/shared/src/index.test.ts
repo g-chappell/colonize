@@ -13,6 +13,12 @@ import {
   User,
   VerifyRequest,
   VerifyResponse,
+  Entitlements,
+  EntitlementsResponse,
+  IapPlatform,
+  IapProductId,
+  VerifyReceiptRequest,
+  VerifyReceiptResponse,
 } from './index.js';
 
 describe('@colonize/shared', () => {
@@ -120,5 +126,48 @@ describe('@colonize/shared save schemas', () => {
       payload: { anything: 'goes' },
     };
     expect(GetSaveResponse.parse(res)).toEqual(res);
+  });
+});
+
+describe('@colonize/shared IAP schemas', () => {
+  it('accepts known IapPlatform values and rejects unknowns', () => {
+    expect(IapPlatform.parse('ios')).toBe('ios');
+    expect(IapPlatform.parse('android')).toBe('android');
+    expect(IapPlatform.parse('web')).toBe('web');
+    expect(() => IapPlatform.parse('windows')).toThrow();
+  });
+
+  it('accepts known IapProductId values and rejects unknowns', () => {
+    expect(IapProductId.parse('com.colonize.remove_ads')).toBe('com.colonize.remove_ads');
+    expect(() => IapProductId.parse('com.colonize.premium')).toThrow();
+  });
+
+  it('round-trips a VerifyReceiptRequest', () => {
+    const req = {
+      platform: 'ios' as const,
+      productId: 'com.colonize.remove_ads' as const,
+      receipt: 'base64-receipt-payload',
+    };
+    expect(VerifyReceiptRequest.parse(req)).toEqual(req);
+  });
+
+  it('rejects a VerifyReceiptRequest with an empty receipt', () => {
+    expect(() =>
+      VerifyReceiptRequest.parse({
+        platform: 'ios',
+        productId: 'com.colonize.remove_ads',
+        receipt: '',
+      }),
+    ).toThrow();
+  });
+
+  it('round-trips a VerifyReceiptResponse + EntitlementsResponse', () => {
+    const body = { entitlements: { hasRemoveAds: true } };
+    expect(VerifyReceiptResponse.parse(body)).toEqual(body);
+    expect(EntitlementsResponse.parse(body)).toEqual(body);
+  });
+
+  it('rejects Entitlements with a non-boolean flag', () => {
+    expect(() => Entitlements.parse({ hasRemoveAds: 'yes' })).toThrow();
   });
 });

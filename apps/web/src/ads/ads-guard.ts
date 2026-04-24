@@ -13,9 +13,14 @@ export interface AdGuardFlags {
   readonly narrativeModalOpen: boolean;
   readonly combatOverlayOpen: boolean;
   readonly tutorialStepActive: boolean;
+  // Set when the signed-in user holds the `remove_ads` entitlement
+  // granted by /iap/verify-receipt. Checked before the other guards so
+  // a paid user never trips a `skip/war` telemetry line on a day they
+  // would not have seen an ad anyway.
+  readonly hasRemoveAdsEntitlement: boolean;
 }
 
-export type AdGuardReason = 'war' | 'narrative' | 'combat' | 'tutorial';
+export type AdGuardReason = 'entitlement' | 'war' | 'narrative' | 'combat' | 'tutorial';
 
 export interface AdGuardEvaluation {
   readonly allowed: boolean;
@@ -23,6 +28,7 @@ export interface AdGuardEvaluation {
 }
 
 export function evaluateAdGuard(flags: AdGuardFlags): AdGuardEvaluation {
+  if (flags.hasRemoveAdsEntitlement) return { allowed: false, reason: 'entitlement' };
   if (flags.inSovereigntyWar) return { allowed: false, reason: 'war' };
   if (flags.narrativeModalOpen) return { allowed: false, reason: 'narrative' };
   if (flags.combatOverlayOpen) return { allowed: false, reason: 'combat' };

@@ -6,6 +6,7 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { HealthResponse } from '@colonize/shared';
 import { registerAuthRoutes, type AuthRoutesOptions } from './auth/routes.js';
+import { registerIapRoutes, type IapRoutesOptions } from './iap/routes.js';
 import { registerSaveRoutes, type SaveRoutesOptions } from './saves/routes.js';
 
 export const SERVER_VERSION = '0.0.0';
@@ -68,6 +69,16 @@ export interface BuildAppOptions {
    * AuthRepository's session-lookup path.
    */
   saves?: Pick<SaveRoutesOptions, 'saves'> & Partial<Pick<SaveRoutesOptions, 'now'>>;
+  /**
+   * IAP wiring. When provided, POST /iap/verify-receipt and GET
+   * /me/entitlements are registered against the supplied
+   * EntitlementRepository. Requires `auth` to be supplied as well — IAP
+   * endpoints gate on the session cookie issued by the auth plugin, and
+   * the EntitlementRepository shares the AuthRepository's session-lookup
+   * path.
+   */
+  iap?: Pick<IapRoutesOptions, 'entitlements'> &
+    Partial<Pick<IapRoutesOptions, 'now' | 'validate'>>;
 }
 
 function resolveDefaultStaticRoot(): string | null {
@@ -127,6 +138,17 @@ export function buildApp(options: BuildAppOptions = {}): FastifyInstance {
           ...(options.saves.now !== undefined ? { now: options.saves.now } : {}),
         };
         await registerSaveRoutes(scope, saveOpts);
+      }
+
+      if (options.iap) {
+        const iapOpts: IapRoutesOptions = {
+          entitlements: options.iap.entitlements,
+          auth: auth.repository,
+          sessionCookieName,
+          ...(options.iap.now !== undefined ? { now: options.iap.now } : {}),
+          ...(options.iap.validate !== undefined ? { validate: options.iap.validate } : {}),
+        };
+        await registerIapRoutes(scope, iapOpts);
       }
     });
   }
