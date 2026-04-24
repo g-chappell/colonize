@@ -9,9 +9,9 @@ _Created: 2026-04-20_
 ## Summary
 
 - **Total tasks:** 90
-- **Done:** 73 (81%)
+- **Done:** 74 (82%)
 - **Ready:** 16
-- **In progress:** 1
+- **In progress:** 0
 - **Blocked:** 0
 
 ---
@@ -649,7 +649,7 @@ Fleet invasion. Victory conditions engine.
 - **STORY-40** — Tidewater Party boycott event
   > Discrete scripted event: player dumps cargo to reset tension
   > briefly at a cost; adds lore beat.
-  - :large_orange_diamond: **TASK-069** — Tidewater Party event flow  `med` `small` _(core, web, content)_  
+  - :white_check_mark: **TASK-069** — Tidewater Party event flow  `med` `small` _(core, web, content)_ · [PR](https://github.com/g-chappell/colonize/pull/104)  
     _depends on: TASK-067_
     > Modal event — confirm dump of N cargo of a chosen good.
     > Tension drops to 0 for M turns; Concord ire rises
