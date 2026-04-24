@@ -1689,7 +1689,7 @@ gaps.
 - Files changed: .gitignore, packages/content/store/README.md (new), packages/content/store/descriptions.md (new), packages/content/store/keywords.md (new), packages/content/store/age-rating.md (new), packages/content/store/metadata.md (new), packages/content/store/screenshots/README.md (new)
 - Regression alert: false
 - Review proposed: (filled post-Step 15 if triggered)
-- Deploy: (filled in Step 14)
+- Deploy: success (healthcheck ok on attempt 2)
 - Lessons learned: Shipped the submission pack as human-authored markdown under packages/content/store/ (alongside legal.md / balance.md / VOICE.md), not as a TS registry under src/ — the files are read once, by a human, at submission time, and don't participate in the game's runtime or save format. Deliberately gitignored the PNG capture output rather than checking placeholder binaries into the content workspace: the commitment is the spec (device matrix + scene list + file-name convention), captured PNGs are disposable output of a future packaging script. Pulled every user-visible string (hero pitch, screenshot captions, tagline) verbatim from apps/web/src/marketing/LandingPage.tsx so the landing page and the stores share one source of truth, and flagged the propagation rule in the README to prevent silent drift on the next edit.
 
 ---
