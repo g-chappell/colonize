@@ -191,6 +191,8 @@ export {
   isTavernRumourId,
   eligibleTavernRumours,
   tavernRumourWeight,
+  collectTavernRumourHints,
+  type TavernRumourHint,
   type TavernRumourId,
   type TavernRumourEntry,
   type TavernRumourTrigger,

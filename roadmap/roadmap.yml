@@ -1853,7 +1853,7 @@ epics:
             attempt_count: 1
           - id: TASK-076
             title: Rumour → map-marker hint pipeline
-            status: ready
+            status: done
             priority: med
             complexity: small
             workspaces:
@@ -1866,11 +1866,11 @@ epics:
             depends_on:
               - TASK-075
               - TASK-032
-            pr: null
-            completed: null
+            pr: https://github.com/g-chappell/colonize/pull/107
+            completed: '2026-04-24'
             blocked_reason: null
-            last_attempted: null
-            attempt_count: 0
+            last_attempted: '2026-04-24T02:32:00Z'
+            attempt_count: 1
       - id: STORY-45
         title: Codex / in-game lore browser
         description: |

@@ -1,3 +1,4 @@
+import type { Direction, MapHintCategory } from '@colonize/core';
 import type { PlayableFactionId } from './factions.js';
 import type { ToneRegister } from './palette.js';
 
@@ -32,12 +33,23 @@ export interface TavernRumourTrigger {
   readonly weight?: number;
 }
 
+// Pre-baked directional hint for rumours that describe a specific map
+// payoff (Archive cache, Legendary wreck). The direction is intentionally
+// coarse — a compass heading, not a tile coordinate — so the player still
+// has to explore to cash the lead in. Rumours that are pure flavour leave
+// this field undefined.
+export interface TavernRumourHint {
+  readonly category: MapHintCategory;
+  readonly direction: Direction;
+}
+
 export interface TavernRumourEntry {
   readonly id: TavernRumourId;
   readonly headline: string;
   readonly body: string;
   readonly register: ToneRegister;
   readonly trigger: TavernRumourTrigger;
+  readonly hint?: TavernRumourHint;
 }
 
 export const TAVERN_RUMOURS: readonly TavernRumourEntry[] = [
@@ -47,6 +59,7 @@ export const TAVERN_RUMOURS: readonly TavernRumourEntry[] = [
     body: 'Two tide-washed deckhands swear they saw the corner of a tin chest pressed under the kelp east of here. Liberty broadsheets, they reckon — still dry inside.',
     register: 'salvaged-futurism',
     trigger: {},
+    hint: { category: 'archive-cache', direction: 'e' },
   },
   {
     id: 'rumour-archive-cache-south',
@@ -54,6 +67,7 @@ export const TAVERN_RUMOURS: readonly TavernRumourEntry[] = [
     body: 'A salt-trader off the southern reach laid down a parchment edge on the bar — Liberty seal half-burnt. Said the rest is bundled in oiled cloth on a sandbar a day south.',
     register: 'salvaged-futurism',
     trigger: { year: { min: 2 } },
+    hint: { category: 'archive-cache', direction: 's' },
   },
   {
     id: 'rumour-derelict-leeward',
@@ -61,6 +75,7 @@ export const TAVERN_RUMOURS: readonly TavernRumourEntry[] = [
     body: 'A topsail caught the morning glass and hung there like a ghost. Whoever ran her aground left her cargo to the gulls — for now.',
     register: 'salt-and-rum',
     trigger: {},
+    hint: { category: 'wreck', direction: 'w' },
   },
   {
     id: 'rumour-kraken-shrine-fog',
@@ -202,4 +217,18 @@ function admits(trigger: TavernRumourTrigger, context: TavernContext): boolean {
 
 export function tavernRumourWeight(entry: TavernRumourEntry): number {
   return entry.trigger.weight ?? 1;
+}
+
+// Collect the hint metadata from a set of rumour ids in order, skipping
+// rumours that carry no hint. Pure — the opener pairs the result with
+// the colony's position to build `MapHint` values via `deriveMapHint`.
+export function collectTavernRumourHints(
+  ids: readonly TavernRumourId[],
+): readonly { readonly rumourId: TavernRumourId; readonly hint: TavernRumourHint }[] {
+  const out: { readonly rumourId: TavernRumourId; readonly hint: TavernRumourHint }[] = [];
+  for (const id of ids) {
+    const entry = getTavernRumour(id);
+    if (entry.hint) out.push({ rumourId: id, hint: entry.hint });
+  }
+  return out;
 }

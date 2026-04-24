@@ -4,6 +4,7 @@ import { getTitheFlavour, type ConcordTensionTier } from '@colonize/content';
 import { findUnitById } from '../game/unit-input';
 import { turnController } from '../game/turn-controller';
 import { FACTION_NAMES, useGameStore, type PlayableFaction } from '../store/game';
+import { MapHintsPanel } from './MapHintsPanel';
 import styles from './Hud.module.css';
 
 const NW_EPOCH_YEAR = 2191;
@@ -61,6 +62,7 @@ export function Hud(): JSX.Element {
       </div>
       <div className={styles.bottomLeft}>
         <UnitStatsPanel />
+        <MapHintsPanel />
       </div>
       <div className={styles.bottomRight}>
         <EndTurnButton />

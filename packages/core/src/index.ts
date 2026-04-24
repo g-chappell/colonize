@@ -141,6 +141,11 @@ export {
   outcomeCategoryForKind,
   LEGENDARY_WRECK_BLUEPRINT_FACTION,
   RumourTile,
+  MapHintCategory,
+  ALL_MAP_HINT_CATEGORIES,
+  isMapHintCategory,
+  rotateDirection,
+  deriveMapHint,
 } from './rumour/index.js';
 export type {
   RumourOutcome,
@@ -148,6 +153,8 @@ export type {
   RumourTileInit,
   ResolveOptions,
   MirageVariant,
+  MapHint,
+  DeriveMapHintInput,
 } from './rumour/index.js';
 export {
   CombatActionType,
