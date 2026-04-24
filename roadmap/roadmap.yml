@@ -2050,7 +2050,7 @@ epics:
         tasks:
           - id: TASK-084
             title: Ad manager abstraction in apps/web + Capacitor plugin wire-up
-            status: ready
+            status: done
             priority: med
             complexity: medium
             workspaces:
@@ -2062,11 +2062,11 @@ epics:
               "no ads during war/narrative" rule via a guard flag.
             depends_on:
               - TASK-003
-            pr: null
-            completed: null
+            pr: https://github.com/g-chappell/colonize/pull/115
+            completed: '2026-04-24T06:51:00Z'
             blocked_reason: null
-            last_attempted: null
-            attempt_count: 0
+            last_attempted: '2026-04-24T06:40:00Z'
+            attempt_count: 1
           - id: TASK-085
             title: Per-N-turn interstitial + cooldown
             status: ready
