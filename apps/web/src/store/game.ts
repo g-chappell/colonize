@@ -17,6 +17,7 @@ import type {
   FactionChartersJSON,
   GameVersion,
   HomePortJSON,
+  MapHint,
   MerchantRouteJSON,
   RelationsMatrixJSON,
   ResourceId,
@@ -48,6 +49,7 @@ import {
   sovereigntyMilestoneCrossed,
   type SovereigntyMilestone,
 } from '../sovereignty/sovereignty-progress';
+import { resolveTavernHints } from '../tavern/resolve-rumour-hints';
 
 export type PlayableFaction = 'otk' | 'ironclad' | 'phantom' | 'bloodborne';
 
@@ -355,6 +357,13 @@ export interface GameState {
   // Active tavern encounter — see TavernEncounter above. Non-null
   // while the tavern modal is mounted.
   tavernEncounter: TavernEncounter | null;
+  // Map-hint leads currently surfaced on the HUD. Populated by the
+  // tavern-dismiss flow (TASK-076) — each rumour with `hint` metadata
+  // produces one `MapHint` pinned to the tavern colony. Entries
+  // accumulate across tavern visits; `sourceRumourId` de-duplicates
+  // re-rolls of the same rumour. Cleared on `reset` (and exposed via
+  // `clearMapHints` for a future "mark resolved" orchestrator).
+  mapHints: readonly MapHint[];
   // Per-turn Concord tithe notification — see TitheNotification above.
   // Non-null while the payment modal is mounted; cleared by `payTithe`
   // or `boycottTithe`. The orchestrator that drives per-turn tithe
@@ -475,7 +484,19 @@ export interface GameState {
   // is already active so a double-click on the colony overlay's
   // Visit Tavern button cannot stack two modals on top of each other.
   showTavernEncounter: (encounter: TavernEncounter) => void;
+  // Dismiss the active tavern encounter. Before clearing the slice,
+  // resolves any rumours with `hint` metadata into `MapHint` values
+  // pinned to the tavern colony's position and appends them to
+  // `mapHints` (de-duplicated by sourceRumourId). A dismiss while no
+  // encounter is mounted is a no-op.
   dismissTavernEncounter: () => void;
+  // Append hint leads to `mapHints`. Entries sharing a sourceRumourId
+  // with an incoming hint are dropped before the append so re-visiting
+  // the same rumour never stacks. No-op on an empty input list.
+  addMapHints: (hints: readonly MapHint[]) => void;
+  // Clear every lead from `mapHints`. Used by a future orchestrator
+  // that marks a rumour as resolved and by `reset`.
+  clearMapHints: () => void;
   // Mount the per-turn tithe notification with `amount` coins due. The
   // optional `gameYear` is forwarded so tests / future orchestration can
   // pin the modal copy to a calendar slice. No-op when a notification
@@ -671,6 +692,7 @@ const initialState = {
   councilPick: null as CouncilPickSession | null,
   blackMarketEncounter: null as BlackMarketEncounter | null,
   tavernEncounter: null as TavernEncounter | null,
+  mapHints: [] as readonly MapHint[],
   titheNotification: null as TitheNotification | null,
   concordTension: DEFAULT_CONCORD_TENSION_SNAPSHOT,
   tidewaterPartyEvent: null as TidewaterPartyEvent | null,
@@ -873,7 +895,26 @@ export const useGameStore = create<GameState>((set) => ({
   dismissBlackMarketEncounter: () => set({ blackMarketEncounter: null }),
   showTavernEncounter: (encounter) =>
     set((state) => (state.tavernEncounter === null ? { tavernEncounter: encounter } : {})),
-  dismissTavernEncounter: () => set({ tavernEncounter: null }),
+  dismissTavernEncounter: () =>
+    set((state) => {
+      const encounter = state.tavernEncounter;
+      if (encounter === null) return {};
+      const colony = state.colonies.find((c) => c.id === encounter.colonyId);
+      if (!colony) return { tavernEncounter: null };
+      const added = resolveTavernHints(colony.position, encounter.rumourIds);
+      if (added.length === 0) return { tavernEncounter: null };
+      const incoming = new Set(added.map((h) => h.sourceRumourId));
+      const surviving = state.mapHints.filter((h) => !incoming.has(h.sourceRumourId));
+      return { tavernEncounter: null, mapHints: [...surviving, ...added] };
+    }),
+  addMapHints: (hints) =>
+    set((state) => {
+      if (hints.length === 0) return {};
+      const incoming = new Set(hints.map((h) => h.sourceRumourId));
+      const surviving = state.mapHints.filter((h) => !incoming.has(h.sourceRumourId));
+      return { mapHints: [...surviving, ...hints] };
+    }),
+  clearMapHints: () => set((state) => (state.mapHints.length === 0 ? {} : { mapHints: [] })),
   showTitheNotification: (notification) =>
     set((state) => (state.titheNotification === null ? { titheNotification: notification } : {})),
   payTithe: () =>

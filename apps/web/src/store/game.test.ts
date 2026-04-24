@@ -1505,4 +1505,140 @@ describe('useGameStore', () => {
       expect(s.autoRoutes).toEqual({});
     });
   });
+
+  describe('mapHints (TASK-076)', () => {
+    const colony: ColonyJSON = {
+      id: 'colony-tavern',
+      faction: 'otk',
+      position: { x: 10, y: 10 },
+      population: 2,
+      crew: [],
+      buildings: ['tavern'],
+      stocks: { resources: {}, artifacts: [] },
+    };
+
+    it('starts empty', () => {
+      expect(useGameStore.getState().mapHints).toEqual([]);
+    });
+
+    it('dismissTavernEncounter appends hints from rumours that carry hint metadata', () => {
+      useGameStore.getState().setColonies([colony]);
+      useGameStore.getState().showTavernEncounter({
+        colonyId: 'colony-tavern',
+        rumourIds: ['rumour-archive-cache-east', 'rumour-singing-buoy'],
+      });
+      useGameStore.getState().dismissTavernEncounter();
+      const hints = useGameStore.getState().mapHints;
+      expect(hints).toHaveLength(1);
+      expect(hints[0]).toEqual({
+        origin: { x: 10, y: 10 },
+        direction: 'e',
+        category: 'archive-cache',
+        sourceRumourId: 'rumour-archive-cache-east',
+      });
+      expect(useGameStore.getState().tavernEncounter).toBeNull();
+    });
+
+    it('dismissTavernEncounter with zero hinted rumours clears the encounter but leaves mapHints untouched', () => {
+      useGameStore.getState().setColonies([colony]);
+      useGameStore.getState().showTavernEncounter({
+        colonyId: 'colony-tavern',
+        rumourIds: ['rumour-singing-buoy', 'rumour-empty-keel'],
+      });
+      useGameStore.getState().dismissTavernEncounter();
+      expect(useGameStore.getState().mapHints).toEqual([]);
+      expect(useGameStore.getState().tavernEncounter).toBeNull();
+    });
+
+    it('dismiss for an encounter whose colonyId is not in the roster clears the slice without pushing hints', () => {
+      useGameStore.getState().setColonies([]);
+      useGameStore.getState().showTavernEncounter({
+        colonyId: 'unknown-colony',
+        rumourIds: ['rumour-archive-cache-east'],
+      });
+      useGameStore.getState().dismissTavernEncounter();
+      expect(useGameStore.getState().mapHints).toEqual([]);
+      expect(useGameStore.getState().tavernEncounter).toBeNull();
+    });
+
+    it('dismiss with no active encounter is a no-op', () => {
+      useGameStore.getState().dismissTavernEncounter();
+      expect(useGameStore.getState().mapHints).toEqual([]);
+    });
+
+    it('re-rolling the same rumour across tavern visits de-duplicates by sourceRumourId', () => {
+      useGameStore.getState().setColonies([colony]);
+      useGameStore.getState().showTavernEncounter({
+        colonyId: 'colony-tavern',
+        rumourIds: ['rumour-archive-cache-east'],
+      });
+      useGameStore.getState().dismissTavernEncounter();
+      // Second visit re-surfaces the same rumour — the prior entry
+      // must be replaced, not stacked.
+      useGameStore.getState().showTavernEncounter({
+        colonyId: 'colony-tavern',
+        rumourIds: ['rumour-archive-cache-east', 'rumour-derelict-leeward'],
+      });
+      useGameStore.getState().dismissTavernEncounter();
+      const hints = useGameStore.getState().mapHints;
+      expect(hints).toHaveLength(2);
+      expect(hints.map((h) => h.sourceRumourId)).toEqual([
+        'rumour-archive-cache-east',
+        'rumour-derelict-leeward',
+      ]);
+    });
+
+    it('addMapHints appends entries and de-duplicates by sourceRumourId', () => {
+      useGameStore.getState().addMapHints([
+        {
+          origin: { x: 1, y: 1 },
+          direction: 'n',
+          category: 'archive-cache',
+          sourceRumourId: 'rumour-archive-cache-east',
+        },
+      ]);
+      useGameStore.getState().addMapHints([
+        {
+          origin: { x: 2, y: 2 },
+          direction: 's',
+          category: 'archive-cache',
+          sourceRumourId: 'rumour-archive-cache-east',
+        },
+      ]);
+      const hints = useGameStore.getState().mapHints;
+      expect(hints).toHaveLength(1);
+      expect(hints[0]!.origin).toEqual({ x: 2, y: 2 });
+    });
+
+    it('addMapHints with an empty list is a no-op', () => {
+      useGameStore.getState().addMapHints([]);
+      expect(useGameStore.getState().mapHints).toEqual([]);
+    });
+
+    it('clearMapHints empties the slice', () => {
+      useGameStore.getState().addMapHints([
+        {
+          origin: { x: 0, y: 0 },
+          direction: 'e',
+          category: 'wreck',
+          sourceRumourId: 'rumour-derelict-leeward',
+        },
+      ]);
+      useGameStore.getState().clearMapHints();
+      expect(useGameStore.getState().mapHints).toEqual([]);
+    });
+
+    it('reset empties mapHints', () => {
+      useGameStore.getState().addMapHints([
+        {
+          origin: { x: 0, y: 0 },
+          direction: 'e',
+          category: 'wreck',
+          sourceRumourId: 'rumour-derelict-leeward',
+        },
+      ]);
+      useGameStore.getState().reset();
+      expect(useGameStore.getState().mapHints).toEqual([]);
+    });
+  });
 });
