@@ -1487,3 +1487,14 @@ gaps.
 
 ---
 
+### Run [2026-04-24 02:32]
+- Task: TASK-075 — Tavern encounter UI + rumour data model
+- Outcome: success
+- PR: https://github.com/g-chappell/colonize/pull/106
+- Test counts: core=1131, content=258, web=698, server=56, shared=18
+- Files changed: packages/content/src/tavern-rumours.ts, packages/content/src/tavern-rumours.test.ts, packages/content/src/index.ts, apps/web/src/tavern/TavernModal.tsx, apps/web/src/tavern/TavernModal.module.css, apps/web/src/tavern/TavernModal.test.tsx, apps/web/src/tavern/select-rumours.ts, apps/web/src/tavern/select-rumours.test.ts, apps/web/src/store/game.ts, apps/web/src/App.tsx, apps/web/src/colony/ColonyOverlay.tsx, apps/web/src/colony/ColonyOverlay.test.tsx, roadmap/roadmap.yml, ROADMAP.md
+- Regression alert: false
+- Deploy: pending
+
+---
+
