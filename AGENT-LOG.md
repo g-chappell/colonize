@@ -1651,7 +1651,7 @@ gaps.
 - Files changed: apps/web/src/menu/FactionSelect.tsx, apps/web/src/menu/FactionSelect.module.css, apps/web/src/menu/FactionSelect.test.tsx, apps/web/src/menu/faction-bonus-text.ts (new), apps/web/src/menu/faction-bonus-text.test.ts (new)
 - Regression alert: false
 - Review proposed: (filled post-Step 15 if triggered)
-- Deploy: (filled post-Step 14)
+- Deploy: success (healthcheck ok on attempt 2)
 - Lessons learned: Reused the existing tagline as the canon-rooted flavour quote rather than introducing a new content field — the task said "from canon" and taglines already are; pulling new lore lines would have risked inventing canon to fill [OPEN] gaps. Pure-sibling module (faction-bonus-text.ts) derived enumerated lines from the core registry so future balance tweaks to FACTION_BONUSES numbers flow into UI copy without a separate content edit.
 
 ---
