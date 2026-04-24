@@ -186,6 +186,18 @@ export {
 } from './npc-factions.js';
 
 export {
+  TAVERN_RUMOURS,
+  getTavernRumour,
+  isTavernRumourId,
+  eligibleTavernRumours,
+  tavernRumourWeight,
+  type TavernRumourId,
+  type TavernRumourEntry,
+  type TavernRumourTrigger,
+  type TavernContext,
+} from './tavern-rumours.js';
+
+export {
   BLACK_MARKET_OFFERINGS,
   BLACK_MARKET_BUY_CHIMES_PER_UNIT_FLOOR,
   BLACK_MARKET_SELL_CHIMES_PER_UNIT_CEILING,

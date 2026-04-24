@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { BlackMarketOffering, TutorialStepId } from '@colonize/content';
+import type { BlackMarketOffering, TavernRumourId, TutorialStepId } from '@colonize/content';
 import type {
   ArchiveCharterId,
   AutoRouteJSON,
@@ -122,6 +122,20 @@ export interface TransferCommitLine {
 // whatever list the opener passed in.
 export interface BlackMarketEncounter {
   readonly offerings: readonly BlackMarketOffering[];
+}
+
+// Tavern encounter snapshot — modal data for a single "Visit Tavern"
+// scene (TASK-075). Non-null while the tavern modal is mounted; the
+// player walks away via `dismissTavernEncounter` which clears the
+// slice. The opener (today the colony overlay's Visit Tavern button)
+// pre-rolls the rumour ids via the pure `selectRumours` sibling and
+// passes them in here. Treated as an unbidden event-modal
+// (slice-driven self-mounting overlay per CLAUDE.md): the player was
+// inside the colony view when they triggered it, and dismissing
+// returns them to that same overlay because no `Screen` literal flips.
+export interface TavernEncounter {
+  readonly colonyId: string;
+  readonly rumourIds: readonly TavernRumourId[];
 }
 
 // Active Council pick session — the modal data for a two-charter draw
@@ -338,6 +352,9 @@ export interface GameState {
   // task) and cleared by `dismissBlackMarketEncounter` when the
   // player walks away.
   blackMarketEncounter: BlackMarketEncounter | null;
+  // Active tavern encounter — see TavernEncounter above. Non-null
+  // while the tavern modal is mounted.
+  tavernEncounter: TavernEncounter | null;
   // Per-turn Concord tithe notification — see TitheNotification above.
   // Non-null while the payment modal is mounted; cleared by `payTithe`
   // or `boycottTithe`. The orchestrator that drives per-turn tithe
@@ -454,6 +471,11 @@ export interface GameState {
   dismissRumourReveal: () => void;
   showBlackMarketEncounter: (encounter: BlackMarketEncounter) => void;
   dismissBlackMarketEncounter: () => void;
+  // Open the tavern encounter modal with `encounter` — no-op if one
+  // is already active so a double-click on the colony overlay's
+  // Visit Tavern button cannot stack two modals on top of each other.
+  showTavernEncounter: (encounter: TavernEncounter) => void;
+  dismissTavernEncounter: () => void;
   // Mount the per-turn tithe notification with `amount` coins due. The
   // optional `gameYear` is forwarded so tests / future orchestration can
   // pin the modal copy to a calendar slice. No-op when a notification
@@ -648,6 +670,7 @@ const initialState = {
   factionCharters: {} as Readonly<Record<string, FactionChartersJSON>>,
   councilPick: null as CouncilPickSession | null,
   blackMarketEncounter: null as BlackMarketEncounter | null,
+  tavernEncounter: null as TavernEncounter | null,
   titheNotification: null as TitheNotification | null,
   concordTension: DEFAULT_CONCORD_TENSION_SNAPSHOT,
   tidewaterPartyEvent: null as TidewaterPartyEvent | null,
@@ -848,6 +871,9 @@ export const useGameStore = create<GameState>((set) => ({
   dismissRumourReveal: () => set({ rumourReveal: null }),
   showBlackMarketEncounter: (encounter) => set({ blackMarketEncounter: encounter }),
   dismissBlackMarketEncounter: () => set({ blackMarketEncounter: null }),
+  showTavernEncounter: (encounter) =>
+    set((state) => (state.tavernEncounter === null ? { tavernEncounter: encounter } : {})),
+  dismissTavernEncounter: () => set({ tavernEncounter: null }),
   showTitheNotification: (notification) =>
     set((state) => (state.titheNotification === null ? { titheNotification: notification } : {})),
   payTithe: () =>
