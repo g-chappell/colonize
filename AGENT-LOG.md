@@ -1676,6 +1676,7 @@ gaps.
 - Test counts: core=1159, content=321 (was 290, +31 new from register tests), web=855, server=69, shared=24
 - Files changed: packages/content/src/register.ts, packages/content/src/register.test.ts, packages/content/src/register-coverage.test.ts, packages/content/src/index.ts, packages/content/VOICE.md
 - Regression alert: false
+- Deploy: success (healthcheck ok on attempt 2)
 - Lessons learned: Scoped the "lint rule" to a vitest sweep over registries that already carry a register tag plus a pinned-count assertion, rather than back-tagging every untagged user-visible string across resources / buildings / professions / units / etc. That broader back-fill is a separate (much larger) task — TASK-081 is "infra + lint rule", small/low-priority, and the smallest credible delivery is the typed coverage-test machinery + a single source-of-truth VOICE.md, leaving registry-by-registry tagging to dedicated follow-ups when each surface gets its narrative pass.
 
 ---
