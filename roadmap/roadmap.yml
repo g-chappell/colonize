@@ -2069,7 +2069,7 @@ epics:
             attempt_count: 1
           - id: TASK-085
             title: Per-N-turn interstitial + cooldown
-            status: ready
+            status: in-progress
             priority: med
             complexity: small
             workspaces:
@@ -2084,8 +2084,8 @@ epics:
             pr: null
             completed: null
             blocked_reason: null
-            last_attempted: null
-            attempt_count: 0
+            last_attempted: '2026-04-24T07:11:00Z'
+            attempt_count: 1
       - id: STORY-50
         title: IAP — Remove Ads + cosmetics
         description: |

@@ -10,8 +10,8 @@ _Created: 2026-04-20_
 
 - **Total tasks:** 90
 - **Done:** 80 (89%)
-- **Ready:** 10
-- **In progress:** 0
+- **Ready:** 9
+- **In progress:** 1
 - **Blocked:** 0
 
 ---
@@ -790,7 +790,7 @@ site.
     > Single AdManager interface. Web backend (Ad Manager) +
     > mobile backend (@capacitor-community/admob). Respect the
     > "no ads during war/narrative" rule via a guard flag.
-  - :black_circle: **TASK-085** — Per-N-turn interstitial + cooldown  `med` `small` _(core, web)_  
+  - :large_orange_diamond: **TASK-085** — Per-N-turn interstitial + cooldown  `med` `small` _(core, web)_  
     _depends on: TASK-084_
     > End-of-turn hook: if N turns since last ad + no guard
     > flag active, show interstitial. Adjust N per game-length
