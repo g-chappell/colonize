@@ -1773,7 +1773,7 @@ epics:
             attempt_count: 1
           - id: TASK-073
             title: 'Balance pass: tune thresholds for all 4 victory paths'
-            status: in-progress
+            status: done
             priority: med
             complexity: medium
             workspaces:
@@ -1785,8 +1785,8 @@ epics:
               target win-times in content/balance.md.
             depends_on:
               - TASK-072
-            pr: null
-            completed: null
+            pr: https://github.com/g-chappell/colonize/pull/105
+            completed: '2026-04-24'
             blocked_reason: null
             last_attempted: '2026-04-24T00:34:00Z'
             attempt_count: 1
