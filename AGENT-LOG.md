@@ -1571,7 +1571,7 @@ gaps.
 - Files changed: apps/server/migrations/0003_entitlements.sql, apps/server/src/app.ts, apps/server/src/db/schema.ts, apps/server/src/index.ts, apps/server/src/iap/{repository,in-memory-repository,drizzle-repository,validator,routes}.ts + tests, apps/web/src/iap/{iap-manager,web-iap-manager,capacitor-iap-manager}.ts + tests, apps/web/src/ads/{ads-guard,ad-orchestrator-pure,ad-orchestrator}.ts + ads-guard/ad-orchestrator-pure tests, apps/web/src/store/game.ts + tests, packages/shared/src/index.ts + tests
 - Regression alert: false
 - Review proposed: TBD (Step 15)
-- Deploy: TBD (Step 14)
+- Deploy: success
 - Lessons learned: Receipt-validator stub lands with the same "real integration awaits store accounts" shape as TASK-084's AdMob wrapper — the dynamic-import + structural-type fallback pattern now appears twice, so future external-SDK integrations should mirror it without re-deriving. Adding hasRemoveAdsEntitlement as a top-priority AdGuardReason (ahead of war) prevents a paid user from ever contributing to skip/war telemetry.
 
 ---
