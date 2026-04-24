@@ -1,5 +1,6 @@
 import { FACTIONS, type FactionEntry, type PlayableFactionId } from '@colonize/content';
 import { useGameStore } from '../store/game';
+import { describeFactionBonuses } from './faction-bonus-text';
 import styles from './FactionSelect.module.css';
 
 export function FactionSelect(): JSX.Element {
@@ -25,12 +26,14 @@ export function FactionSelect(): JSX.Element {
               className={styles.card}
               onClick={() => select(faction.id)}
               data-testid={`faction-card-${faction.id}`}
+              aria-describedby={`faction-tooltip-${faction.id}`}
             >
               <Crest faction={faction} />
               <h2 className={styles.name}>{faction.name}</h2>
               <p className={styles.tagline}>{faction.tagline}</p>
               <p className={styles.lore}>{faction.lore}</p>
               <p className={styles.bonus}>{faction.bonus}</p>
+              <BonusTooltip faction={faction} />
             </button>
           </li>
         ))}
@@ -56,6 +59,26 @@ export function FactionSelect(): JSX.Element {
         Back
       </button>
     </main>
+  );
+}
+
+function BonusTooltip({ faction }: { faction: FactionEntry }): JSX.Element {
+  const lines = describeFactionBonuses(faction.id);
+  return (
+    <div
+      id={`faction-tooltip-${faction.id}`}
+      className={styles.tooltip}
+      role="tooltip"
+      data-testid={`faction-tooltip-${faction.id}`}
+    >
+      <p className={styles.tooltipHeading}>Faction bonuses</p>
+      <ul className={styles.tooltipList}>
+        {lines.map((line) => (
+          <li key={line}>{line}</li>
+        ))}
+      </ul>
+      <p className={styles.tooltipQuote}>&ldquo;{faction.tagline}&rdquo;</p>
+    </div>
   );
 }
 

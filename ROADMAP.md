@@ -9,8 +9,8 @@ _Created: 2026-04-20_
 ## Summary
 
 - **Total tasks:** 90
-- **Done:** 85 (94%)
-- **Ready:** 5
+- **Done:** 86 (96%)
+- **Ready:** 4
 - **In progress:** 0
 - **Blocked:** 0
 
@@ -601,7 +601,7 @@ Collective).
     > Ironclad: +production, cheaper shipyards. Phantom:
     > stealth on open ocean, raid bonus. Bloodborne: +combat,
     > free soldier/turn per colony.
-  - :black_circle: **TASK-064** — Faction-select bonus tooltip polish  `low` `small` _(web, content)_  
+  - :white_check_mark: **TASK-064** — Faction-select bonus tooltip polish  `low` `small` _(web, content)_ · [PR](https://github.com/g-chappell/colonize/pull/124)  
     _depends on: TASK-014, TASK-063_
     > Tooltip hover on faction-select cards enumerates the
     > specific bonuses. Flavour quote from canon beneath each.
