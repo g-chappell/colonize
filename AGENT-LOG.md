@@ -1518,7 +1518,7 @@ gaps.
 - Test counts: core=1145, content=278, web=740, server=56, shared=18
 - Files changed: packages/content/src/codex-entries.ts, packages/content/src/codex-entries.test.ts, packages/content/src/index.ts, packages/shared/src/index.ts, apps/web/src/store/game.ts, apps/web/src/store/game.test.ts, apps/web/src/codex/CodexViewer.tsx, apps/web/src/codex/CodexViewer.module.css, apps/web/src/codex/CodexViewer.test.tsx, apps/web/src/codex/codex-math.ts, apps/web/src/codex/codex-math.test.ts, apps/web/src/App.tsx, apps/web/src/App.test.tsx, apps/web/src/GameCanvas.tsx, apps/web/src/hud/Hud.tsx, apps/web/src/hud/Hud.test.tsx
 - Regression alert: false
-- Deploy: pending
+- Deploy: success
 - Lessons learned: GameCanvas's single effect gates all bus subscriptions behind the canvas-mount check — any new bus→store wiring added there is invisible in jsdom tests. Kept the new codex subscription inline with the colony:selected pattern and covered the unlock path via the store-slice test instead.
 
 ---
