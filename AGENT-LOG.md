@@ -1558,7 +1558,7 @@ gaps.
 - Files changed: packages/core/src/ads/{cadence.ts,cadence.test.ts,index.ts}, packages/core/src/index.ts, apps/web/src/ads/{ad-orchestrator.ts,ad-orchestrator.test.ts,ad-orchestrator-pure.ts,ad-orchestrator-pure.test.ts}, apps/web/src/store/game.ts, apps/web/src/store/game.test.ts, apps/web/src/App.tsx, packages/content/balance.md
 - Regression alert: false
 - Review proposed: pending
-- Deploy: pending
+- Deploy: success
 - Lessons learned: TASK-084 left the ad-manager factory + ads-guard evaluator in place; TASK-085 slotted a pure-core cadence primitive + thin web orchestrator in between them, with every decision moved to pure siblings so wiring tests can stay small. `lastAdShowTurn` is kept monotonic in the store so an out-of-order `shown` report cannot rewind the cadence cursor.
 
 ---
