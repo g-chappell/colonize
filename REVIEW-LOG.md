@@ -278,3 +278,21 @@ Next-cycle retry: both proposals still apply. The canonical-examples refresh is 
 Landing caveat: both refinements semantically belong in the respective `.claude/notes/*.md` files, but Edit-on-`.claude/notes/*.md` remains blocked at the Claude Code CLI ("sensitive file" rejection) — same block as 2026-04-24 01:20 reported. Bullets landed in CLAUDE.md Tier 3 as fallback per that entry's follow-up plan, with each bullet explicitly flagging the notes file as the best-effort canonical home so a future cycle (or a structural move of notes out of `.claude/`) can migrate the copy back.
 
 Next-cycle signal for human operator: if the notes-Edit block persists through a third review cycle, consider either (a) relaxing the CLI heuristic for project-local `.claude/notes/`, or (b) moving `.claude/notes/` to `docs/notes/` and updating CLAUDE.md imports — 7 line edits in CLAUDE.md + git mv of 6 files. Structural move deferred out of this cycle to keep the review surface small.
+
+---
+
+## Review [2026-04-24 17:25] — after TASK-087, TASK-088, TASK-037, TASK-064, TASK-078
+- Success streak: 5
+- Patterns identified: 1 novel ≥ 2-entry pattern (URL-level routing dispatcher); 2 candidates not promoted this cycle (see below)
+- Proposals drafted: 1
+- Proposals de-duplicated: 1 (novel vs CLAUDE.md + apps/web/src/CLAUDE.md + apps/web/src/game/CLAUDE.md + packages/CLAUDE.md; Jaro-Winkler threshold 0.85 via alreadyCovered)
+- Refinements committed: 1
+- PR: https://github.com/g-chappell/colonize/pull/126
+- Outcome: opened
+- Files touched: apps/web/src/CLAUDE.md (one new bullet between the "Top-level screen routing lives in the zustand store" rule and the "Slice-driven self-mounting overlays" rule; root CLAUDE.md Tier 1 [57, 74) untouched)
+- Refinements:
+  1. 4410377 — codify URL-level routing (marketing / legal / play split) as a pure-sibling dispatcher above the zustand `screen` slice. TASK-087 introduced `apps/web/src/marketing/path-route.ts` covering `/` + `/play`; TASK-088 extended it for `/privacy` + `/terms`. Two in-window applications make the pathname-dispatcher-above-`screen` split load-bearing.
+
+Candidates not promoted:
+- Per-tile visibility-driven decorative-overlay shape (FogOverlay → FogEdgeMotifLayer mirror, constructor+sync+setDepth+destroy). Only one in-window application (TASK-037); the earlier FogOverlay introduction (TASK-022) is outside the trailing 5-run window. Revisit when a second in-window application lands (tutorial-hint-tile overlay, per-tile combat-zone marker, etc.).
+- Forward-pointer comments that misrepresent future task scope (TASK-078 hit this — the TASK-077-era comment predicted TASK-078 was about rendering *locked* stubs as fragmentary, but the actual TASK-078 was rendering *[OPEN] canonTier* entries as fragmentary). Covered implicitly by CLAUDE.md Tier 1's "Don't reference the current task, fix, or callers" rule; a dedicated SKILL-prose bullet would duplicate that rule.
