@@ -5,9 +5,8 @@
 //
 // Log format: one human-readable line per event, grep-friendly.
 //
-//   [2026-04-24T06:15:22Z] path_glob_match .claude/rules/phaser-patterns.md ← apps/web/src/game/boot-scene.ts [globs: apps/web/src/game/**]
-//   [2026-04-24T06:15:22Z] session_start  CLAUDE.md
-//   [2026-04-24T06:15:23Z] include        docs/notes/phaser-patterns.md ← .claude/rules/phaser-patterns.md
+//   [2026-04-24T06:15:22Z] session_start    CLAUDE.md
+//   [2026-04-24T06:15:22Z] subtree          apps/web/src/game/CLAUDE.md ← apps/web/src/game/boot-scene.ts
 //
 // Wired into .claude/settings.json under `InstructionsLoaded` with no
 // matcher so every load reason passes through.

@@ -1,5 +1,5 @@
 // Pure sibling to ad-orchestrator.ts (pure-sibling pattern per
-// docs/notes/ui-screens.md). Owns two framework-free decisions the
+// apps/web/src/CLAUDE.md). Owns two framework-free decisions the
 // orchestrator runs on every `turn:advanced` bus event:
 //
 //   1. `deriveAdGuardFlags` — collapse the live store slice values into
