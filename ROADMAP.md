@@ -10,8 +10,8 @@ _Created: 2026-04-20_
 
 - **Total tasks:** 90
 - **Done:** 77 (86%)
-- **Ready:** 13
-- **In progress:** 0
+- **Ready:** 12
+- **In progress:** 1
 - **Blocked:** 0
 
 ---
@@ -723,7 +723,7 @@ salvaged-futurism).
   > Browsable encyclopedia of OTK Universe Reference entries.
   > Unlocked over time as the player discovers related content.
   > [OPEN] items surfaced as "fragmentary" with blurred text.
-  - :black_circle: **TASK-077** — Codex viewer + entry unlock hooks  `med` `medium` _(web, content)_  
+  - :large_orange_diamond: **TASK-077** — Codex viewer + entry unlock hooks  `med` `medium` _(web, content)_  
     _depends on: TASK-013_
     > Side-drawer Codex. Entries grouped by section (Factions,
     > Abyssal Horrors, Legendary Ships, Locations, Bloodlines,
