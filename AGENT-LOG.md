@@ -1576,3 +1576,14 @@ gaps.
 
 ---
 
+### Run [2026-04-24 10:16]
+- Task: N/A — review gate decision for TASK-086
+- Outcome: skipped
+- PR: n/a
+- Reason: review_gate_skip
+- Review proposed: false (review PR #110 already covers TASK-073 through TASK-080 — TASK-077 + TASK-080 are still inside the current trailing-5-success window (TASK-077/080/084/085/086); re-fire suppressed per per-window uniqueness heuristic)
+- Regression alert: false
+- Notes: Gate re-opens once TASK-077 + TASK-080 roll out of the trailing window (i.e. 2 more successful non-review cycles land after TASK-086).
+
+---
+
