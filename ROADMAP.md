@@ -10,8 +10,8 @@ _Created: 2026-04-20_
 
 - **Total tasks:** 90
 - **Done:** 83 (92%)
-- **Ready:** 7
-- **In progress:** 0
+- **Ready:** 6
+- **In progress:** 1
 - **Blocked:** 0
 
 ---
@@ -814,7 +814,7 @@ site.
     > / renders landing (marketing), /play renders the game.
     > Hero trailer video, screenshot carousel, store badges,
     > call-to-action.
-  - :black_circle: **TASK-088** — Privacy policy + terms pages  `med` `small` _(web, content)_  
+  - :large_orange_diamond: **TASK-088** — Privacy policy + terms pages  `med` `small` _(web, content)_  
     _depends on: TASK-087_
     > Two static pages. Privacy: what we collect (email on opt-
     > in; ad metrics). Terms: standard game ToS. Link from
