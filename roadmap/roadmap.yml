@@ -1899,7 +1899,7 @@ epics:
             attempt_count: 1
           - id: TASK-078
             title: Render [OPEN] entries as 'fragmentary' placeholders
-            status: ready
+            status: done
             priority: low
             complexity: small
             workspaces:
@@ -1911,11 +1911,11 @@ epics:
               player that canon is deliberately unresolved here.
             depends_on:
               - TASK-077
-            pr: null
-            completed: null
+            pr: https://github.com/g-chappell/colonize/pull/125
+            completed: '2026-04-24T17:15:00Z'
             blocked_reason: null
-            last_attempted: null
-            attempt_count: 0
+            last_attempted: '2026-04-24T17:01:00Z'
+            attempt_count: 1
       - id: STORY-46
         title: Tutorial campaign
         description: |

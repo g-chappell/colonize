@@ -9,8 +9,8 @@ _Created: 2026-04-20_
 ## Summary
 
 - **Total tasks:** 90
-- **Done:** 86 (96%)
-- **Ready:** 4
+- **Done:** 87 (97%)
+- **Ready:** 3
 - **In progress:** 0
 - **Blocked:** 0
 
@@ -728,7 +728,7 @@ salvaged-futurism).
     > Side-drawer Codex. Entries grouped by section (Factions,
     > Abyssal Horrors, Legendary Ships, Locations, Bloodlines,
     > etc.). Unlock triggers hooked into game events.
-  - :black_circle: **TASK-078** — Render [OPEN] entries as 'fragmentary' placeholders  `low` `small` _(web, content)_  
+  - :white_check_mark: **TASK-078** — Render [OPEN] entries as 'fragmentary' placeholders  `low` `small` _(web, content)_ · [PR](https://github.com/g-chappell/colonize/pull/125)  
     _depends on: TASK-077_
     > Any Codex entry marked [OPEN] renders with a torn-
     > parchment visual + partial blurred text. Flags to the

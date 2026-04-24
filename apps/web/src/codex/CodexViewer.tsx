@@ -10,8 +10,9 @@ import styles from './CodexViewer.module.css';
 
 // Mounts while `screen === 'codex'`. Renders a right-anchored side-
 // drawer over the game-stage, grouping every unlocked Codex entry by
-// category. Locked entries are not rendered — their future "fragmentary"
-// placeholder is TASK-078's scope.
+// category. Entries whose canon is marked unresolved (`canonTier:
+// 'open'`) render with a fragmentary / torn-parchment treatment;
+// locked entries are not rendered.
 export function CodexViewer(): JSX.Element {
   const setScreen = useGameStore((s) => s.setScreen);
   const unlocked = useGameStore((s) => s.codexUnlocked);
@@ -63,8 +64,13 @@ export function CodexViewer(): JSX.Element {
 }
 
 function CodexEntryCard({ entry }: { readonly entry: CodexEntry }): JSX.Element {
+  const isFragmentary = entry.canonTier === 'open';
+  const entryClass = isFragmentary ? `${styles.entry} ${styles.entryFragmentary}` : styles.entry;
+  const bodyClass = isFragmentary
+    ? `${styles.entryBody} ${styles.entryBodyBlurred}`
+    : styles.entryBody;
   return (
-    <li className={styles.entry} data-testid={`codex-entry-${entry.id}`}>
+    <li className={entryClass} data-testid={`codex-entry-${entry.id}`}>
       <div className={styles.entryHead}>
         <h4 className={styles.entryTitle}>{entry.title}</h4>
         <span className={styles.entryTier} data-testid={`codex-entry-${entry.id}-tier`}>
@@ -72,7 +78,17 @@ function CodexEntryCard({ entry }: { readonly entry: CodexEntry }): JSX.Element 
         </span>
       </div>
       <p className={styles.entrySummary}>{entry.summary}</p>
-      <p className={styles.entryBody}>{entry.body}</p>
+      <p className={bodyClass} data-testid={`codex-entry-${entry.id}-body`}>
+        {entry.body}
+      </p>
+      {isFragmentary ? (
+        <p
+          className={styles.fragmentaryNote}
+          data-testid={`codex-entry-${entry.id}-fragmentary-note`}
+        >
+          Canon unresolved — fragment recovered.
+        </p>
+      ) : null}
     </li>
   );
 }

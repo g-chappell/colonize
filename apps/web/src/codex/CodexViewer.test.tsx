@@ -79,4 +79,22 @@ describe('CodexViewer', () => {
       expect(tierEl.textContent).toMatch(/Canon|Draft|Fragment/);
     }
   });
+
+  it('flags [OPEN] entries with a fragmentary note and non-[OPEN] entries without', () => {
+    useGameStore.setState({ codexUnlocked: CODEX_ENTRIES.map((e) => e.id) });
+    render(<CodexViewer />);
+    const openEntries = CODEX_ENTRIES.filter((e) => e.canonTier === 'open');
+    const nonOpenEntries = CODEX_ENTRIES.filter((e) => e.canonTier !== 'open');
+    // The registry must contain at least one [OPEN] entry for this test
+    // to exercise the fragmentary-rendering branch.
+    expect(openEntries.length).toBeGreaterThan(0);
+    for (const entry of openEntries) {
+      expect(screen.getByTestId(`codex-entry-${entry.id}-fragmentary-note`)).toBeInTheDocument();
+    }
+    for (const entry of nonOpenEntries) {
+      expect(
+        screen.queryByTestId(`codex-entry-${entry.id}-fragmentary-note`),
+      ).not.toBeInTheDocument();
+    }
+  });
 });

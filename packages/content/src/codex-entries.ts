@@ -1,16 +1,16 @@
-// Codex entry registry. Content for the in-game Codex side-drawer
-// (TASK-077). Entries are grouped by `category` in the UI. An entry
-// is visible from the first Codex open when `unlockedFromStart: true`;
-// otherwise it stays hidden until a gameplay orchestrator emits
+// Codex entry registry. Content for the in-game Codex side-drawer.
+// Entries are grouped by `category` in the UI. An entry is visible
+// from the first Codex open when `unlockedFromStart: true`; otherwise
+// it stays hidden until a gameplay orchestrator emits
 // `codex:entry-unlocked` with the entry id (see the bus event in
-// @colonize/shared). The rendering of locked-but-unlockable stubs as
-// "fragmentary" text is TASK-078; for this task a locked entry simply
-// does not appear in the drawer.
+// @colonize/shared).
 //
 // Bodies are sourced from lore/OTK.md and must respect the canon-tier
 // discipline: an entry's `canonTier` is the tier of the body text, not
 // the umbrella section it lives in. `[OPEN]` entries deliberately keep
-// their summary factual and leave any speculation out of `body`.
+// their summary factual and leave any speculation out of `body` — the
+// viewer renders them with a fragmentary / torn-parchment treatment to
+// flag unresolved canon to the player.
 
 export type CodexCategory = 'faction' | 'bloodline' | 'horror' | 'ship' | 'location';
 
