@@ -10,8 +10,8 @@ _Created: 2026-04-20_
 
 - **Total tasks:** 90
 - **Done:** 86 (96%)
-- **Ready:** 4
-- **In progress:** 0
+- **Ready:** 3
+- **In progress:** 1
 - **Blocked:** 0
 
 ---
@@ -728,7 +728,7 @@ salvaged-futurism).
     > Side-drawer Codex. Entries grouped by section (Factions,
     > Abyssal Horrors, Legendary Ships, Locations, Bloodlines,
     > etc.). Unlock triggers hooked into game events.
-  - :black_circle: **TASK-078** — Render [OPEN] entries as 'fragmentary' placeholders  `low` `small` _(web, content)_  
+  - :large_orange_diamond: **TASK-078** — Render [OPEN] entries as 'fragmentary' placeholders  `low` `small` _(web, content)_  
     _depends on: TASK-077_
     > Any Codex entry marked [OPEN] renders with a torn-
     > parchment visual + partial blurred text. Flags to the
