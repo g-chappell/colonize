@@ -10,8 +10,8 @@ _Created: 2026-04-20_
 
 - **Total tasks:** 90
 - **Done:** 87 (97%)
-- **Ready:** 3
-- **In progress:** 0
+- **Ready:** 2
+- **In progress:** 1
 - **Blocked:** 0
 
 ---
@@ -754,7 +754,7 @@ salvaged-futurism).
   > Tag every UI surface with an appropriate tonal register
   > (salt-and-rum / eldritch / salvaged-futurism) so future
   > content authoring stays coherent.
-  - :black_circle: **TASK-081** — Content register-tagging infra + lint rule  `low` `small` _(content)_  
+  - :large_orange_diamond: **TASK-081** — Content register-tagging infra + lint rule  `low` `small` _(content)_  
     _depends on: TASK-004_
     > Content strings carry a `register` tag. Lint check
     > ensures every user-visible string is tagged. Documented

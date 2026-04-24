@@ -1971,7 +1971,7 @@ epics:
         tasks:
           - id: TASK-081
             title: Content register-tagging infra + lint rule
-            status: ready
+            status: in-progress
             priority: low
             complexity: small
             workspaces:
@@ -1985,8 +1985,8 @@ epics:
             pr: null
             completed: null
             blocked_reason: null
-            last_attempted: null
-            attempt_count: 0
+            last_attempted: '2026-04-24T18:02:00Z'
+            attempt_count: 1
   - id: EPIC-12
     title: Monetization, accounts, cloud save, store release
     description: |
