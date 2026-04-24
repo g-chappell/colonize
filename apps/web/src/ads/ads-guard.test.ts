@@ -8,6 +8,7 @@ function flags(overrides: Partial<AdGuardFlags> = {}): AdGuardFlags {
     narrativeModalOpen: false,
     combatOverlayOpen: false,
     tutorialStepActive: false,
+    hasRemoveAdsEntitlement: false,
     ...overrides,
   };
 }
@@ -45,7 +46,31 @@ describe('evaluateAdGuard', () => {
     });
   });
 
-  it('reports war ahead of any other flag when multiple are set', () => {
+  it('blocks when the player holds the remove_ads entitlement', () => {
+    expect(evaluateAdGuard(flags({ hasRemoveAdsEntitlement: true }))).toEqual({
+      allowed: false,
+      reason: 'entitlement',
+    });
+  });
+
+  it('reports entitlement ahead of war + every other flag when all are set', () => {
+    // Reason-priority ordering is load-bearing for telemetry: a paid
+    // user never contributes a `skip/war` telemetry line, so the
+    // entitlement flag short-circuits ahead of every situational guard.
+    expect(
+      evaluateAdGuard(
+        flags({
+          hasRemoveAdsEntitlement: true,
+          inSovereigntyWar: true,
+          narrativeModalOpen: true,
+          combatOverlayOpen: true,
+          tutorialStepActive: true,
+        }),
+      ),
+    ).toEqual({ allowed: false, reason: 'entitlement' });
+  });
+
+  it('reports war ahead of lesser flags when entitlement is clear', () => {
     // Reason-priority ordering is load-bearing for telemetry: "blocked
     // for war" is a stronger signal than "blocked for a combat overlay
     // that happens to be mid-war-beat".

@@ -105,6 +105,63 @@ export const GetSaveResponse = z.object({
 });
 export type GetSaveResponse = z.infer<typeof GetSaveResponse>;
 
+// --- In-app purchases (server endpoints in apps/server/src/iap) ---
+
+// Platform the client purchased on. `web` is reserved; no browser
+// payment backend ships with the MVP — the enum member exists so a
+// future web-checkout flow can reuse the same receipt-validation path.
+export const IapPlatform = z.enum(['ios', 'android', 'web']);
+export type IapPlatform = z.infer<typeof IapPlatform>;
+
+// Product id as exposed to the store fronts. Kept narrow to the one
+// product the MVP ships — widen when more SKUs land. The string values
+// are the identifiers configured in App Store Connect + Play Console.
+export const IapProductId = z.enum(['com.colonize.remove_ads']);
+export type IapProductId = z.infer<typeof IapProductId>;
+
+// Entitlement id as surfaced to the client. One string per gameplay
+// feature the user unlocks; a single product may grant one or more. The
+// server is the only authority — the client never invents entitlement
+// strings, only reads them back from /iap/verify-receipt + /me/entitlements.
+export const IapEntitlementId = z.enum(['remove_ads']);
+export type IapEntitlementId = z.infer<typeof IapEntitlementId>;
+
+// Client-facing entitlement flags. One boolean per entitlement the app
+// gates on; absent flags default to false on the client so the wire
+// shape can grow without forcing a schema bump.
+export const Entitlements = z.object({
+  hasRemoveAds: z.boolean(),
+});
+export type Entitlements = z.infer<typeof Entitlements>;
+
+// POST /iap/verify-receipt — client submits a store receipt, server
+// validates it with the platform (real Apple/Google verification lives
+// in apps/server/src/iap/validator.ts — the MVP ships a catalog stub),
+// persists the entitlement, and returns the user's full entitlement set.
+export const VerifyReceiptRequest = z.object({
+  platform: IapPlatform,
+  productId: IapProductId,
+  // Opaque receipt payload. iOS sends the base64 app receipt; Android
+  // sends the purchase token. The server-side validator is responsible
+  // for platform-specific shape checks — we accept any non-empty string
+  // at the wire boundary.
+  receipt: z.string().min(1),
+});
+export type VerifyReceiptRequest = z.infer<typeof VerifyReceiptRequest>;
+
+export const VerifyReceiptResponse = z.object({
+  entitlements: Entitlements,
+});
+export type VerifyReceiptResponse = z.infer<typeof VerifyReceiptResponse>;
+
+// GET /me/entitlements — read-only view of the current user's entitlement
+// flags. Sessions-gated like /me; returns `hasRemoveAds: false` for a
+// user with no granted entitlements (never 404).
+export const EntitlementsResponse = z.object({
+  entitlements: Entitlements,
+});
+export type EntitlementsResponse = z.infer<typeof EntitlementsResponse>;
+
 // Event payloads for the web client's pub/sub bus (apps/web/src/bus.ts).
 // Extend via declaration merging as HUD↔Phaser events are introduced.
 export interface GameEvents {

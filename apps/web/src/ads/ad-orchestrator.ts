@@ -56,6 +56,7 @@ function snapshotFromStore(): AdOrchestratorSnapshot {
     sovereigntyBeat: s.sovereigntyBeat,
     titheNotification: s.titheNotification,
     tidewaterPartyEvent: s.tidewaterPartyEvent,
+    entitlements: { hasRemoveAds: s.entitlements.hasRemoveAds },
   };
 }
 

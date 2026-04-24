@@ -2094,7 +2094,7 @@ epics:
         tasks:
           - id: TASK-086
             title: IAP flow (web + mobile) + server-side receipt validation
-            status: ready
+            status: done
             priority: med
             complexity: large
             workspaces:
@@ -2109,11 +2109,11 @@ epics:
             depends_on:
               - TASK-082
               - TASK-084
-            pr: null
-            completed: null
+            pr: https://github.com/g-chappell/colonize/pull/118
+            completed: '2026-04-24T10:10:00Z'
             blocked_reason: null
-            last_attempted: null
-            attempt_count: 0
+            last_attempted: '2026-04-24T09:35:00Z'
+            attempt_count: 1
       - id: STORY-51
         title: Marketing site
         description: |
