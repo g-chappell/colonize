@@ -10,7 +10,8 @@
   "type": "module",
   "scripts": {
     "typecheck": "node scripts/run-workspaces.mjs typecheck",
-    "test": "node scripts/run-workspaces.mjs test",
+    "test:scripts": "node --test scripts/",
+    "test": "node --test scripts/ && node scripts/run-workspaces.mjs test",
     "lint": "eslint .",
     "build": "node scripts/run-workspaces.mjs build",
     "format": "prettier --write .",
