@@ -2168,7 +2168,7 @@ epics:
         tasks:
           - id: TASK-089
             title: Screenshots + store metadata pack
-            status: in-progress
+            status: done
             priority: low
             complexity: medium
             workspaces:
@@ -2179,8 +2179,8 @@ epics:
               answers. All in content/store/.
             depends_on:
               - TASK-087
-            pr: null
-            completed: null
+            pr: https://github.com/g-chappell/colonize/pull/128
+            completed: '2026-04-24T19:13:00Z'
             blocked_reason: null
             last_attempted: '2026-04-24T19:04:00Z'
             attempt_count: 1
