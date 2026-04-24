@@ -442,6 +442,13 @@ export interface GameState {
   // if the id is already present). The Codex viewer groups + renders
   // entries by category, skipping any whose id does not appear here.
   codexUnlocked: readonly string[];
+  // Turn number on which the most recent turn-end interstitial was
+  // shown. `0` means no ad has been shown this run (matches the initial
+  // state). The ad orchestrator (`apps/web/src/ads/ad-orchestrator.ts`)
+  // reads this + `currentTurn` to drive cadence, and calls `recordAdShown`
+  // only on a `shown` AdOutcome — a `skipped` (guarded/unavailable/error)
+  // outcome leaves the slice alone so the next turn re-attempts.
+  lastAdShowTurn: number;
   settings: SettingsState;
   setCurrentTurn: (turn: number) => void;
   advanceTurn: () => void;
@@ -672,6 +679,10 @@ export interface GameState {
   // which is the cheapest defence against typos without coupling the
   // store to content.
   unlockCodexEntry: (entryId: string) => void;
+  // Called by the ad orchestrator after a successful interstitial show
+  // to stamp the cadence cursor. A `skipped` outcome must NOT call this
+  // so the cadence re-attempts on the next turn.
+  recordAdShown: (turn: number) => void;
   reset: () => void;
 }
 
@@ -731,6 +742,7 @@ const initialState = {
   tutorialStep: null as TutorialStepId | null,
   firedTutorialSteps: [] as readonly TutorialStepId[],
   codexUnlocked: initialUnlockedCodexEntryIds(),
+  lastAdShowTurn: 0,
   settings: DEFAULT_SETTINGS,
 } as const;
 
@@ -1185,6 +1197,8 @@ export const useGameStore = create<GameState>((set) => ({
       if (state.codexUnlocked.includes(entryId)) return {};
       return { codexUnlocked: [...state.codexUnlocked, entryId] };
     }),
+  recordAdShown: (turn) =>
+    set((state) => (turn > state.lastAdShowTurn ? { lastAdShowTurn: turn } : {})),
   reset: () =>
     set({
       ...initialState,
