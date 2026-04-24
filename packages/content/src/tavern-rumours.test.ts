@@ -1,6 +1,8 @@
 import { describe, it, expect } from 'vitest';
+import { ALL_DIRECTIONS, ALL_MAP_HINT_CATEGORIES } from '@colonize/core';
 import {
   TAVERN_RUMOURS,
+  collectTavernRumourHints,
   eligibleTavernRumours,
   getTavernRumour,
   isTavernRumourId,
@@ -176,6 +178,67 @@ describe('tavernRumourWeight', () => {
 
   it('uses the explicit weight when set', () => {
     expect(tavernRumourWeight(getTavernRumour('rumour-pale-watch-sighting'))).toBe(2);
+  });
+});
+
+describe('TavernRumourHint', () => {
+  it('every hint names a valid MapHintCategory', () => {
+    const validCategories = new Set(ALL_MAP_HINT_CATEGORIES);
+    for (const r of TAVERN_RUMOURS) {
+      if (r.hint) expect(validCategories.has(r.hint.category)).toBe(true);
+    }
+  });
+
+  it('every hint names a valid Direction', () => {
+    const validDirs = new Set(ALL_DIRECTIONS);
+    for (const r of TAVERN_RUMOURS) {
+      if (r.hint) expect(validDirs.has(r.hint.direction)).toBe(true);
+    }
+  });
+
+  it('at least one rumour per payoff category carries a hint so each category can surface', () => {
+    const seen = new Set<string>();
+    for (const r of TAVERN_RUMOURS) {
+      if (r.hint) seen.add(r.hint.category);
+    }
+    for (const cat of ALL_MAP_HINT_CATEGORIES) {
+      expect(seen.has(cat)).toBe(true);
+    }
+  });
+
+  it('rumours that lack a hint stay undefined (no stray empty objects)', () => {
+    for (const r of TAVERN_RUMOURS) {
+      if (r.hint === undefined) continue;
+      expect(typeof r.hint.category).toBe('string');
+      expect(typeof r.hint.direction).toBe('string');
+    }
+  });
+});
+
+describe('collectTavernRumourHints', () => {
+  it('returns hints in the order of the supplied ids, paired with the rumour id', () => {
+    const result = collectTavernRumourHints([
+      'rumour-archive-cache-east',
+      'rumour-singing-buoy',
+      'rumour-derelict-leeward',
+    ]);
+    expect(result).toHaveLength(2);
+    expect(result[0]).toEqual({
+      rumourId: 'rumour-archive-cache-east',
+      hint: { category: 'archive-cache', direction: 'e' },
+    });
+    expect(result[1]).toEqual({
+      rumourId: 'rumour-derelict-leeward',
+      hint: { category: 'wreck', direction: 'w' },
+    });
+  });
+
+  it('returns an empty array when no supplied rumour carries a hint', () => {
+    expect(collectTavernRumourHints(['rumour-singing-buoy', 'rumour-empty-keel'])).toEqual([]);
+  });
+
+  it('returns an empty array for an empty id list', () => {
+    expect(collectTavernRumourHints([])).toEqual([]);
   });
 });
 
