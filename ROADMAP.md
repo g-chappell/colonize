@@ -9,9 +9,9 @@ _Created: 2026-04-20_
 ## Summary
 
 - **Total tasks:** 90
-- **Done:** 79 (88%)
+- **Done:** 80 (89%)
 - **Ready:** 10
-- **In progress:** 1
+- **In progress:** 0
 - **Blocked:** 0
 
 ---
@@ -785,7 +785,7 @@ site.
   > Interstitial every N turns (configurable). Never during
   > Sovereignty War or narrative beats. AdMob on mobile, Google
   > Ad Manager on web.
-  - :large_orange_diamond: **TASK-084** — Ad manager abstraction in apps/web + Capacitor plugin wire-up  `med` `medium` _(web, mobile)_  
+  - :white_check_mark: **TASK-084** — Ad manager abstraction in apps/web + Capacitor plugin wire-up  `med` `medium` _(web, mobile)_ · [PR](https://github.com/g-chappell/colonize/pull/115)  
     _depends on: TASK-003_
     > Single AdManager interface. Web backend (Ad Manager) +
     > mobile backend (@capacitor-community/admob). Respect the
