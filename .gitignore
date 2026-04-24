@@ -57,6 +57,9 @@ Thumbs.db
 # fails `/autonomous-run`'s strict clean-tree precheck when the scheduled
 # agent runs as a different OS user (no personal core.excludesFile).
 .claude/settings.local.json
+# Hook-written observability logs (InstructionsLoaded, etc.) — grow
+# unbounded and contain absolute paths specific to the machine.
+.claude/logs/
 
 # Approvals (history.md, PENDING.md, and archived approvals) ARE committed
 # per the branch-as-payload / auditable-approvals design.
