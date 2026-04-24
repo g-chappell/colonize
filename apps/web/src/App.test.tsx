@@ -38,6 +38,22 @@ describe('App', () => {
       expect(screen.getByTestId('main-menu')).toBeInTheDocument();
       expect(screen.queryByTestId('landing-page')).not.toBeInTheDocument();
     });
+
+    it('renders the privacy page at /privacy', () => {
+      window.history.replaceState({}, '', '/privacy');
+      render(<App />);
+      expect(screen.getByTestId('privacy-page')).toBeInTheDocument();
+      expect(screen.queryByTestId('landing-page')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('main-menu')).not.toBeInTheDocument();
+    });
+
+    it('renders the terms page at /terms', () => {
+      window.history.replaceState({}, '', '/terms');
+      render(<App />);
+      expect(screen.getByTestId('terms-page')).toBeInTheDocument();
+      expect(screen.queryByTestId('landing-page')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('main-menu')).not.toBeInTheDocument();
+    });
   });
 
   it('shows the faction select screen when the screen advances', () => {

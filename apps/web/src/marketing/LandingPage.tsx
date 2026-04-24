@@ -1,4 +1,5 @@
-import { navigateToPlay } from './use-path-route';
+import { navigateTo, navigateToPlay } from './use-path-route';
+import type { RoutePath } from './path-route';
 import styles from './LandingPage.module.css';
 
 // Marketing landing page served at `/`. The `/play` route renders the
@@ -90,7 +91,37 @@ export function LandingPage(): JSX.Element {
         ))}
       </section>
 
-      <p className={styles.footer}>Order of the Kraken · Post-Collapse · Fragmentary Canon</p>
+      <footer className={styles.footer} data-testid="landing-footer">
+        <p className={styles.footerTagline}>
+          Order of the Kraken · Post-Collapse · Fragmentary Canon
+        </p>
+        <nav className={styles.footerLinks}>
+          <FooterLink route="privacy" label="Privacy Policy" testId="landing-link-privacy" />
+          <span aria-hidden="true" className={styles.footerSeparator}>
+            ·
+          </span>
+          <FooterLink route="terms" label="Terms of Service" testId="landing-link-terms" />
+        </nav>
+      </footer>
     </main>
+  );
+}
+
+interface FooterLinkProps {
+  readonly route: RoutePath;
+  readonly label: string;
+  readonly testId: string;
+}
+
+function FooterLink({ route, label, testId }: FooterLinkProps): JSX.Element {
+  const href = route === 'landing' ? '/' : `/${route}`;
+  const onClick = (event: React.MouseEvent<HTMLAnchorElement>): void => {
+    event.preventDefault();
+    navigateTo(route);
+  };
+  return (
+    <a href={href} onClick={onClick} className={styles.footerLink} data-testid={testId}>
+      {label}
+    </a>
   );
 }

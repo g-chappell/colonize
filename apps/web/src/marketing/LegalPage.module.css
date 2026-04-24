@@ -1,0 +1,92 @@
+.page {
+  min-height: 100vh;
+  background: radial-gradient(ellipse at top, #10293a 0%, #0c1e2b 60%), #0c1e2b;
+  color: #e8d8b8;
+  font-family: 'Georgia', 'Times New Roman', serif;
+  padding: 3rem 1.5rem 4rem;
+  display: flex;
+  justify-content: center;
+}
+
+.article {
+  max-width: 48rem;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.backLink {
+  align-self: flex-start;
+  color: #d6b466;
+  text-decoration: none;
+  font-size: 0.85rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  padding: 0.4rem 0;
+}
+
+.backLink:hover,
+.backLink:focus-visible {
+  text-decoration: underline;
+  outline: none;
+}
+
+.title {
+  font-size: clamp(2rem, 6vw, 3.25rem);
+  margin: 0;
+  letter-spacing: 0.06em;
+  color: #d6b466;
+  line-height: 1.1;
+}
+
+.updated {
+  font-size: 0.8rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  opacity: 0.6;
+  margin: 0;
+}
+
+.article h2 {
+  font-size: 1.35rem;
+  letter-spacing: 0.08em;
+  margin: 1.5rem 0 0.25rem;
+  color: #d6b466;
+}
+
+.article h3 {
+  font-size: 1.05rem;
+  letter-spacing: 0.05em;
+  margin: 1rem 0 0.25rem;
+  color: #e8d8b8;
+}
+
+.article p {
+  line-height: 1.6;
+  margin: 0;
+  opacity: 0.9;
+}
+
+.article ul {
+  padding-left: 1.25rem;
+  margin: 0;
+  line-height: 1.55;
+  opacity: 0.9;
+}
+
+.article li {
+  margin-bottom: 0.35rem;
+}
+
+.article strong {
+  color: #e8d8b8;
+}
+
+.footerNote {
+  margin-top: 2rem;
+  font-size: 0.75rem;
+  opacity: 0.5;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
