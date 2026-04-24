@@ -1537,3 +1537,15 @@ gaps.
 
 ---
 
+### Run [2026-04-24 06:51]
+- Task: TASK-084 — Ad manager abstraction in apps/web + Capacitor plugin wire-up
+- Outcome: success
+- PR: https://github.com/g-chappell/colonize/pull/115
+- Test counts: core=1145, content=280, web=757, server=56, shared=18
+- Files changed: apps/web/src/ads/ads-guard.ts, apps/web/src/ads/ads-guard.test.ts, apps/web/src/ads/ad-manager.ts, apps/web/src/ads/ad-manager.test.ts, apps/web/src/ads/web-ad-manager.ts, apps/web/src/ads/admob-ad-manager.ts
+- Regression alert: false
+- Deploy: pending
+- Lessons learned: the slice-driven store flags (sovereigntyWar, combatOutcome, tutorialStep, narrative modal slices) are a clean mapping target for an AdGuardFlags snapshot — the guard module intentionally stays unaware of the store shape so the orchestrator (follow-up task) can pick the mapping without re-testing guard logic.
+
+---
+
