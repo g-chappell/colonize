@@ -10,6 +10,8 @@ export {
   type ToneRegister,
 } from './palette.js';
 
+export { REGISTERS, isToneRegister } from './register.js';
+
 export { FACTIONS, getFaction, type FactionEntry, type PlayableFactionId } from './factions.js';
 
 export {
