@@ -149,3 +149,10 @@ curl -fsSL --max-time 10 \
 }
 
 echo "notify-cycle: pushed to $NTFY_SERVER/<topic> — outcome=$outcome, task=$task"
+
+# Best-effort heartbeat to autodev-mcp. Never fails the cycle — the MCP
+# may be down or unreachable and that must not block the ntfy push
+# above or the systemd unit's completion.
+if [[ -x "$ROOT/scripts/mcp-heartbeat.sh" ]]; then
+  "$ROOT/scripts/mcp-heartbeat.sh" || true
+fi

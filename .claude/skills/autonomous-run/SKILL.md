@@ -274,6 +274,24 @@ commit). The **review trigger is deliberately moved to Step 15 — AFTER
 deploy completes and its outcome is logged** so that `/autonomous-review`'s
 PR branch is created against the fully up-to-date main.
 
+**Cross-project mirror (autodev-mcp).** If the MCP server is configured
+in `.mcp.json` (connection name `autodev-mcp`), also mirror this cycle
+into the cross-project store so the dashboard + cross-project
+aggregates stay current:
+
+1. Call `mcp__autodev-mcp__cycleMetrics.record` with `{projectSlug,
+   startedAt, outcome, taskId?, prUrl?, inputTokens?, outputTokens?,
+   costUsd?, ciDurationS?, regressionAlert?}` — same shape as the
+   AGENT-LOG bullets.
+2. Call `mcp__autodev-mcp__agentLog.recordEntry` with `{projectSlug,
+   timestamp, taskId?, outcome, body}` where `body` is the full bullet
+   list written above (kept intact for full-text search).
+
+Both calls are best-effort — if the MCP connection is absent or the
+tool errors (e.g. the MCP HTTP server is down), log a warning line and
+continue. Never fail the cycle over a cross-project mirror failure;
+the local `AGENT-LOG.md` remains the source of truth.
+
 ## Step 11 — (no skill-side notification)
 
 **Do NOT fire any notification from this skill.** Notifications are

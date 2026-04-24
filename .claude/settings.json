@@ -1,4 +1,5 @@
 {
+  "enabledMcpjsonServers": ["autodev-mcp"],
   "permissions": {
     "allow": [
       "Bash(*)",
@@ -11,7 +12,10 @@
       "WebSearch(*)",
       "TodoWrite(*)",
       "Agent(*)",
-      "PushNotification(*)"
+      "PushNotification(*)",
+      "mcp__autodev-mcp__cycleMetrics.record",
+      "mcp__autodev-mcp__agentLog.recordEntry",
+      "mcp__autodev-mcp__patterns.registerPattern"
     ],
     "deny": [
       "Read(./.env)",
