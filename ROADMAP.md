@@ -10,8 +10,8 @@ _Created: 2026-04-20_
 
 - **Total tasks:** 90
 - **Done:** 74 (82%)
-- **Ready:** 16
-- **In progress:** 0
+- **Ready:** 15
+- **In progress:** 1
 - **Blocked:** 0
 
 ---
@@ -681,7 +681,7 @@ Fleet invasion. Victory conditions engine.
     > Check conditions per turn. When hit, freeze play + show
     > game-over screen with stats, faction-appropriate epilogue
     > text, and replay option.
-  - :black_circle: **TASK-073** — Balance pass: tune thresholds for all 4 victory paths  `med` `medium` _(core, content)_  
+  - :large_orange_diamond: **TASK-073** — Balance pass: tune thresholds for all 4 victory paths  `med` `medium` _(core, content)_  
     _depends on: TASK-072_
     > Play-test all four paths at target difficulty; adjust
     > thresholds so each is reachable but none trivial. Document

@@ -1773,7 +1773,7 @@ epics:
             attempt_count: 1
           - id: TASK-073
             title: 'Balance pass: tune thresholds for all 4 victory paths'
-            status: ready
+            status: in-progress
             priority: med
             complexity: medium
             workspaces:
@@ -1788,8 +1788,8 @@ epics:
             pr: null
             completed: null
             blocked_reason: null
-            last_attempted: null
-            attempt_count: 0
+            last_attempted: '2026-04-24T00:34:00Z'
+            attempt_count: 1
   - id: EPIC-11
     title: Narrative, tutorial & flavour integration
     description: |
