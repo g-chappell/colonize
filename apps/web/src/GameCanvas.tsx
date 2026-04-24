@@ -49,6 +49,16 @@ export function GameCanvas(): JSX.Element {
       }),
     );
 
+    // Codex unlocks — gameplay orchestrators (rumour resolution,
+    // legendary-ship discovery, faction first-contact) emit the bus
+    // event; the store action dedupes so a double-fire does not grow
+    // the unlocked array twice.
+    busUnsubscribes.push(
+      bus.on('codex:entry-unlocked', ({ entryId }) => {
+        useGameStore.getState().unlockCodexEntry(entryId);
+      }),
+    );
+
     void import('./game').then(({ createGame }) => {
       if (destroyed || !parentRef.current) return;
       gameInstance = createGame({ parent: parentRef.current }) as PhaserGame;

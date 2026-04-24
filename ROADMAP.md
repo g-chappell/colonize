@@ -9,8 +9,8 @@ _Created: 2026-04-20_
 ## Summary
 
 - **Total tasks:** 90
-- **Done:** 77 (86%)
-- **Ready:** 13
+- **Done:** 78 (87%)
+- **Ready:** 12
 - **In progress:** 0
 - **Blocked:** 0
 
@@ -723,7 +723,7 @@ salvaged-futurism).
   > Browsable encyclopedia of OTK Universe Reference entries.
   > Unlocked over time as the player discovers related content.
   > [OPEN] items surfaced as "fragmentary" with blurred text.
-  - :black_circle: **TASK-077** — Codex viewer + entry unlock hooks  `med` `medium` _(web, content)_  
+  - :white_check_mark: **TASK-077** — Codex viewer + entry unlock hooks  `med` `medium` _(web, content)_ · [PR](https://github.com/g-chappell/colonize/pull/108)  
     _depends on: TASK-013_
     > Side-drawer Codex. Entries grouped by section (Factions,
     > Abyssal Horrors, Legendary Ships, Locations, Bloodlines,

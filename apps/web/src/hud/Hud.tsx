@@ -57,6 +57,7 @@ export function Hud(): JSX.Element {
       <div className={styles.topRight}>
         <RoutesButton />
         <DiplomacyButton />
+        <CodexButton />
         <MenuButton />
         <ResourceBar />
       </div>
@@ -112,6 +113,21 @@ export function RoutesButton(): JSX.Element {
       data-testid="hud-routes-button"
     >
       ⚓
+    </button>
+  );
+}
+
+export function CodexButton(): JSX.Element {
+  const setScreen = useGameStore((s) => s.setScreen);
+  return (
+    <button
+      type="button"
+      className={styles.menuButton}
+      onClick={() => setScreen('codex')}
+      aria-label="Open codex"
+      data-testid="hud-codex-button"
+    >
+      📖
     </button>
   );
 }

@@ -124,4 +124,11 @@ export interface GameEvents {
   // via the zustand store. `colonyId` is null for an explicit clear
   // (reserved — no current emitter).
   'colony:selected': { colonyId: string | null };
+  // Fired by gameplay orchestrators (rumour resolution, legendary-ship
+  // discovery, faction first-contact, ...) to unlock a Codex entry by
+  // id. The GameCanvas host listens and calls `unlockCodexEntry` on
+  // the store; the Codex viewer (side-drawer, screen='codex') reveals
+  // the entry on next open. Redundant emits for an already-unlocked
+  // id are no-ops — the store dedupes.
+  'codex:entry-unlocked': { entryId: string };
 }
