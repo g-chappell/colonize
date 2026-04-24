@@ -9,6 +9,7 @@ import {
   type PlayableFaction,
   type SurroundingTile,
 } from '../store/game';
+import { selectRumours } from '../tavern/select-rumours';
 import { availableBuildings, type ProductionQueueItem } from './build-queue';
 import styles from './ColonyOverlay.module.css';
 
@@ -64,6 +65,9 @@ export function ColonyOverlay(): JSX.Element {
   const setSelectedColony = useGameStore((s) => s.setSelectedColony);
   const openTradeSession = useGameStore((s) => s.openTradeSession);
   const openTransferSession = useGameStore((s) => s.openTransferSession);
+  const showTavernEncounter = useGameStore((s) => s.showTavernEncounter);
+  const playerFaction = useGameStore((s) => s.faction);
+  const currentTurn = useGameStore((s) => s.currentTurn);
 
   const colony = findColony(colonies, selectedColonyId);
   const queue = colony ? (colonyQueues[colony.id] ?? []) : [];
@@ -119,6 +123,16 @@ export function ColonyOverlay(): JSX.Element {
                 openTransferSession({ colonyId: colony.id, unitId: tradableShip.id });
               }
             }}
+            onVisitTavern={() => {
+              const picked = selectRumours({
+                context: { town: colony.id, year: currentTurn, faction: playerFaction },
+                count: 3,
+              });
+              showTavernEncounter({
+                colonyId: colony.id,
+                rumourIds: picked.map((r) => r.id),
+              });
+            }}
           />
         ) : (
           <MissingColony onClose={handleClose} />
@@ -136,6 +150,7 @@ interface ColonyDetailsProps {
   readonly onClose: () => void;
   readonly onOpenTrade: () => void;
   readonly onOpenTransfer: () => void;
+  readonly onVisitTavern: () => void;
 }
 
 function ColonyDetails({
@@ -146,6 +161,7 @@ function ColonyDetails({
   onClose,
   onOpenTrade,
   onOpenTransfer,
+  onVisitTavern,
 }: ColonyDetailsProps): JSX.Element {
   const resources = Object.entries(colony.stocks.resources).filter(([, qty]) => qty > 0);
   const artifacts = colony.stocks.artifacts;
@@ -231,6 +247,8 @@ function ColonyDetails({
       {hasHomePort ? <TradePanel tradableShip={tradableShip} onOpenTrade={onOpenTrade} /> : null}
 
       <TransferPanel tradableShip={tradableShip} onOpenTransfer={onOpenTransfer} />
+
+      <TavernPanel colony={colony} onVisitTavern={onVisitTavern} />
 
       <div className={styles.actions}>
         <button
@@ -632,6 +650,31 @@ function TradePanel({ tradableShip, onOpenTrade }: TradePanelProps): JSX.Element
           Trade with {tradableShip.id}
         </button>
       )}
+    </section>
+  );
+}
+
+interface TavernPanelProps {
+  readonly colony: ColonyJSON;
+  readonly onVisitTavern: () => void;
+}
+
+// Surfaces only when the colony has built a tavern. Clicking the
+// button rolls a hand of 3 rumours (via `selectRumours`) and opens
+// the self-mounting TavernModal via `showTavernEncounter`.
+function TavernPanel({ colony, onVisitTavern }: TavernPanelProps): JSX.Element | null {
+  if (!colony.buildings.includes('tavern')) return null;
+  return (
+    <section className={styles.section} data-testid="colony-overlay-tavern">
+      <h3 className={styles.sectionHeader}>Tavern</h3>
+      <button
+        type="button"
+        className={styles.availableButton}
+        onClick={onVisitTavern}
+        data-testid="colony-overlay-tavern-visit"
+      >
+        Visit tavern
+      </button>
     </section>
   );
 }

@@ -19,6 +19,7 @@ import { Prologue } from './prologue/Prologue';
 import { RouteScreen } from './routes/RouteScreen';
 import { SovereigntyBeatModal } from './sovereignty/SovereigntyBeatModal';
 import { SovereigntyWarOverlay } from './sovereignty/SovereigntyWarOverlay';
+import { TavernModal } from './tavern/TavernModal';
 import { TradeScreen } from './trade/TradeScreen';
 import { CargoTransferScreen } from './transfer/CargoTransferScreen';
 import { TutorialStepModal } from './tutorial/TutorialStepModal';
@@ -101,6 +102,7 @@ export function App() {
         <CombatOverlay />
         <CouncilPickModal />
         <BlackMarketModal />
+        <TavernModal />
         <SovereigntyBeatModal />
         <TithePaymentModal />
         <TidewaterPartyModal />

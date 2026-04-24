@@ -425,4 +425,27 @@ describe('ColonyOverlay', () => {
       });
     });
   });
+
+  describe('tavern panel', () => {
+    it('hides the tavern panel when the colony has no tavern building', () => {
+      useGameStore.getState().setColonies([{ ...sampleColony, buildings: ['shipyard'] }]);
+      render(<ColonyOverlay />);
+      expect(screen.queryByTestId('colony-overlay-tavern')).toBeNull();
+    });
+
+    it('shows a Visit tavern button when the colony has a tavern', () => {
+      render(<ColonyOverlay />);
+      expect(screen.getByTestId('colony-overlay-tavern-visit')).toHaveTextContent(/Visit tavern/i);
+    });
+
+    it('clicking Visit tavern opens a tavern encounter with 3 rumours from the colony context', () => {
+      render(<ColonyOverlay />);
+      fireEvent.click(screen.getByTestId('colony-overlay-tavern-visit'));
+      const encounter = useGameStore.getState().tavernEncounter;
+      expect(encounter).not.toBeNull();
+      expect(encounter!.colonyId).toBe('driftwatch');
+      expect(encounter!.rumourIds).toHaveLength(3);
+      expect(new Set(encounter!.rumourIds).size).toBe(3);
+    });
+  });
 });
