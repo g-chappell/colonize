@@ -1833,7 +1833,7 @@ epics:
         tasks:
           - id: TASK-075
             title: Tavern encounter UI + rumour data model
-            status: in-progress
+            status: done
             priority: med
             complexity: medium
             workspaces:
@@ -1846,8 +1846,8 @@ epics:
               with triggers (town, year, faction, random).
             depends_on:
               - TASK-040
-            pr: null
-            completed: null
+            pr: https://github.com/g-chappell/colonize/pull/106
+            completed: '2026-04-24'
             blocked_reason: null
             last_attempted: '2026-04-24T01:30:00Z'
             attempt_count: 1

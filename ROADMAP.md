@@ -9,9 +9,9 @@ _Created: 2026-04-20_
 ## Summary
 
 - **Total tasks:** 90
-- **Done:** 75 (83%)
+- **Done:** 76 (84%)
 - **Ready:** 14
-- **In progress:** 1
+- **In progress:** 0
 - **Blocked:** 0
 
 ---
@@ -708,7 +708,7 @@ salvaged-futurism).
   > When the player visits a colony tavern, surface a mix of
   > hand-authored and procedural rumours. Some are pure flavour;
   > some are hints toward Archive caches or faction opportunities.
-  - :large_orange_diamond: **TASK-075** — Tavern encounter UI + rumour data model  `med` `medium` _(web, core, content)_  
+  - :white_check_mark: **TASK-075** — Tavern encounter UI + rumour data model  `med` `medium` _(web, core, content)_ · [PR](https://github.com/g-chappell/colonize/pull/106)  
     _depends on: TASK-040_
     > "Visit Tavern" action in colony view opens a scene with
     > 3 rumours + flavour ambience. Rumour table in content
