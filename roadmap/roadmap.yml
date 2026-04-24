@@ -2069,7 +2069,7 @@ epics:
             attempt_count: 1
           - id: TASK-085
             title: Per-N-turn interstitial + cooldown
-            status: in-progress
+            status: done
             priority: med
             complexity: small
             workspaces:
@@ -2081,8 +2081,8 @@ epics:
               (default 10).
             depends_on:
               - TASK-084
-            pr: null
-            completed: null
+            pr: https://github.com/g-chappell/colonize/pull/116
+            completed: '2026-04-24T07:31:00Z'
             blocked_reason: null
             last_attempted: '2026-04-24T07:11:00Z'
             attempt_count: 1
