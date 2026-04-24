@@ -2186,7 +2186,7 @@ epics:
             attempt_count: 1
           - id: TASK-090
             title: Build + submission runbook
-            status: ready
+            status: done
             priority: low
             complexity: medium
             workspaces: []
@@ -2197,8 +2197,8 @@ epics:
             depends_on:
               - TASK-086
               - TASK-089
-            pr: null
-            completed: null
+            pr: https://github.com/g-chappell/colonize/pull/129
+            completed: '2026-04-24T20:12:00Z'
             blocked_reason: null
-            last_attempted: null
-            attempt_count: 0
+            last_attempted: '2026-04-24T20:02:00Z'
+            attempt_count: 1

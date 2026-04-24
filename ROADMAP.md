@@ -9,8 +9,8 @@ _Created: 2026-04-20_
 ## Summary
 
 - **Total tasks:** 90
-- **Done:** 89 (99%)
-- **Ready:** 1
+- **Done:** 90 (100%)
+- **Ready:** 0
 - **In progress:** 0
 - **Blocked:** 0
 
@@ -829,7 +829,7 @@ site.
     > Generate required screenshot sets for all device sizes.
     > Write short + long descriptions, keywords, age rating
     > answers. All in content/store/.
-  - :black_circle: **TASK-090** — Build + submission runbook  `low` `medium`  
+  - :white_check_mark: **TASK-090** — Build + submission runbook  `low` `medium` · [PR](https://github.com/g-chappell/colonize/pull/129)  
     _depends on: TASK-086, TASK-089_
     > docs/RELEASE.md: exact steps to produce signed
     > iOS/Android builds and submit. Includes required Apple /
