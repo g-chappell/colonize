@@ -9,9 +9,9 @@ _Created: 2026-04-20_
 ## Summary
 
 - **Total tasks:** 90
-- **Done:** 81 (90%)
+- **Done:** 82 (91%)
 - **Ready:** 8
-- **In progress:** 1
+- **In progress:** 0
 - **Blocked:** 0
 
 ---
@@ -799,7 +799,7 @@ site.
 - **STORY-50** — IAP — Remove Ads + cosmetics
   > One-time IAP for 'Remove Ads'. Additional cosmetics-only IAPs
   > (ship skins, palette variants). No pay-to-win.
-  - :large_orange_diamond: **TASK-086** — IAP flow (web + mobile) + server-side receipt validation  `med` `large` _(web, mobile, server, shared)_  
+  - :white_check_mark: **TASK-086** — IAP flow (web + mobile) + server-side receipt validation  `med` `large` _(web, mobile, server, shared)_ · [PR](https://github.com/g-chappell/colonize/pull/118)  
     _depends on: TASK-082, TASK-084_
     > Configure products in App Store Connect + Play Console.
     > Client purchase → server receipt validation → user entitlement
