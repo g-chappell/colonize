@@ -54,21 +54,29 @@ git branch --merged main | grep -E "^\s*${branchPrefix}TASK-" \
   | xargs -r git branch -d
 ```
 
-## Step 4 — CI AUTO-RECOVERY (3 attempts max)
+## Step 4 — CI AUTO-RECOVERY
 
-List open PRs; for each with a `failure` check:
+Delegate the 3-attempts-per-PR loop to `scripts/ci-fix-recover.mjs`:
 
-1. Read run logs: `gh run view <id> --log-failed | tail -150`
-2. Check out the branch: `git checkout <branch>`
-3. Read the exact error, apply minimal fix (only files named in the error)
-4. Run local validation: `commands.typecheck`, `commands.test`, `commands.lint`
-5. If local passes: `git add <fixed-files>` → commit `fix: <brief>` → push
-6. Switch back to main
+```bash
+node scripts/ci-fix-recover.mjs
+```
 
-Maximum 3 fix attempts per PR. If all 3 fail:
-- Leave the branch as-is
-- Write AGENT-LOG `outcome: blocked, reason: ci_auto_fix_failed`
-- Notify user; stop the run (don't pick a new task while one is stuck)
+The script lists open PRs with a failing `ci` check, spawns a scoped
+Claude subprocess (allowlist: `Bash(npm *), Bash(git *), Bash(node *),
+Edit, Read, Grep, Glob`) per PR with up to `--max-attempts 3`, and runs
+local validation before pushing. Exit codes:
+
+- `0` — zero failing PRs OR all recovered
+- `1` — some PRs still failing (script emits JSON summary)
+- `2` — infra error (gh CLI missing, claude CLI missing, project.json
+  unreadable)
+
+If exit=1: write AGENT-LOG `outcome: blocked, reason:
+ci_auto_fix_failed`, include the JSON summary in the entry body, and stop
+the run (don't pick a new task while one is stuck).
+
+If exit=2: write AGENT-LOG `outcome: blocked, reason: infra` and stop.
 
 ## Step 5 — SELECT TASK
 
@@ -91,19 +99,21 @@ If no eligible task:
 
 ## Step 6 — BRANCH + CLAIM (branch-as-payload)
 
-```bash
-slug=$(echo "<title>" | tr '[:upper:] ' '[:lower:]-' | tr -cd 'a-z0-9-')
-branch="${branchPrefix}<id>-${slug}"
-git checkout -b "$branch" main
-```
-
-Edit `roadmap/roadmap.yml`: set task status to `in-progress`, update
-`attempt_count` and `last_attempted`. Re-render ROADMAP.md. Commit:
+Delegate the mechanical part to `scripts/new-branch.sh`:
 
 ```bash
-git add roadmap/roadmap.yml ROADMAP.md
-git commit -m "roadmap: mark <id> in-progress"
+branch=$(scripts/new-branch.sh <TASK-ID>)
 ```
+
+The script reads the task's title from roadmap, derives a slug,
+`git checkout -b ${branchPrefix}<id>-<slug> main`, flips the task's
+status to `in-progress`, bumps `attempt_count`, stamps
+`last_attempted` with the current UTC ISO, re-renders ROADMAP.md, and
+commits `roadmap: mark <id> in-progress`. The branch name is printed
+on stdout for downstream steps.
+
+Exit codes: `0` ok, `1` if task id missing from roadmap, `2` on setup
+errors (missing project.json, slug derivation failed, branch exists).
 
 **All status changes live on the feature branch. Never commit them to main.**
 
@@ -190,14 +200,17 @@ EOF
 # (implementation + status change merge together, never diverging)
 ```
 
-Update `roadmap/roadmap.yml` on the branch: status → `done`, set `pr` URL
-and `completed` ISO date. Re-render. Commit:
+Delegate the done-marking mechanics to `scripts/finalize-task.sh`:
 
 ```bash
-git add roadmap/roadmap.yml ROADMAP.md
-git commit -m "roadmap: mark <id> done (PR #<num>)"
-git push
+scripts/finalize-task.sh <TASK-ID> <PR-URL>
 ```
+
+The script flips the roadmap task's status to `done`, stamps `pr` +
+`completed`, re-renders ROADMAP.md, commits
+`roadmap: mark <id> done (PR #<num>)`, and pushes to origin. It prints
+the commit SHA on stdout. Exit codes: `0` ok, `1` if task id missing,
+`2` on setup errors (invalid PR URL, running on main, etc.).
 
 Then enable auto-merge:
 
