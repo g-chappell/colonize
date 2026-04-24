@@ -35,4 +35,27 @@ describe('FactionSelect', () => {
     expect(useGameStore.getState().screen).toBe('menu');
     expect(useGameStore.getState().faction).toBe('otk');
   });
+
+  it('renders a bonus tooltip on every card with enumerated bonuses and a canon flavour quote', () => {
+    render(<FactionSelect />);
+    for (const id of ['otk', 'ironclad', 'phantom', 'bloodborne'] as const) {
+      const tooltip = screen.getByTestId(`faction-tooltip-${id}`);
+      expect(tooltip).toBeInTheDocument();
+      expect(tooltip.getAttribute('role')).toBe('tooltip');
+      expect(tooltip.querySelectorAll('li').length).toBeGreaterThanOrEqual(2);
+    }
+    expect(screen.getByTestId('faction-tooltip-otk').textContent).toMatch(/Red Tide/);
+    expect(screen.getByTestId('faction-tooltip-ironclad').textContent).toMatch(/colony production/);
+    expect(screen.getByTestId('faction-tooltip-phantom').textContent).toMatch(/Stealth/);
+    expect(screen.getByTestId('faction-tooltip-bloodborne').textContent).toMatch(/combat damage/);
+    expect(screen.getByTestId('faction-tooltip-otk').textContent).toMatch(/Hic sunt dracones/);
+  });
+
+  it('each faction card is linked to its tooltip via aria-describedby', () => {
+    render(<FactionSelect />);
+    for (const id of ['otk', 'ironclad', 'phantom', 'bloodborne'] as const) {
+      const card = screen.getByTestId(`faction-card-${id}`);
+      expect(card.getAttribute('aria-describedby')).toBe(`faction-tooltip-${id}`);
+    }
+  });
 });
