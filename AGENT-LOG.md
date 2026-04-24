@@ -1656,3 +1656,16 @@ gaps.
 
 ---
 
+### Run [2026-04-24 17:15]
+- Task: TASK-078 — Render [OPEN] entries as 'fragmentary' placeholders
+- Outcome: success
+- PR: https://github.com/g-chappell/colonize/pull/125
+- Test counts: core=1159, content=290, web=855 (was 854, +1 new), server=69, shared=24
+- Files changed: apps/web/src/codex/CodexViewer.tsx, apps/web/src/codex/CodexViewer.module.css, apps/web/src/codex/CodexViewer.test.tsx, packages/content/src/codex-entries.ts
+- Regression alert: false
+- Review proposed: (filled post-Step 15 if triggered)
+- Deploy: (filled post-deploy)
+- Lessons learned: Re-read the task title verbatim rather than trusting the TASK-077 forward-pointer comment — the comment in codex-entries.ts claimed TASK-078 was "render locked stubs as fragmentary", but the task description was explicitly "Render [OPEN] entries" (canonTier === 'open'). Scoped the rendering branch to canonTier === 'open' only, kept locked entries skipped as before, and updated the stale comment as part of the same PR so the next reader isn't misled.
+
+---
+
