@@ -10,8 +10,8 @@ _Created: 2026-04-20_
 
 - **Total tasks:** 90
 - **Done:** 78 (87%)
-- **Ready:** 12
-- **In progress:** 0
+- **Ready:** 11
+- **In progress:** 1
 - **Blocked:** 0
 
 ---
@@ -744,7 +744,7 @@ salvaged-futurism).
     > New-game option 'Tutorial'. Scripted events fire at turn
     > X, triggering highlight arrows + instructional modals.
     > Player can skip at any step.
-  - :black_circle: **TASK-080** — Tutorial step authoring (12–15 steps)  `med` `large` _(content)_  
+  - :large_orange_diamond: **TASK-080** — Tutorial step authoring (12–15 steps)  `med` `large` _(content)_  
     _depends on: TASK-079_
     > Author step content: what to do, what it teaches, brief
     > narrative framing (Mr Jackson from the Endeavour's crew as
