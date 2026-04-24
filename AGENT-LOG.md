@@ -1482,7 +1482,7 @@ gaps.
 - Files changed: packages/content/balance.md, roadmap/roadmap.yml, ROADMAP.md
 - Regression alert: false
 - Review proposed: (filled in Step 15 if applicable)
-- Deploy: (filled in Step 14 after /deploy runs)
+- Deploy: success
 - Lessons learned: Tests in concord-registry.test.ts and sovereignty-trigger.test.ts deliberately refer to thresholds symbolically ("tuned in TASK-073") so a balance pass that leaves numbers as-is after inspection is a legitimate outcome — the deliverable is the doc that pins the design envelopes for future evidence-driven tunes.
 
 ---
