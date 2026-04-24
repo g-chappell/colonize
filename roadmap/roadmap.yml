@@ -882,7 +882,7 @@ epics:
             attempt_count: 1
           - id: TASK-037
             title: 'Map-edge cue: ''hic sunt dracones'' tile-edge motif'
-            status: ready
+            status: in-progress
             priority: low
             complexity: small
             workspaces:
@@ -897,8 +897,8 @@ epics:
             pr: null
             completed: null
             blocked_reason: null
-            last_attempted: null
-            attempt_count: 0
+            last_attempted: '2026-04-24T14:05:00Z'
+            attempt_count: 1
   - id: EPIC-06
     title: Colonies, resources & professions
     description: |
