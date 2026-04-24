@@ -9,9 +9,9 @@ _Created: 2026-04-20_
 ## Summary
 
 - **Total tasks:** 90
-- **Done:** 76 (84%)
+- **Done:** 77 (86%)
 - **Ready:** 13
-- **In progress:** 1
+- **In progress:** 0
 - **Blocked:** 0
 
 ---
@@ -713,7 +713,7 @@ salvaged-futurism).
     > "Visit Tavern" action in colony view opens a scene with
     > 3 rumours + flavour ambience. Rumour table in content
     > with triggers (town, year, faction, random).
-  - :large_orange_diamond: **TASK-076** — Rumour → map-marker hint pipeline  `med` `small` _(core, web)_  
+  - :white_check_mark: **TASK-076** — Rumour → map-marker hint pipeline  `med` `small` _(core, web)_ · [PR](https://github.com/g-chappell/colonize/pull/107)  
     _depends on: TASK-075, TASK-032_
     > Some rumours drop a subtle map marker pointing roughly
     > toward an Archive cache or wreck. Marker is directional,
