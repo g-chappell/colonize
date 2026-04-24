@@ -1701,7 +1701,7 @@ gaps.
 - Test counts: core=1159, content=321, web=855, server=69, shared=24
 - Files changed: docs/RELEASE.md (new, 421 lines)
 - Regression alert: false
-- Review proposed: <tbd-in-step-15>
+- Review proposed: false (PR #126 still open)
 - Deploy: success
 - Lessons learned:
   - Docs-only task against an already-drafted store-metadata pack: most of the content-side fields (store URLs, age-rating answers, Apple / Play axes) were already resolved under packages/content/store/ by TASK-089. The runbook surfaces real unfinished work (keystore, iOS signing, screenshot capture, feature graphic, legal placeholders) in an explicit § 9 TODO section rather than pretending those steps are complete — first-time-through human runs clear that section.
