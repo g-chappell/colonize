@@ -1623,9 +1623,10 @@ gaps.
 - Outcome: success
 - PR: https://github.com/g-chappell/colonize/pull/121
 - Test counts: core=1159, content=280, web=831, server=69, shared=24
+- Deploy details: healthcheck ok on attempt 2, exit 0
 - Files changed: packages/content/legal.md, apps/web/src/marketing/path-route.ts, apps/web/src/marketing/path-route.test.ts, apps/web/src/marketing/use-path-route.ts, apps/web/src/marketing/LegalPage.module.css, apps/web/src/marketing/PrivacyPage.tsx, apps/web/src/marketing/TermsPage.tsx, apps/web/src/marketing/LegalPage.test.tsx, apps/web/src/marketing/LandingPage.tsx, apps/web/src/marketing/LandingPage.module.css, apps/web/src/marketing/LandingPage.test.tsx, apps/web/src/App.tsx, apps/web/src/App.test.tsx
 - Regression alert: false
-- Deploy: pending
+- Deploy: success
 - Lessons learned: The navigateTo helper generalised naturally from navigateToPlay — keep the single-route helper as a thin wrapper so existing call sites stay readable.
 
 ---
