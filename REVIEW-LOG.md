@@ -241,3 +241,21 @@ Healthy outcome: the existing rule set is doing its job — five tasks landed wi
 
 For next cycle's reference: the emerging cross-cutting pattern is the **slice-driven self-mounting event modal** applied a third, fourth, and fifth time this post-review window (TASK-062 BlackMarketModal, TASK-068 TithePaymentModal, TASK-069 TidewaterPartyModal) — already fully codified in `.claude/notes/ui-screens.md`, so the canonical-examples list is stale but the *rule* is not net-new.
 
+
+---
+
+## Review [2026-04-24 01:20] — after TASK-061 through TASK-073
+- Success streak: 5 post-prior-review (TASK-061, TASK-062, TASK-068, TASK-069, TASK-073)
+- Patterns identified: 2 candidate refinements
+  1. Canonical-examples list for "slice-driven self-mounting overlays" in `.claude/notes/ui-screens.md` is stale — 4 new modals (SovereigntyBeatModal in TASK-071, BlackMarketModal in TASK-062, TithePaymentModal in TASK-068, TidewaterPartyModal in TASK-069) apply the rule; canonical list still names only 2. Explicitly flagged by the prior 2026-04-24 00:45 REVIEW-LOG entry as worth refreshing next cycle.
+  2. Pointer to `packages/content/balance.md` (introduced by TASK-073) as the design-targets home for balance-tunable registries, to be added to `.claude/notes/registry-patterns.md` alongside the existing "Relational invariants over literal numbers" rule.
+- Proposals drafted: 2
+- Proposals de-duplicated: 2 (both novel vs CLAUDE.md + `.claude/notes/ui-screens.md` + `.claude/notes/registry-patterns.md` + `.claude/approvals/history.md`, Jaro-Winkler threshold 0.85 via `alreadyCovered`)
+- Refinements committed: 0
+- PR: n/a
+- Outcome: blocked-permission
+- Files touched: none
+
+Both proposed edits targeted files under `.claude/notes/` (the subsystem-pattern-notes files imported into CLAUDE.md Tier 3). The Edit tool rejected both with "sensitive file" at the Claude Code CLI boundary even though `.claude/settings.json` allows `Edit(*)`. Per CLAUDE.md Tier 1 "When the user denies a tool call, do not re-attempt — adjust your approach" and the autonomous-run "do not bypass safety checks as a shortcut" contract, the review branch (`auto/review-2026-04-24`, already created at this point) was deleted locally and no PR was opened. The refinements are durably recorded in this REVIEW-LOG entry so the next cycle can retry once the permission path is resolved.
+
+Next-cycle retry: both proposals still apply. The canonical-examples refresh is purely additive — a single hunk in `.claude/notes/ui-screens.md` appending four file paths + task ids to the existing "Canonical examples:" sentence. The balance.md pointer is a one-bullet addition to `.claude/notes/registry-patterns.md`. If the Edit-on-`.claude/notes/` path is still blocked, an alternative is to land the same guidance as a Tier 3 bullet directly in CLAUDE.md (the Edit tool already accepted CLAUDE.md in PRs #8, #17, #23, #72, #78 per REVIEW-LOG history).
