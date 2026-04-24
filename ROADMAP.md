@@ -9,8 +9,8 @@ _Created: 2026-04-20_
 ## Summary
 
 - **Total tasks:** 90
-- **Done:** 88 (98%)
-- **Ready:** 2
+- **Done:** 89 (99%)
+- **Ready:** 1
 - **In progress:** 0
 - **Blocked:** 0
 
@@ -824,7 +824,7 @@ site.
   > Prepare + submit App Store and Play Store builds. Screenshots,
   > metadata, age rating, review responses. Requires human
   > intervention (Apple / Google accounts).
-  - :black_circle: **TASK-089** — Screenshots + store metadata pack  `low` `medium` _(content)_  
+  - :white_check_mark: **TASK-089** — Screenshots + store metadata pack  `low` `medium` _(content)_ · [PR](https://github.com/g-chappell/colonize/pull/128)  
     _depends on: TASK-087_
     > Generate required screenshot sets for all device sizes.
     > Write short + long descriptions, keywords, age rating
