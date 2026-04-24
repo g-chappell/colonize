@@ -1971,7 +1971,7 @@ epics:
         tasks:
           - id: TASK-081
             title: Content register-tagging infra + lint rule
-            status: in-progress
+            status: done
             priority: low
             complexity: small
             workspaces:
@@ -1982,8 +1982,8 @@ epics:
               voice guide in packages/content/VOICE.md.
             depends_on:
               - TASK-004
-            pr: null
-            completed: null
+            pr: https://github.com/g-chappell/colonize/pull/127
+            completed: '2026-04-24T18:14:00Z'
             blocked_reason: null
             last_attempted: '2026-04-24T18:02:00Z'
             attempt_count: 1
