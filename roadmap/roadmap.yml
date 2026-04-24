@@ -2168,7 +2168,7 @@ epics:
         tasks:
           - id: TASK-089
             title: Screenshots + store metadata pack
-            status: ready
+            status: in-progress
             priority: low
             complexity: medium
             workspaces:
@@ -2182,8 +2182,8 @@ epics:
             pr: null
             completed: null
             blocked_reason: null
-            last_attempted: null
-            attempt_count: 0
+            last_attempted: '2026-04-24T19:04:00Z'
+            attempt_count: 1
           - id: TASK-090
             title: Build + submission runbook
             status: ready
