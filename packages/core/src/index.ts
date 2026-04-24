@@ -269,6 +269,7 @@ export type {
   ConcordTensionMeterInit,
   ConcordTensionMeterJSON,
   ConcordUltimatumEvent,
+  TidewaterPartyParams,
   SovereigntyTriggerInputs,
   SovereigntyTriggerStatus,
   SovereigntyTriggerThresholds,

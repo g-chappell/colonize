@@ -152,6 +152,32 @@ export interface TitheNotification {
   readonly gameYear?: number;
 }
 
+// Pending Tidewater Party event — modal data for a single "dump cargo
+// to buy reprieve" prompt (STORY-40). Non-null while the modal is
+// mounted; cleared by `confirmTidewaterParty` (after the
+// tension-clamp + ire-raise fires) or `dismissTidewaterPartyEvent`
+// (no side effects). The caller that opens the event supplies
+// `availableCargo` — the good-to-quantity snapshot of whatever hold
+// the dump comes out of (ship cargo at a coastal anchorage today, a
+// future-task colony stockpile path later). The modal filters to the
+// goods with `>= dumpQty` and lets the player pick one.
+export interface TidewaterPartyEvent {
+  readonly availableCargo: Readonly<Record<ResourceId, number>>;
+  readonly dumpQty: number;
+  readonly freezeTurns: number;
+  readonly irePenalty: number;
+}
+
+// Record of the most-recent dump, surfaced so a future orchestrator
+// (the ship-cargo removal path) can observe what was dumped without
+// scraping the modal's state. `confirmTidewaterParty` writes this
+// alongside the tension-clamp; `clearLastTidewaterDump` acknowledges
+// + clears. Cosmetic session state — not persisted.
+export interface TidewaterDumpRecord {
+  readonly resourceId: ResourceId;
+  readonly qty: number;
+}
+
 // Default snapshot for the Concord tension meter — mirrors the empty
 // state of `new ConcordTensionMeter()`. Frozen so callers cannot
 // mutate the shared default; `set` clones via `toJSON()` whenever
@@ -161,6 +187,8 @@ const DEFAULT_CONCORD_TENSION_SNAPSHOT: ConcordTensionMeterJSON = Object.freeze(
   thresholds: Object.freeze([...CONCORD_TENSION_THRESHOLDS]),
   crossed: Object.freeze([]),
   pending: Object.freeze([]),
+  ire: 0,
+  freezeTurnsRemaining: 0,
 }) as ConcordTensionMeterJSON;
 
 // User-editable game settings that survive pause/resume. Audio volumes
@@ -324,6 +352,16 @@ export interface GameState {
   // slice directly without reconstituting the meter (it only needs the
   // numeric tension + crossed-thresholds count).
   concordTension: ConcordTensionMeterJSON;
+  // Active Tidewater Party modal payload — see TidewaterPartyEvent
+  // above. Non-null while the modal is mounted; `confirmTidewaterParty`
+  // or `dismissTidewaterPartyEvent` clears it.
+  tidewaterPartyEvent: TidewaterPartyEvent | null;
+  // Most-recent Tidewater dump — the (good, qty) pair the player
+  // committed to on the most recent confirm. Non-null from
+  // `confirmTidewaterParty` until `clearLastTidewaterDump` runs;
+  // lets a ship-cargo orchestrator observe the dump without inspecting
+  // the cleared event.
+  lastTidewaterDump: TidewaterDumpRecord | null;
   // Per-faction-pair relations + cooldowns, plain JSON for zustand
   // round-trip compatibility. Gameplay code reconstitutes a
   // RelationsMatrix instance via `RelationsMatrix.fromJSON` when it
@@ -436,6 +474,26 @@ export interface GameState {
   // them from the snapshot diff. No-op (returns []) when no notification
   // is active.
   boycottTithe: () => readonly ConcordUltimatumEvent[];
+  // Open the Tidewater Party modal with `event` — no-op if one is
+  // already active (mirrors `showTitheNotification` so a spurious
+  // double-fire cannot stack two modals).
+  showTidewaterPartyEvent: (event: TidewaterPartyEvent) => void;
+  // Commit the active Tidewater Party: clamp tension to 0, install the
+  // freeze window, raise ire, clear the event, and record the
+  // `{ resourceId, qty }` the player committed to so a cargo-removal
+  // orchestrator can observe it. Silently no-ops when no event is
+  // active, when `qty` is not a positive integer, when `qty` is less
+  // than the event's `dumpQty`, or when `resourceId` is not among the
+  // event's eligible goods — defence-in-depth against malformed input;
+  // the modal UI only offers valid choices.
+  confirmTidewaterParty: (resourceId: ResourceId, qty: number) => void;
+  // Cancel the active Tidewater Party without side effects — clears
+  // the event slice only.
+  dismissTidewaterPartyEvent: () => void;
+  // Acknowledge + clear the `lastTidewaterDump` record. Orchestrators
+  // that act on the dump call this after removing the cargo so a
+  // subsequent observer does not double-apply.
+  clearLastTidewaterDump: () => void;
   showCombatOutcome: (outcome: CombatOutcome) => void;
   dismissCombatOutcome: () => void;
   setHomePort: (factionId: string, port: HomePortJSON) => void;
@@ -592,6 +650,8 @@ const initialState = {
   blackMarketEncounter: null as BlackMarketEncounter | null,
   titheNotification: null as TitheNotification | null,
   concordTension: DEFAULT_CONCORD_TENSION_SNAPSHOT,
+  tidewaterPartyEvent: null as TidewaterPartyEvent | null,
+  lastTidewaterDump: null as TidewaterDumpRecord | null,
   homePorts: {} as Readonly<Record<string, HomePortJSON>>,
   tradeSession: null as TradeSession | null,
   transferSession: null as TransferSession | null,
@@ -801,6 +861,31 @@ export const useGameStore = create<GameState>((set) => ({
     set({ concordTension: meter.toJSON(), titheNotification: null });
     return crossed;
   },
+  showTidewaterPartyEvent: (event) =>
+    set((state) => (state.tidewaterPartyEvent === null ? { tidewaterPartyEvent: event } : {})),
+  confirmTidewaterParty: (resourceId, qty) => {
+    const state = useGameStore.getState();
+    const event = state.tidewaterPartyEvent;
+    if (event === null) return;
+    if (!Number.isInteger(qty) || qty <= 0) return;
+    if (qty < event.dumpQty) return;
+    const have = event.availableCargo[resourceId];
+    if (have === undefined || have < qty) return;
+    const meter = ConcordTensionMeter.fromJSON(state.concordTension);
+    meter.triggerTidewaterParty({
+      freezeTurns: event.freezeTurns,
+      irePenalty: event.irePenalty,
+    });
+    set({
+      concordTension: meter.toJSON(),
+      tidewaterPartyEvent: null,
+      lastTidewaterDump: { resourceId, qty },
+    });
+  },
+  dismissTidewaterPartyEvent: () =>
+    set((state) => (state.tidewaterPartyEvent === null ? {} : { tidewaterPartyEvent: null })),
+  clearLastTidewaterDump: () =>
+    set((state) => (state.lastTidewaterDump === null ? {} : { lastTidewaterDump: null })),
   showCombatOutcome: (outcome) => set({ combatOutcome: outcome }),
   dismissCombatOutcome: () => set({ combatOutcome: null }),
   setHomePort: (factionId, port) =>

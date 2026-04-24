@@ -11,6 +11,7 @@ export type {
   ConcordTensionMeterInit,
   ConcordTensionMeterJSON,
   ConcordUltimatumEvent,
+  TidewaterPartyParams,
 } from './tension-meter.js';
 export {
   DEFAULT_SOVEREIGNTY_TRIGGER_THRESHOLDS,

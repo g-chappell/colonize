@@ -173,8 +173,105 @@ describe('ConcordTensionMeter pendingEvents snapshot', () => {
   });
 });
 
+describe('ConcordTensionMeter.triggerTidewaterParty', () => {
+  it('clamps tension to 0, installs the freeze window, and bumps ire', () => {
+    const meter = new ConcordTensionMeter({ thresholds: [25, 50], tension: 40 });
+    meter.triggerTidewaterParty({ freezeTurns: 6, irePenalty: 15 });
+    expect(meter.tension).toBe(0);
+    expect(meter.freezeTurnsRemaining).toBe(6);
+    expect(meter.isTensionFrozen).toBe(true);
+    expect(meter.ire).toBe(15);
+  });
+
+  it('preserves already-crossed thresholds — the Concord remembers', () => {
+    const meter = new ConcordTensionMeter({ thresholds: [25, 50] });
+    meter.raise(30);
+    expect(meter.crossedThresholds).toEqual([25]);
+    meter.triggerTidewaterParty({ freezeTurns: 4, irePenalty: 10 });
+    expect(meter.crossedThresholds).toEqual([25]);
+    // ...and does not re-fire the threshold once the freeze ends.
+    meter.tickFreeze();
+    meter.tickFreeze();
+    meter.tickFreeze();
+    meter.tickFreeze();
+    expect(meter.raise(30)).toEqual([]);
+  });
+
+  it('accumulates ire across multiple dumps', () => {
+    const meter = new ConcordTensionMeter();
+    meter.triggerTidewaterParty({ freezeTurns: 4, irePenalty: 10 });
+    meter.triggerTidewaterParty({ freezeTurns: 2, irePenalty: 7 });
+    expect(meter.ire).toBe(17);
+  });
+
+  it('a second dump overwrites the freeze window (does not compound)', () => {
+    const meter = new ConcordTensionMeter();
+    meter.triggerTidewaterParty({ freezeTurns: 8, irePenalty: 10 });
+    meter.triggerTidewaterParty({ freezeTurns: 3, irePenalty: 10 });
+    expect(meter.freezeTurnsRemaining).toBe(3);
+  });
+
+  it('rejects negative / non-integer freezeTurns and irePenalty', () => {
+    const meter = new ConcordTensionMeter();
+    expect(() => meter.triggerTidewaterParty({ freezeTurns: -1, irePenalty: 5 })).toThrow(
+      RangeError,
+    );
+    expect(() => meter.triggerTidewaterParty({ freezeTurns: 1.5, irePenalty: 5 })).toThrow(
+      RangeError,
+    );
+    expect(() => meter.triggerTidewaterParty({ freezeTurns: 5, irePenalty: -3 })).toThrow(
+      RangeError,
+    );
+    expect(() => meter.triggerTidewaterParty({ freezeTurns: 5, irePenalty: Number.NaN })).toThrow(
+      RangeError,
+    );
+  });
+
+  it('freezeTurns of 0 is a legal no-reprieve dump (ire still rises)', () => {
+    const meter = new ConcordTensionMeter({ tension: 20 });
+    meter.triggerTidewaterParty({ freezeTurns: 0, irePenalty: 5 });
+    expect(meter.tension).toBe(0);
+    expect(meter.freezeTurnsRemaining).toBe(0);
+    expect(meter.isTensionFrozen).toBe(false);
+    expect(meter.ire).toBe(5);
+    // raise still works immediately
+    expect(meter.raise(25)).toEqual([{ threshold: 25 }]);
+  });
+});
+
+describe('ConcordTensionMeter freeze + raise interaction', () => {
+  it('raise is a no-op while the freeze window is active', () => {
+    const meter = new ConcordTensionMeter({ thresholds: [25, 50] });
+    meter.triggerTidewaterParty({ freezeTurns: 3, irePenalty: 10 });
+    const events = meter.raise(80);
+    expect(events).toEqual([]);
+    expect(meter.tension).toBe(0);
+    expect(meter.crossedThresholds).toEqual([]);
+    expect(meter.pendingEvents).toEqual([]);
+  });
+
+  it('raise resumes once the freeze window expires via tickFreeze', () => {
+    const meter = new ConcordTensionMeter({ thresholds: [25] });
+    meter.triggerTidewaterParty({ freezeTurns: 2, irePenalty: 10 });
+    meter.tickFreeze();
+    expect(meter.freezeTurnsRemaining).toBe(1);
+    expect(meter.raise(30)).toEqual([]);
+    meter.tickFreeze();
+    expect(meter.freezeTurnsRemaining).toBe(0);
+    expect(meter.isTensionFrozen).toBe(false);
+    expect(meter.raise(30)).toEqual([{ threshold: 25 }]);
+  });
+
+  it('tickFreeze is a no-op while already unfrozen', () => {
+    const meter = new ConcordTensionMeter();
+    meter.tickFreeze();
+    meter.tickFreeze();
+    expect(meter.freezeTurnsRemaining).toBe(0);
+  });
+});
+
 describe('ConcordTensionMeter save-format round-trip', () => {
-  it('toJSON captures tension, thresholds, crossed (sorted asc), pending (FIFO order)', () => {
+  it('toJSON captures tension, thresholds, crossed (sorted asc), pending (FIFO order), ire, freezeTurnsRemaining', () => {
     const meter = new ConcordTensionMeter({ thresholds: [10, 25, 60] });
     meter.raise(30);
     const json = meter.toJSON();
@@ -183,6 +280,8 @@ describe('ConcordTensionMeter save-format round-trip', () => {
       thresholds: [10, 25, 60],
       crossed: [10, 25],
       pending: [{ threshold: 10 }, { threshold: 25 }],
+      ire: 0,
+      freezeTurnsRemaining: 0,
     });
   });
 
@@ -198,6 +297,25 @@ describe('ConcordTensionMeter save-format round-trip', () => {
     expect(meter.thresholds).toEqual([25, 50, 75, 100]);
     expect(meter.crossedThresholds).toEqual([25, 50]);
     expect(meter.pendingEvents).toEqual([{ threshold: 25 }, { threshold: 50 }]);
+    // Back-compat: pre-TASK-069 saves omit the Tidewater fields; fromJSON defaults them to 0.
+    expect(meter.ire).toBe(0);
+    expect(meter.freezeTurnsRemaining).toBe(0);
+  });
+
+  it('fromJSON round-trips the Tidewater fields when present', () => {
+    const data: ConcordTensionMeterJSON = {
+      tension: 0,
+      thresholds: [25, 50],
+      crossed: [25],
+      pending: [],
+      ire: 22,
+      freezeTurnsRemaining: 5,
+    };
+    const meter = ConcordTensionMeter.fromJSON(data);
+    expect(meter.ire).toBe(22);
+    expect(meter.freezeTurnsRemaining).toBe(5);
+    expect(meter.isTensionFrozen).toBe(true);
+    expect(meter.crossedThresholds).toEqual([25]);
   });
 
   it('round-trips cleanly through JSON.stringify / JSON.parse', () => {
