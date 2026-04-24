@@ -1946,7 +1946,7 @@ epics:
             attempt_count: 1
           - id: TASK-080
             title: Tutorial step authoring (12–15 steps)
-            status: ready
+            status: done
             priority: med
             complexity: large
             workspaces:
@@ -1957,11 +1957,11 @@ epics:
               tutor voice — diary canon). Each step <50 words.
             depends_on:
               - TASK-079
-            pr: null
-            completed: null
+            pr: https://github.com/g-chappell/colonize/pull/109
+            completed: '2026-04-24'
             blocked_reason: null
-            last_attempted: null
-            attempt_count: 0
+            last_attempted: '2026-04-24T04:40:00Z'
+            attempt_count: 1
       - id: STORY-47
         title: Three-register flavour-text pipeline
         description: |

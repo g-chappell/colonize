@@ -350,7 +350,9 @@ describe('App', () => {
       useGameStore.getState().setScreen('game');
       render(<App />);
       expect(screen.getByTestId('tutorial-step')).toBeInTheDocument();
-      expect(screen.getByTestId('tutorial-step-title')).toHaveTextContent('Welcome aboard');
+      expect(screen.getByTestId('tutorial-step-title')).toHaveTextContent(
+        'The watch is yours, Captain',
+      );
       expect(useGameStore.getState().tutorialStep).toBe('welcome');
       expect(useGameStore.getState().firedTutorialSteps).toEqual(['welcome']);
     });
@@ -373,14 +375,16 @@ describe('App', () => {
       useGameStore.getState().setTutorialEnabled(true);
       useGameStore.getState().setScreen('game');
       render(<App />);
-      expect(screen.getByTestId('tutorial-step-title')).toHaveTextContent('Welcome aboard');
+      expect(screen.getByTestId('tutorial-step-title')).toHaveTextContent(
+        'The watch is yours, Captain',
+      );
       fireEvent.click(screen.getByTestId('tutorial-step-next'));
       expect(useGameStore.getState().tutorialStep).toBeNull();
       act(() => {
         useGameStore.getState().setCurrentTurn(1);
       });
       expect(useGameStore.getState().tutorialStep).toBe('end-turn');
-      expect(screen.getByTestId('tutorial-step-title')).toHaveTextContent('Ending a turn');
+      expect(screen.getByTestId('tutorial-step-title')).toHaveTextContent('Ending the watch');
     });
 
     it('does not re-fire an already-fired step', () => {
@@ -421,7 +425,9 @@ describe('App', () => {
       useGameStore.getState().setTutorialEnabled(true);
       useGameStore.getState().setScreen('game');
       render(<App />);
-      expect(screen.getByTestId('tutorial-step-title')).toHaveTextContent('Welcome aboard');
+      expect(screen.getByTestId('tutorial-step-title')).toHaveTextContent(
+        'The watch is yours, Captain',
+      );
       expect(screen.queryByTestId('tutorial-step-highlight')).not.toBeInTheDocument();
     });
   });
