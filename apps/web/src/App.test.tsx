@@ -8,16 +8,36 @@ import { useGameStore } from './store/game';
 describe('App', () => {
   beforeEach(() => {
     useGameStore.getState().reset();
+    // The landing route gate (see marketing/path-route.ts) sits above
+    // the `screen` slice — every test below exercises the /play app
+    // shell, so pin the pathname before render.
+    window.history.replaceState({}, '', '/play');
   });
 
   afterEach(() => {
     bus.clear();
   });
 
-  it('renders the main menu by default', () => {
+  it('renders the main menu by default at /play', () => {
     render(<App />);
     expect(screen.getByTestId('main-menu')).toBeInTheDocument();
     expect(screen.getByRole('heading', { level: 1, name: 'Colonize' })).toBeInTheDocument();
+  });
+
+  describe('landing route', () => {
+    it('renders the marketing landing page at /', () => {
+      window.history.replaceState({}, '', '/');
+      render(<App />);
+      expect(screen.getByTestId('landing-page')).toBeInTheDocument();
+      expect(screen.queryByTestId('main-menu')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('hud')).not.toBeInTheDocument();
+    });
+
+    it('renders the main menu at /play even though the store screen is "menu"', () => {
+      render(<App />);
+      expect(screen.getByTestId('main-menu')).toBeInTheDocument();
+      expect(screen.queryByTestId('landing-page')).not.toBeInTheDocument();
+    });
   });
 
   it('shows the faction select screen when the screen advances', () => {
