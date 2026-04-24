@@ -1638,7 +1638,7 @@ gaps.
 - Test counts: core=1159, content=290, web=847, server=69, shared=24
 - Files changed: apps/web/src/game/fog-edge-motif.ts, apps/web/src/game/fog-edge-motif.test.ts, apps/web/src/game/fog-edge-motif-layer.ts, apps/web/src/game/game-scene.ts, packages/content/src/frontier-motifs.ts, packages/content/src/frontier-motifs.test.ts, packages/content/src/index.ts
 - Regression alert: false
-- Deploy: pending
+- Deploy: success
 - Lessons learned: FogOverlay's constructor+sync+setDepth+destroy surface is the right shape for any per-tile visibility-driven decorative layer; mirroring it (rather than folding motif rendering into FogOverlay itself) kept the two concerns independently testable — the pure-sibling edge detector has no fog-alpha dependency, and the Phaser wrapper's `render(...)` is a clear-and-rebuild that doesn't need to track per-tile state.
 
 ---
