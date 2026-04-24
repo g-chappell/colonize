@@ -10,8 +10,8 @@ _Created: 2026-04-20_
 
 - **Total tasks:** 90
 - **Done:** 79 (88%)
-- **Ready:** 11
-- **In progress:** 0
+- **Ready:** 10
+- **In progress:** 1
 - **Blocked:** 0
 
 ---
@@ -785,7 +785,7 @@ site.
   > Interstitial every N turns (configurable). Never during
   > Sovereignty War or narrative beats. AdMob on mobile, Google
   > Ad Manager on web.
-  - :black_circle: **TASK-084** — Ad manager abstraction in apps/web + Capacitor plugin wire-up  `med` `medium` _(web, mobile)_  
+  - :large_orange_diamond: **TASK-084** — Ad manager abstraction in apps/web + Capacitor plugin wire-up  `med` `medium` _(web, mobile)_  
     _depends on: TASK-003_
     > Single AdManager interface. Web backend (Ad Manager) +
     > mobile backend (@capacitor-community/admob). Respect the
