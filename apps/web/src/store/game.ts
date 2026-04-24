@@ -1,5 +1,10 @@
 import { create } from 'zustand';
-import type { BlackMarketOffering, TavernRumourId, TutorialStepId } from '@colonize/content';
+import {
+  initialUnlockedCodexEntryIds,
+  type BlackMarketOffering,
+  type TavernRumourId,
+  type TutorialStepId,
+} from '@colonize/content';
 import type {
   ArchiveCharterId,
   AutoRouteJSON,
@@ -71,6 +76,7 @@ export type Screen =
   | 'transfer'
   | 'diplomacy'
   | 'routes'
+  | 'codex'
   | 'game-over';
 
 // Active trade session (which ship is trading at which colony's home
@@ -429,6 +435,13 @@ export interface GameState {
   tutorialEnabled: boolean;
   tutorialStep: TutorialStepId | null;
   firedTutorialSteps: readonly TutorialStepId[];
+  // Codex entry ids the player has revealed. Seeded from
+  // `initialUnlockedCodexEntryIds()` in `@colonize/content` at game
+  // start and by `reset` — entries flagged `unlockedFromStart: true`
+  // in the registry. Extended by `unlockCodexEntry` (idempotent; no-op
+  // if the id is already present). The Codex viewer groups + renders
+  // entries by category, skipping any whose id does not appear here.
+  codexUnlocked: readonly string[];
   settings: SettingsState;
   setCurrentTurn: (turn: number) => void;
   advanceTurn: () => void;
@@ -652,6 +665,13 @@ export interface GameState {
   // AND clears the currently mounted step; the fired ledger is left in
   // place so re-enabling mid-game resumes from where it stopped.
   skipTutorial: () => void;
+  // Add `entryId` to the unlocked set. Idempotent — redundant calls
+  // with an already-unlocked id are a no-op (prevents stale bus re-fires
+  // from growing the array). Does not validate `entryId` against the
+  // registry; a non-registry id is stored and ignored by the viewer,
+  // which is the cheapest defence against typos without coupling the
+  // store to content.
+  unlockCodexEntry: (entryId: string) => void;
   reset: () => void;
 }
 
@@ -710,6 +730,7 @@ const initialState = {
   tutorialEnabled: false,
   tutorialStep: null as TutorialStepId | null,
   firedTutorialSteps: [] as readonly TutorialStepId[],
+  codexUnlocked: initialUnlockedCodexEntryIds(),
   settings: DEFAULT_SETTINGS,
 } as const;
 
@@ -1159,5 +1180,17 @@ export const useGameStore = create<GameState>((set) => ({
     }),
   dismissTutorialStep: () => set({ tutorialStep: null }),
   skipTutorial: () => set({ tutorialEnabled: false, tutorialStep: null }),
-  reset: () => set({ ...initialState }),
+  unlockCodexEntry: (entryId) =>
+    set((state) => {
+      if (state.codexUnlocked.includes(entryId)) return {};
+      return { codexUnlocked: [...state.codexUnlocked, entryId] };
+    }),
+  reset: () =>
+    set({
+      ...initialState,
+      // `initialState` was captured at module init; re-evaluate the
+      // unlocked seed on reset so a content-hot-reload in dev cannot
+      // leak a stale snapshot into a fresh game.
+      codexUnlocked: initialUnlockedCodexEntryIds(),
+    }),
 }));

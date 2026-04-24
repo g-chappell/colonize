@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { TUTORIAL_STEPS } from '@colonize/content';
 import './App.css';
 import { BlackMarketModal } from './blackmarket/BlackMarketModal';
+import { CodexViewer } from './codex/CodexViewer';
 import { ColonyOverlay } from './colony/ColonyOverlay';
 import { CombatOverlay } from './combat/CombatOverlay';
 import { CouncilPickModal } from './council/CouncilPickModal';
@@ -46,6 +47,9 @@ export function App() {
         event.preventDefault();
         setScreen('pause');
       } else if (screen === 'pause') {
+        event.preventDefault();
+        setScreen('game');
+      } else if (screen === 'codex') {
         event.preventDefault();
         setScreen('game');
       }
@@ -113,6 +117,7 @@ export function App() {
         {screen === 'transfer' && <CargoTransferScreen />}
         {screen === 'diplomacy' && <DiplomacyScreen />}
         {screen === 'routes' && <RouteScreen />}
+        {screen === 'codex' && <CodexViewer />}
       </div>
     </main>
   );

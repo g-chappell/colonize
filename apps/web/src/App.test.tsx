@@ -186,6 +186,29 @@ describe('App', () => {
     });
   });
 
+  describe('codex viewer', () => {
+    it('mounts the codex viewer over the game stage when screen is codex', () => {
+      useGameStore.getState().setScreen('codex');
+      render(<App />);
+      expect(screen.getByTestId('hud')).toBeInTheDocument();
+      expect(screen.getByTestId('codex-viewer')).toBeInTheDocument();
+    });
+
+    it('does not mount the codex viewer outside the codex screen', () => {
+      useGameStore.getState().setScreen('game');
+      render(<App />);
+      expect(screen.queryByTestId('codex-viewer')).not.toBeInTheDocument();
+    });
+
+    it('closes the codex viewer when Esc is pressed', () => {
+      useGameStore.getState().setScreen('codex');
+      render(<App />);
+      fireEvent.keyDown(document, { key: 'Escape' });
+      expect(useGameStore.getState().screen).toBe('game');
+      expect(screen.queryByTestId('codex-viewer')).not.toBeInTheDocument();
+    });
+  });
+
   describe('combat overlay', () => {
     const sampleOutcome: CombatOutcome = {
       action: CombatActionType.Broadside,

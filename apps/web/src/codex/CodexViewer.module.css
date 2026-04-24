@@ -1,0 +1,140 @@
+.backdrop {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: flex-end;
+  background: rgba(4, 14, 22, 0.72);
+  font-family: 'Georgia', 'Times New Roman', serif;
+  color: #e8d8b8;
+  z-index: 50;
+}
+
+.drawer {
+  width: min(460px, 100vw);
+  height: 100%;
+  padding: 1.5rem;
+  background: rgba(12, 30, 43, 0.97);
+  border-left: 1px solid #d6b466;
+  box-shadow: -4px 0 24px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  overflow-y: auto;
+}
+
+.header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  border-bottom: 1px solid rgba(214, 180, 102, 0.35);
+  padding-bottom: 0.5rem;
+}
+
+.title {
+  margin: 0;
+  color: #d6b466;
+  font-size: 1.25rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.count {
+  font-size: 0.8rem;
+  opacity: 0.7;
+  letter-spacing: 0.1em;
+}
+
+.closeButton {
+  background: transparent;
+  border: 1px solid #d6b466;
+  color: #d6b466;
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: bold;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 0.35rem 0.75rem;
+  cursor: pointer;
+  transition:
+    background 120ms ease,
+    color 120ms ease;
+}
+
+.closeButton:hover {
+  background: #d6b466;
+  color: #0c1e2b;
+}
+
+.closeButton:focus-visible {
+  outline: 2px solid #e6c477;
+  outline-offset: 2px;
+}
+
+.categoryHeading {
+  margin: 0.75rem 0 0.25rem;
+  color: #d6b466;
+  font-size: 0.85rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  border-bottom: 1px dashed rgba(214, 180, 102, 0.35);
+  padding-bottom: 0.15rem;
+}
+
+.emptyHint {
+  font-size: 0.8rem;
+  font-style: italic;
+  opacity: 0.55;
+}
+
+.entryList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.entry {
+  background: rgba(12, 30, 43, 0.85);
+  border: 1px solid rgba(214, 180, 102, 0.4);
+  padding: 0.6rem 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.entryHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.entryTitle {
+  margin: 0;
+  color: #e6c477;
+  font-size: 0.95rem;
+  letter-spacing: 0.05em;
+}
+
+.entryTier {
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  opacity: 0.55;
+}
+
+.entrySummary {
+  margin: 0;
+  font-size: 0.8rem;
+  letter-spacing: 0.03em;
+  opacity: 0.8;
+}
+
+.entryBody {
+  margin: 0.15rem 0 0;
+  font-size: 0.85rem;
+  line-height: 1.45;
+}

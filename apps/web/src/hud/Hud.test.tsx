@@ -86,6 +86,15 @@ describe('Hud', () => {
     });
   });
 
+  describe('CodexButton', () => {
+    it('routes to the codex screen when clicked', () => {
+      useGameStore.getState().setScreen('game');
+      render(<Hud />);
+      fireEvent.click(screen.getByTestId('hud-codex-button'));
+      expect(useGameStore.getState().screen).toBe('codex');
+    });
+  });
+
   describe('YearDisplay', () => {
     it('renders NW + epoch year on turn zero', () => {
       render(<YearDisplay />);

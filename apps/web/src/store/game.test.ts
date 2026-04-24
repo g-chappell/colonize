@@ -1641,4 +1641,38 @@ describe('useGameStore', () => {
       expect(useGameStore.getState().mapHints).toEqual([]);
     });
   });
+
+  describe('codex unlocks', () => {
+    it('seeds codexUnlocked with entries flagged unlockedFromStart', () => {
+      const unlocked = useGameStore.getState().codexUnlocked;
+      expect(unlocked.length).toBeGreaterThan(0);
+      // Sanity: the OTK faction entry is flagged unlockedFromStart in
+      // the registry (TASK-077 seed); if this ever changes, the HUD
+      // codex-open button lands the player on an empty drawer.
+      expect(unlocked).toContain('faction-otk');
+    });
+
+    it('appends a new entry id via unlockCodexEntry', () => {
+      useGameStore.getState().unlockCodexEntry('ship-black-pearl');
+      expect(useGameStore.getState().codexUnlocked).toContain('ship-black-pearl');
+    });
+
+    it('is idempotent — repeated unlock of the same id does not duplicate', () => {
+      const before = useGameStore.getState().codexUnlocked.length;
+      useGameStore.getState().unlockCodexEntry('ship-black-pearl');
+      useGameStore.getState().unlockCodexEntry('ship-black-pearl');
+      useGameStore.getState().unlockCodexEntry('ship-black-pearl');
+      const after = useGameStore.getState().codexUnlocked;
+      expect(after).toContain('ship-black-pearl');
+      expect(after.length).toBe(before + 1);
+    });
+
+    it('reset drops runtime unlocks back to the initial seed', () => {
+      const seed = [...useGameStore.getState().codexUnlocked];
+      useGameStore.getState().unlockCodexEntry('ship-black-pearl');
+      useGameStore.getState().unlockCodexEntry('bloodline-kidd');
+      useGameStore.getState().reset();
+      expect([...useGameStore.getState().codexUnlocked].sort()).toEqual([...seed].sort());
+    });
+  });
 });

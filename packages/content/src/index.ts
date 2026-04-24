@@ -200,6 +200,18 @@ export {
 } from './tavern-rumours.js';
 
 export {
+  CODEX_ENTRIES,
+  CODEX_CATEGORIES,
+  codexCategoryLabel,
+  getCodexEntry,
+  isCodexEntryId,
+  initialUnlockedCodexEntryIds,
+  type CodexCategory,
+  type CodexCanonTier,
+  type CodexEntry,
+} from './codex-entries.js';
+
+export {
   BLACK_MARKET_OFFERINGS,
   BLACK_MARKET_BUY_CHIMES_PER_UNIT_FLOOR,
   BLACK_MARKET_SELL_CHIMES_PER_UNIT_CEILING,
