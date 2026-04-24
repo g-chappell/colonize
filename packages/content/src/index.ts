@@ -126,6 +126,15 @@ export {
 } from './concord-tithe-flavour.js';
 
 export {
+  TIDEWATER_PARTY_DUMP_QTY,
+  TIDEWATER_PARTY_FREEZE_TURNS,
+  TIDEWATER_PARTY_IRE_PENALTY,
+  TIDEWATER_PARTY_FLAVOUR,
+  getTidewaterPartyFlavour,
+  type TidewaterPartyFlavour,
+} from './tidewater-party.js';
+
+export {
   ARCHIVE_CHARTER_FLAVOURS,
   getArchiveCharterFlavour,
   isArchiveCharterFlavourId,

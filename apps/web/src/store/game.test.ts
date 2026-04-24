@@ -1222,6 +1222,134 @@ describe('useGameStore', () => {
     });
   });
 
+  describe('Tidewater Party slice', () => {
+    const baseEvent = {
+      availableCargo: { salvage: 12, planks: 4 } as Record<string, number>,
+      dumpQty: 10,
+      freezeTurns: 8,
+      irePenalty: 15,
+    };
+
+    it('starts with no pending event or dump record', () => {
+      const state = useGameStore.getState();
+      expect(state.tidewaterPartyEvent).toBeNull();
+      expect(state.lastTidewaterDump).toBeNull();
+    });
+
+    it('showTidewaterPartyEvent stores the event', () => {
+      useGameStore.getState().showTidewaterPartyEvent(baseEvent);
+      expect(useGameStore.getState().tidewaterPartyEvent).toEqual(baseEvent);
+    });
+
+    it('showTidewaterPartyEvent is a no-op when one is already active', () => {
+      useGameStore.getState().showTidewaterPartyEvent(baseEvent);
+      const second = { ...baseEvent, dumpQty: 99 };
+      useGameStore.getState().showTidewaterPartyEvent(second);
+      expect(useGameStore.getState().tidewaterPartyEvent?.dumpQty).toBe(10);
+    });
+
+    it('confirmTidewaterParty clamps tension to 0, freezes, raises ire, clears event, records dump', () => {
+      useGameStore.setState({
+        concordTension: {
+          tension: 40,
+          thresholds: [...CONCORD_TENSION_THRESHOLDS],
+          crossed: [25],
+          pending: [{ threshold: 25 }],
+          ire: 0,
+          freezeTurnsRemaining: 0,
+        },
+      });
+      useGameStore.getState().showTidewaterPartyEvent(baseEvent);
+      useGameStore.getState().confirmTidewaterParty('salvage', 10);
+      const state = useGameStore.getState();
+      expect(state.tidewaterPartyEvent).toBeNull();
+      expect(state.concordTension.tension).toBe(0);
+      expect(state.concordTension.freezeTurnsRemaining).toBe(8);
+      expect(state.concordTension.ire).toBe(15);
+      expect(state.concordTension.crossed).toEqual([25]);
+      expect(state.lastTidewaterDump).toEqual({ resourceId: 'salvage', qty: 10 });
+    });
+
+    it('confirmTidewaterParty is a no-op when no event is active', () => {
+      useGameStore.getState().confirmTidewaterParty('salvage', 10);
+      const state = useGameStore.getState();
+      expect(state.concordTension.tension).toBe(0);
+      expect(state.concordTension.ire).toBe(0);
+      expect(state.lastTidewaterDump).toBeNull();
+    });
+
+    it('confirmTidewaterParty ignores a resource not in the event manifest', () => {
+      useGameStore.getState().showTidewaterPartyEvent(baseEvent);
+      useGameStore.getState().confirmTidewaterParty('timber', 10);
+      const state = useGameStore.getState();
+      expect(state.tidewaterPartyEvent).toEqual(baseEvent);
+      expect(state.concordTension.ire).toBe(0);
+      expect(state.lastTidewaterDump).toBeNull();
+    });
+
+    it('confirmTidewaterParty ignores a resource the player has too little of', () => {
+      useGameStore.getState().showTidewaterPartyEvent(baseEvent);
+      useGameStore.getState().confirmTidewaterParty('planks', 10);
+      expect(useGameStore.getState().tidewaterPartyEvent).toEqual(baseEvent);
+      expect(useGameStore.getState().lastTidewaterDump).toBeNull();
+    });
+
+    it('confirmTidewaterParty rejects qty below the event dumpQty', () => {
+      useGameStore.getState().showTidewaterPartyEvent(baseEvent);
+      useGameStore.getState().confirmTidewaterParty('salvage', 9);
+      expect(useGameStore.getState().tidewaterPartyEvent).toEqual(baseEvent);
+      expect(useGameStore.getState().lastTidewaterDump).toBeNull();
+    });
+
+    it('confirmTidewaterParty rejects non-positive or non-integer qty', () => {
+      useGameStore.getState().showTidewaterPartyEvent(baseEvent);
+      useGameStore.getState().confirmTidewaterParty('salvage', 0);
+      useGameStore.getState().confirmTidewaterParty('salvage', -5);
+      useGameStore.getState().confirmTidewaterParty('salvage', 10.5);
+      expect(useGameStore.getState().tidewaterPartyEvent).toEqual(baseEvent);
+      expect(useGameStore.getState().lastTidewaterDump).toBeNull();
+    });
+
+    it('dismissTidewaterPartyEvent clears the event without side effects', () => {
+      useGameStore.getState().showTidewaterPartyEvent(baseEvent);
+      useGameStore.getState().dismissTidewaterPartyEvent();
+      const state = useGameStore.getState();
+      expect(state.tidewaterPartyEvent).toBeNull();
+      expect(state.concordTension.tension).toBe(0);
+      expect(state.concordTension.ire).toBe(0);
+      expect(state.lastTidewaterDump).toBeNull();
+    });
+
+    it('clearLastTidewaterDump acknowledges the record', () => {
+      useGameStore.getState().showTidewaterPartyEvent(baseEvent);
+      useGameStore.getState().confirmTidewaterParty('salvage', 10);
+      useGameStore.getState().clearLastTidewaterDump();
+      expect(useGameStore.getState().lastTidewaterDump).toBeNull();
+    });
+
+    it('a confirmed dump freezes subsequent boycottTithe raises', () => {
+      useGameStore.getState().showTidewaterPartyEvent(baseEvent);
+      useGameStore.getState().confirmTidewaterParty('salvage', 10);
+      useGameStore.getState().showTitheNotification({ amount: 50 });
+      const events = useGameStore.getState().boycottTithe();
+      expect(events).toEqual([]);
+      expect(useGameStore.getState().concordTension.tension).toBe(0);
+      expect(useGameStore.getState().concordTension.crossed).toEqual([]);
+    });
+
+    it('reset clears the pending event + dump record', () => {
+      useGameStore.getState().showTidewaterPartyEvent(baseEvent);
+      useGameStore.getState().confirmTidewaterParty('salvage', 10);
+      useGameStore.getState().showTidewaterPartyEvent(baseEvent);
+      useGameStore.getState().reset();
+      const state = useGameStore.getState();
+      expect(state.tidewaterPartyEvent).toBeNull();
+      expect(state.lastTidewaterDump).toBeNull();
+      expect(state.concordTension.ire).toBe(0);
+      expect(state.concordTension.freezeTurnsRemaining).toBe(0);
+    });
+  });
+
   describe('merchant routes', () => {
     const route = {
       id: 'salt-run',

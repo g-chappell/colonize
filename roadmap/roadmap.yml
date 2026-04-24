@@ -1677,7 +1677,7 @@ epics:
         tasks:
           - id: TASK-069
             title: Tidewater Party event flow
-            status: ready
+            status: done
             priority: med
             complexity: small
             workspaces:
@@ -1690,11 +1690,11 @@ epics:
               permanently. Flavour: "Tidewater Party at Barataria Bay."
             depends_on:
               - TASK-067
-            pr: null
-            completed: null
+            pr: https://github.com/g-chappell/colonize/pull/104
+            completed: '2026-04-24'
             blocked_reason: null
-            last_attempted: null
-            attempt_count: 0
+            last_attempted: "2026-04-24T00:00:00Z"
+            attempt_count: 1
       - id: STORY-41
         title: Declaration of Sovereignty + Concord Fleet
         description: |
