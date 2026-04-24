@@ -2094,7 +2094,7 @@ epics:
         tasks:
           - id: TASK-086
             title: IAP flow (web + mobile) + server-side receipt validation
-            status: ready
+            status: in-progress
             priority: med
             complexity: large
             workspaces:
@@ -2112,8 +2112,8 @@ epics:
             pr: null
             completed: null
             blocked_reason: null
-            last_attempted: null
-            attempt_count: 0
+            last_attempted: '2026-04-24T09:35:00Z'
+            attempt_count: 1
       - id: STORY-51
         title: Marketing site
         description: |

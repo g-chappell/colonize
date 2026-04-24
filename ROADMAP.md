@@ -10,8 +10,8 @@ _Created: 2026-04-20_
 
 - **Total tasks:** 90
 - **Done:** 81 (90%)
-- **Ready:** 9
-- **In progress:** 0
+- **Ready:** 8
+- **In progress:** 1
 - **Blocked:** 0
 
 ---
@@ -799,7 +799,7 @@ site.
 - **STORY-50** — IAP — Remove Ads + cosmetics
   > One-time IAP for 'Remove Ads'. Additional cosmetics-only IAPs
   > (ship skins, palette variants). No pay-to-win.
-  - :black_circle: **TASK-086** — IAP flow (web + mobile) + server-side receipt validation  `med` `large` _(web, mobile, server, shared)_  
+  - :large_orange_diamond: **TASK-086** — IAP flow (web + mobile) + server-side receipt validation  `med` `large` _(web, mobile, server, shared)_  
     _depends on: TASK-082, TASK-084_
     > Configure products in App Store Connect + Play Console.
     > Client purchase → server receipt validation → user entitlement
