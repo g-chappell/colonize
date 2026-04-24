@@ -882,7 +882,7 @@ epics:
             attempt_count: 1
           - id: TASK-037
             title: 'Map-edge cue: ''hic sunt dracones'' tile-edge motif'
-            status: in-progress
+            status: done
             priority: low
             complexity: small
             workspaces:
@@ -894,8 +894,8 @@ epics:
               only; no mechanical effect. Pulls from content palette.
             depends_on:
               - TASK-022
-            pr: null
-            completed: null
+            pr: https://github.com/g-chappell/colonize/pull/122
+            completed: '2026-04-24T14:24:00Z'
             blocked_reason: null
             last_attempted: '2026-04-24T14:05:00Z'
             attempt_count: 1

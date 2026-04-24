@@ -9,9 +9,9 @@ _Created: 2026-04-20_
 ## Summary
 
 - **Total tasks:** 90
-- **Done:** 84 (93%)
+- **Done:** 85 (94%)
 - **Ready:** 5
-- **In progress:** 1
+- **In progress:** 0
 - **Blocked:** 0
 
 ---
@@ -350,7 +350,7 @@ Ship blueprints (OTK-only).
     > Two new UnitTypes with sight radius 2× normal, higher MP,
     > minimal guns. Recruitable from tavern in a starting
     > colony. Flavour text references Sparrow's diary voice.
-  - :large_orange_diamond: **TASK-037** — Map-edge cue: 'hic sunt dracones' tile-edge motif  `low` `small` _(web, content)_  
+  - :white_check_mark: **TASK-037** — Map-edge cue: 'hic sunt dracones' tile-edge motif  `low` `small` _(web, content)_ · [PR](https://github.com/g-chappell/colonize/pull/122)  
     _depends on: TASK-022_
     > On map tiles at the edge of explored territory, occasionally
     > render a subtle dragon sigil + motto in the fog. Flavour
