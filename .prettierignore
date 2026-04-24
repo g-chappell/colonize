@@ -20,6 +20,7 @@ REVIEW-LOG.md
 CLAUDE.md
 memory-seeds/**
 lore/**
+docs/notes/**
 
 # Claude Code config (managed separately, not project source)
 .claude/**

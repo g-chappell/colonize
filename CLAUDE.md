@@ -99,9 +99,9 @@ colonize/
 - **Shared schemas** in `packages/shared` are validated with Zod; tests verify round-trip serialisation.
 - **Web e2e** via Playwright when/if added — smoke-test happy paths only.
 - **Phaser scene tests** are hard; prefer logic-first tests. Scene behaviour is verified via Playwright on the built web app.
-- Detailed jsdom + pure-sibling rules for Phaser code live in `@.claude/notes/phaser-patterns.md`.
-- Detailed pure-sibling rules for React component logic live in `@.claude/notes/ui-screens.md`.
-- Registry-test relational-invariants rule lives in `@.claude/notes/registry-patterns.md`.
+- Detailed jsdom + pure-sibling rules for Phaser code live in `@docs/notes/phaser-patterns.md`.
+- Detailed pure-sibling rules for React component logic live in `@docs/notes/ui-screens.md`.
+- Registry-test relational-invariants rule lives in `@docs/notes/registry-patterns.md`.
 
 ## Scaffolding hygiene
 
@@ -111,24 +111,24 @@ colonize/
 
 Topline architecture principles — cross-cutting rules that govern package
 boundaries and seam design. Detailed pattern rules for specific subsystems
-live in `.claude/notes/*.md` imports below.
+live in `docs/notes/*.md` imports below.
 
 - **Pure core, impure shells.** `packages/core` is framework-free TS — it must run in Node (for server simulation + tests) and browser (for client). No `window`, no Phaser imports, no React.
 - **Server API contract.** Every endpoint's request + response schema lives in `packages/shared`. Client and server both import from there; mismatches become typecheck errors.
 - **Mobile wrapper.** `apps/mobile` is a Capacitor wrapper around `apps/web`'s build output. Never duplicate web UI code — all shared UI lives in `apps/web`.
 - **Generated asset pipelines use the source/packed/served triad.** Commit the *source* inputs under `packages/content/<asset>-src/<name>/` (CI-deterministic); gitignore the *packed* output under `packages/content/<asset>-out/` (regenerated per build); gitignore the *served* copy under `apps/web/public/<asset>/` (consumed at runtime). `apps/web`'s `predev` and `prebuild` scripts run the packer then copy packed → served. See `packages/content/scripts/pack-atlas.mjs` + `apps/web/scripts/prepare-assets.mjs`.
 - **Ship the entity's primitive; leave iteration / scheduling to the task that owns the collection.** When a class exposes an action that a higher-level system will eventually drive (per-turn hooks, per-faction iteration, event dispatch), scope the implementing task to *just the primitive* — "I do this thing" belongs with the entity, "when / to whom this thing happens" belongs with the orchestrator. Applies broadly to core primitives: unit actions, tile effects, combat modifiers, resource producers.
-- **Slice-driven self-mounting overlay — canonical-examples refresh (2026-04).** `@.claude/notes/ui-screens.md` documents the "nullable store slice + unconditional `<Component />` in `App.tsx`'s game-stage block + `if (!slice) return null` guard" pattern with its two originating examples (`CombatOverlay` in TASK-055, `RumourRevealModal`). The MVP has since applied the same rule five more times: `apps/web/src/blackmarket/BlackMarketModal.tsx` gated on `blackMarketEncounter` (TASK-062), `apps/web/src/hud/TithePaymentModal.tsx` on `titheNotification` (TASK-068), `apps/web/src/hud/TidewaterPartyModal.tsx` on `tidewaterPartyEvent` (TASK-069), `apps/web/src/sovereignty/SovereigntyBeatModal.tsx` on `sovereigntyBeat` (TASK-071), `apps/web/src/tavern/TavernModal.tsx` on `tavernEncounter` (TASK-075). When adding the seventh+ transient-event modal, mirror the existing shape (nullable slice, show/dismiss actions, unconditional mount, internal-null guard, slice-setState tests rather than `screen`-driven tests) rather than re-deriving from the two original examples — seven applications make this a load-bearing pattern, not a two-off. Best-effort home for this list is the notes file, but Edit-on-`.claude/notes/*.md` remains blocked at the Claude Code CLI as of 2026-04-24; bullet landed here as fallback.
-- **Balance-design targets for tunable registries live in `packages/content/balance.md`.** A balance pass against a tunable registry (campaign turn-counts, ship stats, profession multipliers, reputation thresholds, wave escalations, tension ladders) checks the numbers against the design envelopes recorded in `packages/content/balance.md` (introduced in TASK-073) before proposing a change. Complements the relational-invariant tests described in `@.claude/notes/registry-patterns.md`: the tests enforce *relationships* between numbers (monotonicity, ordering, cross-tier escalation); `balance.md` documents the *intent* behind those relationships. A balance pass that leaves the literals unchanged after inspection is a legitimate outcome — the deliverable is the doc update if intent shifted, not a cosmetic re-tune (TASK-073 shipped as pure doc).
+- **Slice-driven self-mounting overlay — canonical-examples refresh (2026-04).** `@docs/notes/ui-screens.md` documents the "nullable store slice + unconditional `<Component />` in `App.tsx`'s game-stage block + `if (!slice) return null` guard" pattern with its two originating examples (`CombatOverlay` in TASK-055, `RumourRevealModal`). The MVP has since applied the same rule five more times: `apps/web/src/blackmarket/BlackMarketModal.tsx` gated on `blackMarketEncounter` (TASK-062), `apps/web/src/hud/TithePaymentModal.tsx` on `titheNotification` (TASK-068), `apps/web/src/hud/TidewaterPartyModal.tsx` on `tidewaterPartyEvent` (TASK-069), `apps/web/src/sovereignty/SovereigntyBeatModal.tsx` on `sovereigntyBeat` (TASK-071), `apps/web/src/tavern/TavernModal.tsx` on `tavernEncounter` (TASK-075). When adding the seventh+ transient-event modal, mirror the existing shape (nullable slice, show/dismiss actions, unconditional mount, internal-null guard, slice-setState tests rather than `screen`-driven tests) rather than re-deriving from the two original examples — seven applications make this a load-bearing pattern, not a two-off.
+- **Balance-design targets for tunable registries live in `packages/content/balance.md`.** A balance pass against a tunable registry (campaign turn-counts, ship stats, profession multipliers, reputation thresholds, wave escalations, tension ladders) checks the numbers against the design envelopes recorded in `packages/content/balance.md` (introduced in TASK-073) before proposing a change. Complements the relational-invariant tests described in `@docs/notes/registry-patterns.md`: the tests enforce *relationships* between numbers (monotonicity, ordering, cross-tier escalation); `balance.md` documents the *intent* behind those relationships. A balance pass that leaves the literals unchanged after inspection is a legitimate outcome — the deliverable is the doc update if intent shifted, not a cosmetic re-tune (TASK-073 shipped as pure doc).
 
 ### Subsystem pattern notes (imported)
 
-- TS / save-format kinds, exhaustive switches, opaque-string aliases, scalar seams, `exactOptionalPropertyTypes` traps — `@.claude/notes/typescript-patterns.md`
-- Save-format machinery (`toJSON` determinism, FIFO + re-fire-guard accumulators, defensive-copy getters) — `@.claude/notes/serialization-patterns.md`
-- Registry design (core-vs-content split, trim speculative fields, relational-invariant tests) — `@.claude/notes/registry-patterns.md`
-- Zustand store discipline (atomic multi-slice `set`, clamp-at-boundary) — `@.claude/notes/zustand-patterns.md`
-- Phaser + jsdom (React/Phaser isolation via bus, pure-sibling modules, canvas stubs) — `@.claude/notes/phaser-patterns.md`
-- React UI / screens (CSS Modules, click-through overlays, terminal-vs-overlay taxonomy, slice-driven event modals, heraldic inline SVG, pure-sibling for component logic) — `@.claude/notes/ui-screens.md`
+- TS / save-format kinds, exhaustive switches, opaque-string aliases, scalar seams, `exactOptionalPropertyTypes` traps — `@docs/notes/typescript-patterns.md`
+- Save-format machinery (`toJSON` determinism, FIFO + re-fire-guard accumulators, defensive-copy getters) — `@docs/notes/serialization-patterns.md`
+- Registry design (core-vs-content split, trim speculative fields, relational-invariant tests) — `@docs/notes/registry-patterns.md`
+- Zustand store discipline (atomic multi-slice `set`, clamp-at-boundary) — `@docs/notes/zustand-patterns.md`
+- Phaser + jsdom (React/Phaser isolation via bus, pure-sibling modules, canvas stubs) — `@docs/notes/phaser-patterns.md`
+- React UI / screens (CSS Modules, click-through overlays, terminal-vs-overlay taxonomy, slice-driven event modals, heraldic inline SVG, pure-sibling for component logic) — `@docs/notes/ui-screens.md`
 
 ---
 
