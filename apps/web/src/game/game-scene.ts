@@ -16,6 +16,7 @@ import {
 } from './camera-controls';
 import { getColonyFortificationVisual } from './colony-fortification';
 import { pickColonyIdAtTile } from './colony-input';
+import { FogEdgeMotifLayer } from './fog-edge-motif-layer';
 import { FogOverlay } from './fog-overlay';
 import { decideMoveClick } from './move-intent';
 import { truncatePathResult } from './path-preview';
@@ -52,6 +53,10 @@ export const COLONY_LAYER_DEPTH = 40;
 export const UNIT_LAYER_DEPTH = 50;
 export const SELECTION_RING_DEPTH = 60;
 export const FOG_OVERLAY_DEPTH = 100;
+// Frontier motif ("hic sunt dracones") sits just above the fog so the
+// motto is visible on the opaque Unseen fill without fighting the
+// fog's black tint on the explored side.
+export const FOG_EDGE_MOTIF_DEPTH = 110;
 
 // Merchant-route line visuals — drawn between sequential route stops
 // on the Phaser map so the player sees their trade loops at a glance.
@@ -103,6 +108,7 @@ export class GameScene extends Phaser.Scene {
   private mapModel: GameMap | null = null;
   private initialVisibility: FactionVisibility | null = null;
   private fogOverlay: FogOverlay | null = null;
+  private fogEdgeMotifLayer: FogEdgeMotifLayer | null = null;
   // Follow target is a lightweight invisible sprite — Phaser cameras
   // follow GameObjects, not bare coords.
   private followTarget: Phaser.GameObjects.Sprite | null = null;
@@ -165,6 +171,9 @@ export class GameScene extends Phaser.Scene {
     if (visibility) {
       this.fogOverlay = new FogOverlay(this, map.width, map.height, visibility).setDepth(
         FOG_OVERLAY_DEPTH,
+      );
+      this.fogEdgeMotifLayer = new FogEdgeMotifLayer(this, visibility).setDepth(
+        FOG_EDGE_MOTIF_DEPTH,
       );
     }
 
@@ -487,6 +496,7 @@ export class GameScene extends Phaser.Scene {
   // overlay. No-op when the scene has no fog overlay configured.
   syncFogOverlay(visibility: FactionVisibility): void {
     this.fogOverlay?.sync(visibility, this.time.now);
+    this.fogEdgeMotifLayer?.sync(visibility);
   }
 
   private setupColonyLayer(): void {
