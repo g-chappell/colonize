@@ -1643,3 +1643,16 @@ gaps.
 
 ---
 
+### Run [2026-04-24 16:33]
+- Task: TASK-064 — Faction-select bonus tooltip polish
+- Outcome: success
+- PR: https://github.com/g-chappell/colonize/pull/124
+- Test counts: core=1159, content=290, web=854 (was 847, +7 new), server=69, shared=24
+- Files changed: apps/web/src/menu/FactionSelect.tsx, apps/web/src/menu/FactionSelect.module.css, apps/web/src/menu/FactionSelect.test.tsx, apps/web/src/menu/faction-bonus-text.ts (new), apps/web/src/menu/faction-bonus-text.test.ts (new)
+- Regression alert: false
+- Review proposed: (filled post-Step 15 if triggered)
+- Deploy: (filled post-Step 14)
+- Lessons learned: Reused the existing tagline as the canon-rooted flavour quote rather than introducing a new content field — the task said "from canon" and taglines already are; pulling new lore lines would have risked inventing canon to fill [OPEN] gaps. Pure-sibling module (faction-bonus-text.ts) derived enumerated lines from the core registry so future balance tweaks to FACTION_BONUSES numbers flow into UI copy without a separate content edit.
+
+---
+
