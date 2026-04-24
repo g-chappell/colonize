@@ -1614,7 +1614,7 @@ gaps.
 - Test counts: core=1159, content=280, web=820, server=69, shared=24
 - Files changed: apps/web/src/App.tsx, apps/web/src/App.test.tsx, apps/web/src/marketing/{LandingPage.tsx,LandingPage.module.css,LandingPage.test.tsx,path-route.ts,path-route.test.ts,use-path-route.ts}
 - Regression alert: false
-- Deploy: pending (auto-deploy after merge)
+- Deploy: success (colonize.blacksail.dev healthcheck ok)
 
 ---
 
