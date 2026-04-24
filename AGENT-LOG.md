@@ -1694,3 +1694,18 @@ gaps.
 
 ---
 
+### Run [2026-04-24 20:12]
+- Task: TASK-090 — Build + submission runbook
+- Outcome: success
+- PR: https://github.com/g-chappell/colonize/pull/129
+- Test counts: core=1159, content=321, web=855, server=69, shared=24
+- Files changed: docs/RELEASE.md (new, 421 lines)
+- Regression alert: false
+- Review proposed: <tbd-in-step-15>
+- Deploy: <pending>
+- Lessons learned:
+  - Docs-only task against an already-drafted store-metadata pack: most of the content-side fields (store URLs, age-rating answers, Apple / Play axes) were already resolved under packages/content/store/ by TASK-089. The runbook surfaces real unfinished work (keystore, iOS signing, screenshot capture, feature graphic, legal placeholders) in an explicit § 9 TODO section rather than pretending those steps are complete — first-time-through human runs clear that section.
+  - Followed the packages/CLAUDE.md "trim speculative fields" discipline in reverse: didn't invent release helpers (archive.sh, bundle-android.sh, fastlane lanes) that don't exist; instead the runbook describes the manual commands + Xcode flow and references the future scripts/store-pack.mjs only in the places packages/content/store/screenshots/README.md already flagged as deferred.
+
+---
+
