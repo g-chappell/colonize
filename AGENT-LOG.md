@@ -1498,3 +1498,16 @@ gaps.
 
 ---
 
+### Run [2026-04-24 03:32]
+- Task: TASK-076 — Rumour → map-marker hint pipeline
+- Outcome: success
+- PR: https://github.com/g-chappell/colonize/pull/107
+- Test counts: core=1145, content=265, web=716, server=56, shared=18
+- Files changed: packages/core/src/rumour/map-hint.ts, packages/core/src/rumour/map-hint.test.ts, packages/core/src/rumour/index.ts, packages/core/src/index.ts, packages/content/src/tavern-rumours.ts, packages/content/src/tavern-rumours.test.ts, packages/content/src/index.ts, apps/web/src/tavern/resolve-rumour-hints.ts, apps/web/src/tavern/resolve-rumour-hints.test.ts, apps/web/src/store/game.ts, apps/web/src/store/game.test.ts, apps/web/src/hud/MapHintsPanel.tsx, apps/web/src/hud/MapHintsPanel.module.css, apps/web/src/hud/MapHintsPanel.test.tsx, apps/web/src/hud/Hud.tsx, apps/web/src/hud/Hud.module.css, roadmap/roadmap.yml, ROADMAP.md
+- Regression alert: false
+- Review proposed: <filled in Step 15 if applicable>
+- Deploy: <filled in Step 14>
+- Lessons learned: Rumour hint metadata fits cleanly beside the existing trigger schema — splitting into pre-baked direction (content) vs derived (core primitive) kept the pipeline testable without coupling the store slice to RumourTile access. MapHintsPanel tests revealed that zustand state mutations after initial `render()` need an explicit `act()` wrapper to flush React re-renders under jsdom.
+
+---
+
