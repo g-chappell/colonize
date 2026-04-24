@@ -2123,7 +2123,7 @@ epics:
         tasks:
           - id: TASK-087
             title: Marketing landing route in apps/web
-            status: ready
+            status: in-progress
             priority: med
             complexity: medium
             workspaces:
@@ -2138,8 +2138,8 @@ epics:
             pr: null
             completed: null
             blocked_reason: null
-            last_attempted: null
-            attempt_count: 0
+            last_attempted: '2026-04-24T12:04:00Z'
+            attempt_count: 1
           - id: TASK-088
             title: Privacy policy + terms pages
             status: ready
