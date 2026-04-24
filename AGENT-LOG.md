@@ -1469,7 +1469,7 @@ gaps.
 - Files changed: packages/core/src/concord/tension-meter.ts, packages/core/src/concord/tension-meter.test.ts, packages/core/src/concord/index.ts, packages/core/src/index.ts, packages/content/src/tidewater-party.ts, packages/content/src/tidewater-party.test.ts, packages/content/src/index.ts, apps/web/src/store/game.ts, apps/web/src/store/game.test.ts, apps/web/src/hud/TidewaterPartyModal.tsx, apps/web/src/hud/TidewaterPartyModal.module.css, apps/web/src/hud/TidewaterPartyModal.test.tsx, apps/web/src/App.tsx
 - Regression alert: false
 - Review proposed: <filled in Step 15 if applicable>
-- Deploy: <filled in Step 12/14>
+- Deploy: success
 - Lessons learned: ConcordTensionMeter extended cleanly — the "ship-the-primitive" discipline from CLAUDE.md made the freeze/ire additions local to the meter with no orchestrator churn; the modal slice pattern transplanted from TithePaymentModal with minimal adaptation.
 
 ---
