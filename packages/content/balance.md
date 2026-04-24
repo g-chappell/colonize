@@ -146,6 +146,35 @@ check fires in [`checkEndgame`](../core/src/endgame/endgame.ts).
   [`packages/content/src/concord-campaign.ts`](./src/concord-campaign.ts).
 - **Victory/loss predicate** —
   [`packages/core/src/endgame/endgame.ts`](../core/src/endgame/endgame.ts).
+- **Ad cadence (turn-end interstitial)** — `AD_CADENCE_BY_GAME_LENGTH` in
+  [`packages/core/src/ads/cadence.ts`](../core/src/ads/cadence.ts). Per
+  `GameLength` preset; Standard is the reference. Paired with the in-shell
+  guard (`apps/web/src/ads/ads-guard.ts`) that blocks interstitials during
+  Sovereignty Wars, combat, tutorial, and transient narrative modals.
+
+## Ad cadence envelopes
+
+Per-turn interstitial pacing (TASK-085). The orchestrator in
+`apps/web/src/ads/ad-orchestrator.ts` attempts an ad every N turns; the
+cadence skips when the guard (`evaluateAdGuard`) blocks, and stamps
+`lastAdShowTurn` only on a successful `shown` outcome so blocked turns
+retry rather than drifting forward.
+
+| GameLength | `cadenceN` (turns) | Rationale                                                                     |
+| ---------- | -----------------: | ----------------------------------------------------------------------------- |
+| Short      |                  6 | Compressed runs still see ~1 interstitial per in-game year (12 turns).        |
+| Standard   |                 10 | Task default. Roughly one ad per ~10 turns of active play.                    |
+| Long       |                 15 | A 200-turn Conquest endgame caps at ~13 ads — not a drumbeat every few turns. |
+
+Ordering invariant (tested via relational-invariant test in
+`packages/core/src/ads/cadence.test.ts`): `short < standard < long`. Specific
+numbers above are tunable; the ordering is a design constraint — a shorter
+run must not see ads less often than a longer one.
+
+No `GameLength` UI ships in the MVP yet; the orchestrator defaults to
+`DEFAULT_GAME_LENGTH = 'standard'`. A settings-side task will route a
+player-chosen preset through `initAdOrchestrator({ gameLength })` once the
+selector lands.
 
 Tests that pin the **shape** (ordering, non-emptiness, symbolic
 threshold references) but intentionally do **not** pin concrete

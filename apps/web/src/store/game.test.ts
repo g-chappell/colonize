@@ -1675,4 +1675,29 @@ describe('useGameStore', () => {
       expect([...useGameStore.getState().codexUnlocked].sort()).toEqual([...seed].sort());
     });
   });
+
+  describe('ad cadence cursor', () => {
+    it('starts at 0 so the first ad can fire as soon as cadence is met', () => {
+      expect(useGameStore.getState().lastAdShowTurn).toBe(0);
+    });
+
+    it('stamps the cursor on recordAdShown', () => {
+      useGameStore.getState().recordAdShown(10);
+      expect(useGameStore.getState().lastAdShowTurn).toBe(10);
+    });
+
+    it('is monotonic — a stale, smaller turn value does not rewind the cursor', () => {
+      // Protects against out-of-order orchestrator reports (e.g. a
+      // `shown` outcome resolving late under a microtask schedule).
+      useGameStore.getState().recordAdShown(10);
+      useGameStore.getState().recordAdShown(5);
+      expect(useGameStore.getState().lastAdShowTurn).toBe(10);
+    });
+
+    it('reset clears the cursor so a fresh game does not inherit the old cooldown', () => {
+      useGameStore.getState().recordAdShown(42);
+      useGameStore.getState().reset();
+      expect(useGameStore.getState().lastAdShowTurn).toBe(0);
+    });
+  });
 });

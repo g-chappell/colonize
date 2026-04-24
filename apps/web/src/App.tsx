@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { TUTORIAL_STEPS } from '@colonize/content';
 import './App.css';
+import { initAdOrchestrator, type AdOrchestrator } from './ads/ad-orchestrator';
 import { BlackMarketModal } from './blackmarket/BlackMarketModal';
 import { CodexViewer } from './codex/CodexViewer';
 import { ColonyOverlay } from './colony/ColonyOverlay';
@@ -35,6 +36,27 @@ export function App() {
   const tutorialStep = useGameStore((s) => s.tutorialStep);
   const firedTutorialSteps = useGameStore((s) => s.firedTutorialSteps);
   const showTutorialStep = useGameStore((s) => s.showTutorialStep);
+
+  // Ad orchestrator: subscribe once at app boot. The bus only fires
+  // `turn:advanced` during active gameplay, so booting the subscription
+  // on the menu screen is still quiet; setting it up at root-mount keeps
+  // the ad manager alive across the full screen lifecycle (menu →
+  // faction-select → game → game-over) without re-initialising the
+  // Capacitor plugin on every screen change. Teardown on unmount handles
+  // StrictMode's double-mount in dev by tearing down whichever
+  // orchestrator resolved first.
+  useEffect(() => {
+    let cancelled = false;
+    let orchestrator: AdOrchestrator | null = null;
+    void initAdOrchestrator().then((o) => {
+      if (cancelled) o.teardown();
+      else orchestrator = o;
+    });
+    return () => {
+      cancelled = true;
+      orchestrator?.teardown();
+    };
+  }, []);
 
   // Global Esc-key shortcut: toggles between 'game' and 'pause'. Other
   // screens (menu, faction-select) ignore Esc — they have their own
