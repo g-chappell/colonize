@@ -2142,7 +2142,7 @@ epics:
             attempt_count: 1
           - id: TASK-088
             title: Privacy policy + terms pages
-            status: in-progress
+            status: done
             priority: med
             complexity: small
             workspaces:
@@ -2154,8 +2154,8 @@ epics:
               landing footer. Draft content in content/legal.md.
             depends_on:
               - TASK-087
-            pr: null
-            completed: null
+            pr: https://github.com/g-chappell/colonize/pull/121
+            completed: '2026-04-24T13:21:00Z'
             blocked_reason: null
             last_attempted: '2026-04-24T13:03:00Z'
             attempt_count: 1

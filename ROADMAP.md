@@ -9,9 +9,9 @@ _Created: 2026-04-20_
 ## Summary
 
 - **Total tasks:** 90
-- **Done:** 83 (92%)
+- **Done:** 84 (93%)
 - **Ready:** 6
-- **In progress:** 1
+- **In progress:** 0
 - **Blocked:** 0
 
 ---
@@ -814,7 +814,7 @@ site.
     > / renders landing (marketing), /play renders the game.
     > Hero trailer video, screenshot carousel, store badges,
     > call-to-action.
-  - :large_orange_diamond: **TASK-088** — Privacy policy + terms pages  `med` `small` _(web, content)_  
+  - :white_check_mark: **TASK-088** — Privacy policy + terms pages  `med` `small` _(web, content)_ · [PR](https://github.com/g-chappell/colonize/pull/121)  
     _depends on: TASK-087_
     > Two static pages. Privacy: what we collect (email on opt-
     > in; ad metrics). Terms: standard game ToS. Link from
