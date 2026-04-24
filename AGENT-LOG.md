@@ -1530,7 +1530,7 @@ gaps.
 - Test counts: core=1145, content=280, web=740, server=56, shared=18
 - Files changed: packages/content/src/tutorial-steps.ts, packages/content/src/tutorial-steps.test.ts, apps/web/src/App.test.tsx, roadmap/roadmap.yml, ROADMAP.md
 - Regression alert: false
-- Review proposed: pending
+- Review proposed: true (PR #110)
 - Deploy: success
 - Lessons learned:
   - Reordered the TutorialStepId union so welcome/end-turn/menu stay at turns 1-3; keeps the existing App.test.tsx progression + highlight tests valid, just needed title updates for the new Jackson copy.
