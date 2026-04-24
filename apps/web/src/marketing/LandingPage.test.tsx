@@ -51,4 +51,21 @@ describe('LandingPage', () => {
     expect(window.location.pathname).toBe('/play');
     expect(routeFromPath(window.location.pathname)).toBe('play');
   });
+
+  it('renders privacy + terms footer links and routes them correctly', () => {
+    render(<LandingPage />);
+    const privacyLink = screen.getByTestId('landing-link-privacy');
+    const termsLink = screen.getByTestId('landing-link-terms');
+    expect(privacyLink).toHaveAttribute('href', '/privacy');
+    expect(termsLink).toHaveAttribute('href', '/terms');
+
+    fireEvent.click(privacyLink);
+    expect(window.location.pathname).toBe('/privacy');
+    expect(routeFromPath(window.location.pathname)).toBe('privacy');
+
+    window.history.replaceState({}, '', '/');
+    fireEvent.click(termsLink);
+    expect(window.location.pathname).toBe('/terms');
+    expect(routeFromPath(window.location.pathname)).toBe('terms');
+  });
 });

@@ -27,6 +27,8 @@ import { CargoTransferScreen } from './transfer/CargoTransferScreen';
 import { TutorialStepModal } from './tutorial/TutorialStepModal';
 import { nextTutorialStep } from './tutorial/tutorial-trigger';
 import { LandingPage } from './marketing/LandingPage';
+import { PrivacyPage } from './marketing/PrivacyPage';
+import { TermsPage } from './marketing/TermsPage';
 import { usePathRoute } from './marketing/use-path-route';
 import { useGameStore } from './store/game';
 
@@ -104,6 +106,14 @@ export function App() {
 
   if (route === 'landing') {
     return <LandingPage />;
+  }
+
+  if (route === 'privacy') {
+    return <PrivacyPage />;
+  }
+
+  if (route === 'terms') {
+    return <TermsPage />;
   }
 
   if (screen === 'menu') {
