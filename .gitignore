@@ -60,6 +60,11 @@ Thumbs.db
 # Hook-written observability logs (InstructionsLoaded, etc.) — grow
 # unbounded and contain absolute paths specific to the machine.
 .claude/logs/
+# Claude Code scheduling subsystem's lock file — root-owned, PID-bound,
+# sometimes left behind if the CLI exits abnormally. Untracked presence
+# trips `/autonomous-run`'s Step 2 dirty-tree precheck and bails the
+# next cycle (observed 2026-04-24 between cycles 09:34 and 10:16).
+.claude/scheduled_tasks.lock
 
 # Approvals (history.md, PENDING.md, and archived approvals) ARE committed
 # per the branch-as-payload / auditable-approvals design.
