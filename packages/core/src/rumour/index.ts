@@ -16,3 +16,11 @@ export type {
   ResolveOptions,
   MirageVariant,
 } from './rumour.js';
+export {
+  MapHintCategory,
+  ALL_MAP_HINT_CATEGORIES,
+  isMapHintCategory,
+  rotateDirection,
+  deriveMapHint,
+} from './map-hint.js';
+export type { MapHint, DeriveMapHintInput } from './map-hint.js';
