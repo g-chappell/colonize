@@ -259,3 +259,22 @@ For next cycle's reference: the emerging cross-cutting pattern is the **slice-dr
 Both proposed edits targeted files under `.claude/notes/` (the subsystem-pattern-notes files imported into CLAUDE.md Tier 3). The Edit tool rejected both with "sensitive file" at the Claude Code CLI boundary even though `.claude/settings.json` allows `Edit(*)`. Per CLAUDE.md Tier 1 "When the user denies a tool call, do not re-attempt — adjust your approach" and the autonomous-run "do not bypass safety checks as a shortcut" contract, the review branch (`auto/review-2026-04-24`, already created at this point) was deleted locally and no PR was opened. The refinements are durably recorded in this REVIEW-LOG entry so the next cycle can retry once the permission path is resolved.
 
 Next-cycle retry: both proposals still apply. The canonical-examples refresh is purely additive — a single hunk in `.claude/notes/ui-screens.md` appending four file paths + task ids to the existing "Canonical examples:" sentence. The balance.md pointer is a one-bullet addition to `.claude/notes/registry-patterns.md`. If the Edit-on-`.claude/notes/` path is still blocked, an alternative is to land the same guidance as a Tier 3 bullet directly in CLAUDE.md (the Edit tool already accepted CLAUDE.md in PRs #8, #17, #23, #72, #78 per REVIEW-LOG history).
+
+---
+
+## Review [2026-04-24 05:31] — after TASK-073 through TASK-080
+- Success streak: 5 (TASK-073, TASK-075, TASK-076, TASK-077, TASK-080)
+- Patterns identified: 2 carried-forward from REVIEW-LOG [2026-04-24 01:20]; no novel ≥ 2-entry pattern in this window above and beyond (TASK-075 + TASK-077 both added slice-driven modals, which is itself the pattern refresh proposal)
+- Proposals drafted: 2
+- Proposals de-duplicated: 2 (both novel vs CLAUDE.md + .claude/notes/ui-screens.md + .claude/notes/registry-patterns.md + .claude/approvals/history.md; Jaro-Winkler threshold 0.85 via alreadyCovered)
+- Refinements committed: 2
+- PR: https://github.com/g-chappell/colonize/pull/110
+- Outcome: opened
+- Files touched: CLAUDE.md (Tier 3 — two bullets inserted in Architecture notes between "Ship the entity's primitive" and the "### Subsystem pattern notes (imported)" subheading; Tier 1 [57, 74) untouched)
+- Refinements:
+  1. e5e56cf — refresh canonical-examples list for slice-driven self-mounting overlays to include 5 new modal applications (BlackMarketModal/TASK-062, TithePaymentModal/TASK-068, TidewaterPartyModal/TASK-069, SovereigntyBeatModal/TASK-071, TavernModal/TASK-075) so the seventh+ modal mirrors rather than re-derives. Seven applications make the pattern load-bearing, not a two-off.
+  2. 77052a8 — pin `packages/content/balance.md` as the balance-design-targets home for tunable registries. Complements the existing relational-invariant-tests rule in notes/registry-patterns.md: tests enforce *relationships*, balance.md documents *intent*. Driven by TASK-073's pure-doc deliverable.
+
+Landing caveat: both refinements semantically belong in the respective `.claude/notes/*.md` files, but Edit-on-`.claude/notes/*.md` remains blocked at the Claude Code CLI ("sensitive file" rejection) — same block as 2026-04-24 01:20 reported. Bullets landed in CLAUDE.md Tier 3 as fallback per that entry's follow-up plan, with each bullet explicitly flagging the notes file as the best-effort canonical home so a future cycle (or a structural move of notes out of `.claude/`) can migrate the copy back.
+
+Next-cycle signal for human operator: if the notes-Edit block persists through a third review cycle, consider either (a) relaxing the CLI heuristic for project-local `.claude/notes/`, or (b) moving `.claude/notes/` to `docs/notes/` and updating CLAUDE.md imports — 7 line edits in CLAUDE.md + git mv of 6 files. Structural move deferred out of this cycle to keep the review surface small.
