@@ -1913,3 +1913,11 @@ gaps.
 
 ---
 
+### Run [2026-04-25 20:02]
+- Task: (none)
+- Outcome: skipped
+- Reason: no_ready_tasks (roadmap 90/90 done)
+- Hint: roadmap running low — consider running /pm-brainstorm to draft a new epic
+
+---
+
