@@ -1663,9 +1663,109 @@ gaps.
 - Test counts: core=1159, content=290, web=855 (was 854, +1 new), server=69, shared=24
 - Files changed: apps/web/src/codex/CodexViewer.tsx, apps/web/src/codex/CodexViewer.module.css, apps/web/src/codex/CodexViewer.test.tsx, packages/content/src/codex-entries.ts
 - Regression alert: false
-- Review proposed: (filled post-Step 15 if triggered)
+- Review proposed: true (PR #126 — 1 refinement drafted: codify URL-level routing dispatcher in apps/web/src/CLAUDE.md)
 - Deploy: success (healthcheck ok on attempt 2)
 - Lessons learned: Re-read the task title verbatim rather than trusting the TASK-077 forward-pointer comment — the comment in codex-entries.ts claimed TASK-078 was "render locked stubs as fragmentary", but the task description was explicitly "Render [OPEN] entries" (canonTier === 'open'). Scoped the rendering branch to canonTier === 'open' only, kept locked entries skipped as before, and updated the stale comment as part of the same PR so the next reader isn't misled.
+
+---
+
+### Run [2026-04-24 18:14]
+- Task: TASK-081 — Content register-tagging infra + lint rule
+- Outcome: success
+- PR: https://github.com/g-chappell/colonize/pull/127
+- Test counts: core=1159, content=321 (was 290, +31 new from register tests), web=855, server=69, shared=24
+- Files changed: packages/content/src/register.ts, packages/content/src/register.test.ts, packages/content/src/register-coverage.test.ts, packages/content/src/index.ts, packages/content/VOICE.md
+- Regression alert: false
+- Deploy: success (healthcheck ok on attempt 2)
+- Lessons learned: Scoped the "lint rule" to a vitest sweep over registries that already carry a register tag plus a pinned-count assertion, rather than back-tagging every untagged user-visible string across resources / buildings / professions / units / etc. That broader back-fill is a separate (much larger) task — TASK-081 is "infra + lint rule", small/low-priority, and the smallest credible delivery is the typed coverage-test machinery + a single source-of-truth VOICE.md, leaving registry-by-registry tagging to dedicated follow-ups when each surface gets its narrative pass.
+
+---
+
+### Run [2026-04-24 19:13]
+- Task: TASK-089 — Screenshots + store metadata pack
+- Outcome: success
+- PR: https://github.com/g-chappell/colonize/pull/128
+- Test counts: core=1159, content=321, web=855, server=69, shared=24
+- Files changed: .gitignore, packages/content/store/README.md (new), packages/content/store/descriptions.md (new), packages/content/store/keywords.md (new), packages/content/store/age-rating.md (new), packages/content/store/metadata.md (new), packages/content/store/screenshots/README.md (new)
+- Regression alert: false
+- Review proposed: false (last review 2026-04-24 17:25 within window; review PR #126 still open)
+- Deploy: success (healthcheck ok on attempt 2)
+- Lessons learned: Shipped the submission pack as human-authored markdown under packages/content/store/ (alongside legal.md / balance.md / VOICE.md), not as a TS registry under src/ — the files are read once, by a human, at submission time, and don't participate in the game's runtime or save format. Deliberately gitignored the PNG capture output rather than checking placeholder binaries into the content workspace: the commitment is the spec (device matrix + scene list + file-name convention), captured PNGs are disposable output of a future packaging script. Pulled every user-visible string (hero pitch, screenshot captions, tagline) verbatim from apps/web/src/marketing/LandingPage.tsx so the landing page and the stores share one source of truth, and flagged the propagation rule in the README to prevent silent drift on the next edit.
+
+---
+
+### Run [2026-04-24 20:12]
+- Task: TASK-090 — Build + submission runbook
+- Outcome: success
+- PR: https://github.com/g-chappell/colonize/pull/129
+- Test counts: core=1159, content=321, web=855, server=69, shared=24
+- Files changed: docs/RELEASE.md (new, 421 lines)
+- Regression alert: false
+- Review proposed: false (PR #126 still open)
+- Deploy: success
+- Lessons learned:
+  - Docs-only task against an already-drafted store-metadata pack: most of the content-side fields (store URLs, age-rating answers, Apple / Play axes) were already resolved under packages/content/store/ by TASK-089. The runbook surfaces real unfinished work (keystore, iOS signing, screenshot capture, feature graphic, legal placeholders) in an explicit § 9 TODO section rather than pretending those steps are complete — first-time-through human runs clear that section.
+  - Followed the packages/CLAUDE.md "trim speculative fields" discipline in reverse: didn't invent release helpers (archive.sh, bundle-android.sh, fastlane lanes) that don't exist; instead the runbook describes the manual commands + Xcode flow and references the future scripts/store-pack.mjs only in the places packages/content/store/screenshots/README.md already flagged as deferred.
+
+---
+
+### Run [2026-04-24 21:03]
+- Task: (none selected)
+- Outcome: skipped
+- Reason: no_ready_tasks
+- Note: roadmap running low — all 90 tasks now in `status: done`; consider running `/pm-brainstorm` to draft the next epic(s).
+- Open PRs blocking nothing: #126 (auto/review-2026-04-24-b) still BEHIND.
+
+---
+
+### Run [2026-04-24 22:06]
+- Task: (none selected)
+- Outcome: skipped
+- Reason: no_ready_tasks
+- Note: roadmap running low — 0 ready tasks. All 90 roadmap tasks are done. Consider running `/pm-brainstorm` to add new epics/stories.
+- Open PRs: #126 (auto/review-2026-04-24-b) — BEHIND, auto-merge enabled, `/autonomous-review` will update on next review-gate fire.
+
+---
+
+### Run [2026-04-24 23:05]
+- Task: (none selected)
+- Outcome: skipped
+- Reason: no_ready_tasks
+- Roadmap state: 90/90 done — no more ready tasks; roadmap fully exhausted
+- Hint: roadmap running low — consider running `/pm-brainstorm` to queue new epics/stories
+- Open PRs: #126 (auto/review-2026-04-24-b) still BEHIND with auto-merge enabled
+
+---
+
+### Run [2026-04-25 00:02]
+- Outcome: skipped
+- Reason: no_ready_tasks
+- Note: roadmap running low (0 ready tasks of 90 total — all done) — consider running `/pm-brainstorm` to seed the next epic
+
+---
+
+### Run [2026-04-25 01:05]
+- Task: (none)
+- Outcome: skipped
+- Reason: no_ready_tasks
+- Notes: Roadmap exhausted — all 90 tasks have status=done. Open self-improvement PR #126 (review-2026-04-24-b) still awaiting merge; ci has succeeded, mergeStateStatus=UNKNOWN. Roadmap running low — consider running `/pm-brainstorm` to seed the next epic.
+
+---
+
+### Run [2026-04-25 02:04]
+- Task: (none)
+- Outcome: skipped
+- Reason: no_ready_tasks
+- Roadmap status: 90 tasks total, all done — no ready work to pick up. Consider running /pm-brainstorm to seed new epics/stories.
+
+---
+
+### Run [2026-04-25 03:03]
+- Task: (none)
+- Outcome: skipped
+- Reason: no_ready_tasks
+- Roadmap status: 90/90 done, 0 ready, 0 in-progress, 0 blocked
+- Hint: roadmap exhausted — run `/pm-brainstorm` to seed the next epic, or `/roadmap-add` for one-off tasks
 
 ---
 

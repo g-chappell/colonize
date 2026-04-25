@@ -9,8 +9,8 @@ _Created: 2026-04-20_
 ## Summary
 
 - **Total tasks:** 90
-- **Done:** 87 (97%)
-- **Ready:** 3
+- **Done:** 90 (100%)
+- **Ready:** 0
 - **In progress:** 0
 - **Blocked:** 0
 
@@ -754,7 +754,7 @@ salvaged-futurism).
   > Tag every UI surface with an appropriate tonal register
   > (salt-and-rum / eldritch / salvaged-futurism) so future
   > content authoring stays coherent.
-  - :black_circle: **TASK-081** — Content register-tagging infra + lint rule  `low` `small` _(content)_  
+  - :white_check_mark: **TASK-081** — Content register-tagging infra + lint rule  `low` `small` _(content)_ · [PR](https://github.com/g-chappell/colonize/pull/127)  
     _depends on: TASK-004_
     > Content strings carry a `register` tag. Lint check
     > ensures every user-visible string is tagged. Documented
@@ -824,12 +824,12 @@ site.
   > Prepare + submit App Store and Play Store builds. Screenshots,
   > metadata, age rating, review responses. Requires human
   > intervention (Apple / Google accounts).
-  - :black_circle: **TASK-089** — Screenshots + store metadata pack  `low` `medium` _(content)_  
+  - :white_check_mark: **TASK-089** — Screenshots + store metadata pack  `low` `medium` _(content)_ · [PR](https://github.com/g-chappell/colonize/pull/128)  
     _depends on: TASK-087_
     > Generate required screenshot sets for all device sizes.
     > Write short + long descriptions, keywords, age rating
     > answers. All in content/store/.
-  - :black_circle: **TASK-090** — Build + submission runbook  `low` `medium`  
+  - :white_check_mark: **TASK-090** — Build + submission runbook  `low` `medium` · [PR](https://github.com/g-chappell/colonize/pull/129)  
     _depends on: TASK-086, TASK-089_
     > docs/RELEASE.md: exact steps to produce signed
     > iOS/Android builds and submit. Includes required Apple /
