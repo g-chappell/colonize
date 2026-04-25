@@ -1760,3 +1760,12 @@ gaps.
 
 ---
 
+### Run [2026-04-25 03:03]
+- Task: (none)
+- Outcome: skipped
+- Reason: no_ready_tasks
+- Roadmap status: 90/90 done, 0 ready, 0 in-progress, 0 blocked
+- Hint: roadmap exhausted — run `/pm-brainstorm` to seed the next epic, or `/roadmap-add` for one-off tasks
+
+---
+
