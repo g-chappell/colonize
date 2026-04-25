@@ -1930,3 +1930,10 @@ gaps.
 
 ---
 
+### Run [2026-04-25 22:03]
+- Outcome: skipped
+- Reason: no_ready_tasks (roadmap 90/90 done)
+- Hint: roadmap empty — run `/pm-brainstorm` to seed new epic(s) before next cycle picks anything up
+
+---
+
