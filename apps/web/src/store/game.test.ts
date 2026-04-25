@@ -95,6 +95,41 @@ describe('useGameStore', () => {
     expect(useGameStore.getState().screen).toBe('menu');
   });
 
+  it('starts with no pendingNewGame', () => {
+    expect(useGameStore.getState().pendingNewGame).toBeNull();
+  });
+
+  it('requestNewGame atomically flips faction + pendingNewGame + screen', () => {
+    useGameStore.getState().requestNewGame('ironclad', 12345);
+    const state = useGameStore.getState();
+    expect(state.faction).toBe('ironclad');
+    expect(state.screen).toBe('game');
+    expect(state.pendingNewGame).toEqual({ factionId: 'ironclad', seed: 12345 });
+  });
+
+  it('requestNewGame draws a fresh seed when one is not supplied', () => {
+    useGameStore.getState().requestNewGame('phantom');
+    const pending = useGameStore.getState().pendingNewGame;
+    expect(pending?.factionId).toBe('phantom');
+    expect(typeof pending?.seed).toBe('number');
+    expect(Number.isInteger(pending?.seed)).toBe(true);
+  });
+
+  it('clearPendingNewGame removes the slice without disturbing faction or screen', () => {
+    useGameStore.getState().requestNewGame('bloodborne', 7);
+    useGameStore.getState().clearPendingNewGame();
+    const state = useGameStore.getState();
+    expect(state.pendingNewGame).toBeNull();
+    expect(state.faction).toBe('bloodborne');
+    expect(state.screen).toBe('game');
+  });
+
+  it('reset clears pendingNewGame', () => {
+    useGameStore.getState().requestNewGame('phantom', 1);
+    useGameStore.getState().reset();
+    expect(useGameStore.getState().pendingNewGame).toBeNull();
+  });
+
   it('starts with no remembered camera view', () => {
     expect(useGameStore.getState().cameraView).toBeNull();
   });

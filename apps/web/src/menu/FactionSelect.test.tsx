@@ -29,6 +29,14 @@ describe('FactionSelect', () => {
     expect(useGameStore.getState().screen).toBe('game');
   });
 
+  it('selecting a faction queues a pendingNewGame for the GameCanvas to consume', () => {
+    render(<FactionSelect />);
+    fireEvent.click(screen.getByTestId('faction-card-otk'));
+    const pending = useGameStore.getState().pendingNewGame;
+    expect(pending?.factionId).toBe('otk');
+    expect(typeof pending?.seed).toBe('number');
+  });
+
   it('Back returns to the main menu without changing faction', () => {
     render(<FactionSelect />);
     fireEvent.click(screen.getByTestId('faction-select-back'));

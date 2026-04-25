@@ -188,4 +188,9 @@ export interface GameEvents {
   // the entry on next open. Redundant emits for an already-unlocked
   // id are no-ops — the store dedupes.
   'codex:entry-unlocked': { entryId: string };
+  // Emitted by BootScene after asset preload finishes. GameCanvas
+  // listens — startGameScene cannot be called until the atlas has
+  // loaded, so the React/Phaser seam pairs this signal with the
+  // pendingNewGame store slice to know when both sides are ready.
+  'boot:complete': Record<string, never>;
 }

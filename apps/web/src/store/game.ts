@@ -236,6 +236,18 @@ export interface CameraView {
   readonly zoom: number;
 }
 
+// Pending new-game request — the seam between FactionSelect (React) and
+// GameCanvas (the Phaser host). FactionSelect populates this slice via
+// `requestNewGame`; GameCanvas reads it to know which faction + seed to
+// hand to `buildNewGameSetup` once `boot:complete` fires, then clears
+// the slice with `clearPendingNewGame`. Holding only the inputs (not
+// the resulting GameMap / FactionVisibility instances) keeps the store
+// cloneable and save-format-friendly.
+export interface PendingNewGame {
+  readonly factionId: PlayableFaction;
+  readonly seed: number;
+}
+
 // One cell in a colony's 8-neighbour ring — the snapshot the colony
 // overlay renders as a work-slot. Populated by whoever discovers the
 // colony (founding action today, cloud-save reload later) via
@@ -276,6 +288,13 @@ export interface GameState {
   phase: TurnPhase;
   faction: PlayableFaction;
   screen: Screen;
+  // Set by `requestNewGame` when the player commits to a faction; cleared
+  // by `clearPendingNewGame` once GameCanvas has finished threading the
+  // generated map + initial roster into the live GameScene. The seam
+  // exists because BootScene's atlas preload is async — GameCanvas pairs
+  // this slice with the `boot:complete` bus event to know when both
+  // sides are ready to start the game.
+  pendingNewGame: PendingNewGame | null;
   cameraView: CameraView | null;
   // Plain-data unit roster (UnitJSON, not Unit instances) — zustand
   // state must be cloneable for devtools / time-travel and not all
@@ -463,6 +482,16 @@ export interface GameState {
   setPhase: (phase: TurnPhase) => void;
   setFaction: (faction: PlayableFaction) => void;
   setScreen: (screen: Screen) => void;
+  // Atomic new-game commit: writes faction + pendingNewGame + screen='game'
+  // in a single `set` call so external subscribers never observe a
+  // partial state where one slice has flipped and the others haven't.
+  // The seed defaults to a fresh PRNG draw; tests + replay can pass an
+  // explicit seed.
+  requestNewGame: (factionId: PlayableFaction, seed?: number) => void;
+  // Cleared by GameCanvas once the generated map + initial roster have
+  // been threaded into the live GameScene. Idempotent — safe to call
+  // when the slice is already null.
+  clearPendingNewGame: () => void;
   setCameraView: (view: CameraView) => void;
   clearCameraView: () => void;
   setUnits: (units: readonly UnitJSON[]) => void;
@@ -725,6 +754,7 @@ const initialState = {
   phase: TurnPhaseEnum.PlayerAction as TurnPhase,
   faction: 'otk' as PlayableFaction,
   screen: 'menu' as Screen,
+  pendingNewGame: null as PendingNewGame | null,
   cameraView: null as CameraView | null,
   units: [] as readonly UnitJSON[],
   selectedUnitId: null as string | null,
@@ -771,6 +801,16 @@ export const useGameStore = create<GameState>((set) => ({
   setPhase: (phase) => set({ phase }),
   setFaction: (faction) => set({ faction }),
   setScreen: (screen) => set({ screen }),
+  requestNewGame: (factionId, seed) =>
+    set({
+      faction: factionId,
+      pendingNewGame: {
+        factionId,
+        seed: seed ?? Math.floor(Math.random() * 0x7fffffff),
+      },
+      screen: 'game',
+    }),
+  clearPendingNewGame: () => set({ pendingNewGame: null }),
   setCameraView: (view) => set({ cameraView: view }),
   clearCameraView: () => set({ cameraView: null }),
   setUnits: (units) => set({ units }),

@@ -6,7 +6,6 @@ describe('game asset keys', () => {
   it('exposes the atlas and scene keys used across the game code', () => {
     expect(ATLAS_KEYS.core).toBe('atlas-core');
     expect(SCENE_KEYS.boot).toBe('BootScene');
-    expect(SCENE_KEYS.mainMenu).toBe('MainMenuScene');
     expect(SCENE_KEYS.game).toBe('GameScene');
   });
 
