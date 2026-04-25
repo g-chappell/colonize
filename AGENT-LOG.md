@@ -1921,3 +1921,12 @@ gaps.
 
 ---
 
+### Run [2026-04-25 21:04]
+- Task: (none)
+- Outcome: skipped
+- Reason: no_ready_tasks
+- Roadmap state: 90/90 done, 0 ready
+- Hint: roadmap running low — consider running `/pm-brainstorm` to seed the next epic
+
+---
+
