@@ -1,10 +1,15 @@
 import Phaser from 'phaser';
 
+import { bus } from '../bus';
 import { ATLAS_KEYS, ATLAS_PATHS, SCENE_KEYS } from './asset-keys';
 import { loadAudioStems } from './audio-manager';
 
-// BootScene — preloads the placeholder atlas and shows a progress bar.
-// On load complete, transitions to MainMenuScene.
+// BootScene — preloads the atlas + audio and shows a progress bar.
+// Emits 'boot:complete' on `create` so the React-side host (GameCanvas)
+// can call startGameScene once a pendingNewGame has been queued. The
+// scene itself stays alive (showing the dark background) until
+// startGameScene swaps to GameScene; React owns all menu chrome above
+// the canvas, so there is no Phaser-side main menu.
 export class BootScene extends Phaser.Scene {
   constructor() {
     super({ key: SCENE_KEYS.boot });
@@ -17,7 +22,7 @@ export class BootScene extends Phaser.Scene {
   }
 
   create(): void {
-    this.scene.start(SCENE_KEYS.mainMenu);
+    bus.emit('boot:complete', {});
   }
 
   private drawLoadingBar(): void {

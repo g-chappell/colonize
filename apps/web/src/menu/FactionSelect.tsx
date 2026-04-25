@@ -4,14 +4,13 @@ import { describeFactionBonuses } from './faction-bonus-text';
 import styles from './FactionSelect.module.css';
 
 export function FactionSelect(): JSX.Element {
-  const setFaction = useGameStore((s) => s.setFaction);
+  const requestNewGame = useGameStore((s) => s.requestNewGame);
   const setScreen = useGameStore((s) => s.setScreen);
   const tutorialEnabled = useGameStore((s) => s.tutorialEnabled);
   const setTutorialEnabled = useGameStore((s) => s.setTutorialEnabled);
 
   const select = (id: PlayableFactionId): void => {
-    setFaction(id);
-    setScreen('game');
+    requestNewGame(id);
   };
 
   return (

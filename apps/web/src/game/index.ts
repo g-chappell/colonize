@@ -1,5 +1,4 @@
 export { BootScene } from './boot-scene';
-export { MainMenuScene } from './main-menu-scene';
 export { GameScene, FOG_OVERLAY_DEPTH, type GameSceneInitData } from './game-scene';
 export {
   AUDIO_REGISTRY_KEY,

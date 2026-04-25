@@ -11,6 +11,5 @@ export const ATLAS_PATHS = {
 
 export const SCENE_KEYS = {
   boot: 'BootScene',
-  mainMenu: 'MainMenuScene',
   game: 'GameScene',
 } as const;

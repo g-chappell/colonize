@@ -4,7 +4,6 @@ import type { GameMap } from '@colonize/core';
 import { SCENE_KEYS } from './asset-keys';
 import { AudioManager } from './audio-manager';
 import { BootScene } from './boot-scene';
-import { MainMenuScene } from './main-menu-scene';
 import { GameScene, type GameSceneInitData } from './game-scene';
 
 export const AUDIO_REGISTRY_KEY = 'audioManager';
@@ -27,7 +26,7 @@ export function createGame({ parent, width = 960, height = 540 }: CreateGameOpti
       mode: Phaser.Scale.FIT,
       autoCenter: Phaser.Scale.CENTER_BOTH,
     },
-    scene: [BootScene, MainMenuScene, GameScene],
+    scene: [BootScene, GameScene],
   });
   // AudioManager is owned by the Phaser.Game — constructed once the
   // sound manager exists, stored on the registry so any scene can

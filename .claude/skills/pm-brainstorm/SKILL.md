@@ -112,6 +112,54 @@ Or: run /ux-discovery first if you want to flesh out user flows and
     acceptance criteria before writing tasks.
 ```
 
+## Producer/consumer integration tasks
+
+When the epic has a task that **produces** an output X (a function, scene,
+generated artifact, endpoint, registry) and another task that **consumes**
+X, the integration call-site is a third, separate task — not implicit.
+
+A producer task and a consumer task each ship something working in
+isolation: the producer's output is verified by its own unit tests, the
+consumer is verified by passing inputs in via tests. **Neither task wires
+the producer's output into the consumer's call site.** Without an explicit
+"connector" task, the epic ships two disconnected halves and the user-
+observable behaviour never appears.
+
+Symptoms in a roadmap that's missing connector tasks:
+- Every task description ends with "…the orchestrator (downstream task)
+  will call this" — and there is no orchestrator task in the epic.
+- Smoke test says "verify the producer's output round-trips" instead of
+  "verify the user observes the combined behaviour."
+- The first PR after epic completion is a hand-written wiring patch that
+  spans both packages.
+
+How to spot this when drafting:
+- For each task that ends `-create`, `-generate`, `-build`, `-define`,
+  `-implement`: ask out loud "who calls this, and is *that* task in the
+  epic?" If "downstream / future / a future task," add the connector now.
+- For every save-format primitive added: the connector that mounts it on
+  the live store/game-state slice is a separate task.
+- For every pure function added: the call site that threads inputs from
+  user state and side-effects the result is a separate task.
+
+The connector task should:
+- Reference both the producer task and the consumer task as
+  `depends_on`.
+- Carry an end-to-end smoke test as part of its acceptance criteria —
+  the test exercises the user-observable surface, not the producer's
+  internal API.
+- Be at the same priority as the producer/consumer (otherwise it gets
+  perpetually deferred and the epic ships dark).
+
+Canonical miss: the early Colonize epics shipped `generateMap` (producer,
+EPIC-02) and `GameScene` (consumer, EPIC-03) and `startGameScene`
+(connector function, EPIC-03) — but no task wired the React faction-
+select handler to call all three. The result was a website that
+displayed the menu chrome and HUD with a blank Phaser canvas under it
+because BootScene only auto-advanced to a placeholder MainMenuScene; no
+code path called `startGameScene(game, generateMap(...), ...)`. A single
+"new-game wire-up" task was missing across two epics.
+
 ## Anti-patterns to avoid
 
 - Don't decide tech stack here — that's the architect's job (Phase 2 or a
@@ -119,6 +167,8 @@ Or: run /ux-discovery first if you want to flesh out user flows and
 - Don't write code or skeleton files
 - Don't propose 10+ tasks for a single epic — split into multiple epics
 - Don't re-propose work that already exists in roadmap.yml — flag it first
+- Don't ship producer/consumer pairs without a connector task — see the
+  section above; this is the most common epic-decomposition miss.
 
 ## Memory
 
