@@ -1737,3 +1737,10 @@ gaps.
 
 ---
 
+### Run [2026-04-25 00:02]
+- Outcome: skipped
+- Reason: no_ready_tasks
+- Note: roadmap running low (0 ready tasks of 90 total — all done) — consider running `/pm-brainstorm` to seed the next epic
+
+---
+
